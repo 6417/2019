@@ -7,15 +7,12 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import ch.fridolinsrobotik.motorcontrollers.FridolinsSparkMAX;
-import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.SCargoGripper;
 
 
 /**
@@ -26,9 +23,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static OI m_oi;
+  public static OI oi;
 
-  public IFridolinsMotors motor;
+  //Create Subsystems
+  public static SCargoGripper cargoGripper;
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -39,9 +37,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_oi = new OI();
+    oi = OI.getInstance();
 
-    motor = new FridolinsSparkMAX(1, MotorType.kBrushless);
+    if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+      cargoGripper = new SCargoGripper();
+    }
 
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
@@ -126,9 +126,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-
-    motor.setVelocity(1f);
-
   }
 
   /**

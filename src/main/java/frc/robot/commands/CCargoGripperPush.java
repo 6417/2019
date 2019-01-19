@@ -8,6 +8,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.OI;
+import frc.robot.subsystems.SCargoGripper;
 
 public class CCargoGripperPush extends Command {
   public CCargoGripperPush() {
@@ -23,22 +25,28 @@ public class CCargoGripperPush extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    SCargoGripper.cargoGripperPush();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    if(OI.CargoGripperButtonPull.get()) {
+      return true;
+    }
+    return SCargoGripper.healthy();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    SCargoGripper.cargoGripperStop();
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    this.end();
   }
 }
