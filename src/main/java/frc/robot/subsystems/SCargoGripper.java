@@ -9,6 +9,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import ch.fridolinsrobotik.motorcontrollers.FridolinsIdleModeType;
+import ch.fridolinsrobotik.motorcontrollers.FridolinsLimitSwitchPolarity;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsSparkMAX;
 import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
 import edu.wpi.first.wpilibj.Timer;
@@ -33,9 +35,16 @@ public class SCargoGripper extends Subsystem {
     //Initialize Motors
     motorRight = new FridolinsSparkMAX(RobotMap.CARGO_GRIPPER_MOTOR_RIGHT_ID, MotorType.kBrushless);
     motorLeft = new FridolinsSparkMAX(RobotMap.CARGO_GRIPPER_MOTOR_LEFT_ID, MotorType.kBrushless);
+
+    motorRight.setIdleMode(FridolinsIdleModeType.kBrake); 
+    motorLeft.setIdleMode(FridolinsIdleModeType.kBrake);
+    motorRight.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
+    motorLeft.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
+    motorRight.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
+    motorLeft.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
     
     //Initialize Time System
-    timeStarted = Timer.getFPGATimestamp();
+    
     runTime = 0;
   }
 
@@ -44,11 +53,13 @@ public class SCargoGripper extends Subsystem {
   }
 
   public static void cargoGripperPush() {
+    timeStarted = Timer.getFPGATimestamp();
     motorRight.setVelocity(0.1);
     motorLeft.setVelocity(-0.1);
   }
 
   public static boolean cargoGripperPull() {
+    timeStarted = Timer.getFPGATimestamp();
     motorRight.setVelocity(-0.1);
     motorLeft.setVelocity(0.1); 
     return false;
