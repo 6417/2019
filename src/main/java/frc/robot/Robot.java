@@ -37,11 +37,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    oi = OI.getInstance();
-
     if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
       cargoGripper = new SCargoGripper();
     }
+
+    oi = OI.getInstance();
 
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
