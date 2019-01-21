@@ -8,18 +8,10 @@
 package ch.fridolinsrobotik.motorcontrollers;
 
 /**
- * Interface to merge the MotorController classes given by the manufacturers.
+ * Add your docs here.
  */
-public interface IFridolinsMotors {
-     
-    public void setVelocity(double velocity);
-
-    public void setPosition(double position);
-
-    public void enableForwardLimitSwitch(FridolinsLimitSwitchPolarity polarity, boolean enable);
-
-    public void enableReverseLimitSwitch(FridolinsLimitSwitchPolarity polarity, boolean enable);
-
-    public void setIdleMode(FridolinsIdleModeType type);
-
+public enum FridolinsLimitSwitchPolarity {
+    kNormallyOpen,
+    kNormallyClosed,
+    kDisabled
 }
