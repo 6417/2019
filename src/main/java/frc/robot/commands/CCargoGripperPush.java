@@ -8,32 +8,28 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.OI;
+import frc.robot.Robot;
 import frc.robot.subsystems.SCargoGripper;
 
 public class CCargoGripperPush extends Command {
   public CCargoGripperPush() {
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
+    requires(Robot.cargoGripper);
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    SCargoGripper.cargoGripperPush();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    SCargoGripper.cargoGripperPush();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    if(OI.CargoGripperButtonPull.get()) {
-      return true;
-    }
     return SCargoGripper.healthy();
   }
 
