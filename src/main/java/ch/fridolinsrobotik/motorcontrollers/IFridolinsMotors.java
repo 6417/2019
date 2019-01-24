@@ -22,4 +22,6 @@ public interface IFridolinsMotors {
 
     public void setIdleMode(FridolinsIdleModeType type);
 
+    public double getEncoderTicks();
+
 }

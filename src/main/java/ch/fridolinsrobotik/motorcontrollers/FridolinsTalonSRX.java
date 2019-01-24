@@ -17,7 +17,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
  * 
  * 
  */
-public class FridolinsTalonSRX<setNeutralMode> extends WPI_TalonSRX implements IFridolinsMotors {
+public class FridolinsTalonSRX extends WPI_TalonSRX implements IFridolinsMotors {
 
     public FridolinsTalonSRX(int deviceNumber) {
 
@@ -84,6 +84,15 @@ public class FridolinsTalonSRX<setNeutralMode> extends WPI_TalonSRX implements I
 	public void setIdleMode(FridolinsIdleModeType type) {
 
 		super.setNeutralMode(convertFridolinIdleModeType(type));
+
+	}
+
+	@Override
+	public double getEncoderTicks() {
+
+		super.getSelectedSensorPosition();
+
+		return getSelectedSensorPosition();
 
 	}
 

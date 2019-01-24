@@ -75,5 +75,14 @@ public class FridolinsSparkMAX extends CANSparkMax implements IFridolinsMotors {
 
 	}
 
+    @Override
+    public double getEncoderTicks() {
+
+        super.getEncoder().getPosition();
+
+        return getEncoder().getPosition();
+
+    }
+
 
 }
