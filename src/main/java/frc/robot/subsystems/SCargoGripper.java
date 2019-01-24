@@ -7,13 +7,13 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import ch.fridolinsrobotik.debug.FridolinsEncoderDebug;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsIdleModeType;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsLimitSwitchPolarity;
-import ch.fridolinsrobotik.motorcontrollers.FridolinsSparkMAX;
+import ch.fridolinsrobotik.motorcontrollers.FridolinsTalonSRX;
 import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
-import edu.wpi.first.wpilibj.Timer;
+import ch.fridolinsrobotik.watchdog.EncoderWatchDog;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
 
@@ -26,26 +26,25 @@ public class SCargoGripper extends Subsystem {
   private static IFridolinsMotors motorRight;
   private static IFridolinsMotors motorLeft;
 
-  //Create Time System for Debug Enoder Errors
-  private static double timeStarted;
-  private static double runTime;
+  private static double motorRightEncoderTicks;
+
+  private static EncoderWatchDog encoderChecker;
 
   public SCargoGripper() {
 
     //Initialize Motors
-    motorRight = new FridolinsSparkMAX(RobotMap.CARGO_GRIPPER_MOTOR_RIGHT_ID, MotorType.kBrushless);
-    motorLeft = new FridolinsSparkMAX(RobotMap.CARGO_GRIPPER_MOTOR_LEFT_ID, MotorType.kBrushless);
+    motorRight = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_RIGHT_ID);
+    motorLeft = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_LEFT_ID);
 
+    //Set Mode and Limit Switches
     motorRight.setIdleMode(FridolinsIdleModeType.kBrake); 
     motorLeft.setIdleMode(FridolinsIdleModeType.kBrake);
     motorRight.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
     motorLeft.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
     motorRight.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
     motorLeft.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
-    
-    //Initialize Time System
-    
-    runTime = 0;
+  
+    encoderChecker = new EncoderWatchDog(1, 100);
   }
 
   @Override
@@ -53,35 +52,27 @@ public class SCargoGripper extends Subsystem {
   }
 
   public static void cargoGripperPush() {
-    timeStarted = Timer.getFPGATimestamp();
     motorRight.setVelocity(0.1);
     motorLeft.setVelocity(-0.1);
   }
 
   public static boolean cargoGripperPull() {
-    timeStarted = Timer.getFPGATimestamp();
+
     motorRight.setVelocity(-0.1);
-    motorLeft.setVelocity(0.1); 
+    motorLeft.setVelocity(0.1);
     return false;
   }
 
   public static void cargoGripperStop() {
     motorRight.setVelocity(0);
     motorLeft.setVelocity(0);
+    encoderChecker.deactivate();
   }
 
-  //Check if Encoders are working
+  //Check if the Encoders are working in another Function who can be used in all Subsystems.
   public static boolean healthy() {
-    runTime = Timer.getFPGATimestamp() - timeStarted;
-
-    //  // TODO add encoder ticks check
-    //  if(runTime >= 1 /* && NO ENCODER TICKS SEEN */) {
-    //   /* report error */
-    //   return true;
-    // } else if (false /* ENCODER TICKS REACHED POSITION */) {
-    //   return true;
-    // }
-    return false;
+    motorRightEncoderTicks = motorLeft.getEncoderTicks();
+    return encoderChecker.healthy(motorRightEncoderTicks);
   }
 
 }
