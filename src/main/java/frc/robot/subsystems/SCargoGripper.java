@@ -8,7 +8,6 @@
 package frc.robot.subsystems;
 
 
-import ch.fridolinsrobotik.debug.FridolinsEncoderDebug;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsIdleModeType;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsLimitSwitchPolarity;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsTalonSRX;
@@ -27,8 +26,10 @@ public class SCargoGripper extends Subsystem {
   private static IFridolinsMotors motorLeft;
 
   private static double motorRightEncoderTicks;
+  private static double motorLeftEncoderTicks;
 
-  private static EncoderWatchDog encoderChecker;
+  private static EncoderWatchDog motorRightEncoderChecker;
+  private static EncoderWatchDog motorLeftEncoderChecker;
 
   public SCargoGripper() {
 
@@ -44,7 +45,8 @@ public class SCargoGripper extends Subsystem {
     motorRight.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
     motorLeft.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
   
-    encoderChecker = new EncoderWatchDog(1, 100);
+    motorRightEncoderChecker = new EncoderWatchDog(1, 100);
+    motorLeftEncoderChecker = new EncoderWatchDog(1, 100);
   }
 
   @Override
@@ -52,27 +54,34 @@ public class SCargoGripper extends Subsystem {
   }
 
   public static void cargoGripperPush() {
-    motorRight.setVelocity(0.1);
-    motorLeft.setVelocity(-0.1);
+    motorRight.setVelocity(RobotMap.CARGO_GRIPPER_SPEED);
+    motorLeft.setVelocity(-RobotMap.CARGO_GRIPPER_SPEED);
   }
 
   public static boolean cargoGripperPull() {
 
-    motorRight.setVelocity(-0.1);
-    motorLeft.setVelocity(0.1);
+    motorRight.setVelocity(-RobotMap.CARGO_GRIPPER_SPEED);
+    motorLeft.setVelocity(RobotMap.CARGO_GRIPPER_SPEED);
     return false;
   }
 
   public static void cargoGripperStop() {
-    motorRight.setVelocity(0);
-    motorLeft.setVelocity(0);
-    encoderChecker.deactivate();
+    motorRight.setVelocity(RobotMap.STOP_SPEED);
+    motorLeft.setVelocity(RobotMap.STOP_SPEED);
+
+    motorRightEncoderChecker.deactivate();
+    motorLeftEncoderChecker.deactivate();
   }
 
   //Check if the Encoders are working in another Function who can be used in all Subsystems.
-  public static boolean healthy() {
-    motorRightEncoderTicks = motorLeft.getEncoderTicks();
-    return encoderChecker.healthy(motorRightEncoderTicks);
+  public static boolean isMotorLefthealthy() {
+    motorLeftEncoderTicks = motorLeft.getEncoderTicks();
+    return motorLeftEncoderChecker.healthy(motorLeftEncoderTicks);
+  }
+
+  public static boolean isMotorRighthealthy() {
+    motorRightEncoderTicks = motorRight.getEncoderTicks();
+    return motorRightEncoderChecker.healthy(motorRightEncoderTicks);
   }
 
 }

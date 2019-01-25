@@ -17,16 +17,33 @@ public class RobotMap {
 
   //Subsystems
   public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE = true;
+  public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = true;
+  public static final boolean CART_SUBSYSTEM_IS_IN_USE = false;
+  public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE = false;
+  public static final boolean ROBOT_ELEVATOR_SUBSYSTEM_IS_IN_USE = false;
+  public static final boolean SWERVE_SUBSYSTEM_IS_IN_USE = false;
+
+  //TODO change Motor IDs
 
   //Motors
   public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID = 1;
   public static final int CARGO_GRIPPER_MOTOR_LEFT_ID = 2;
+  public static final int HATCH_GRIPPER_MOTOR_ID = 3;
 
   //Joysticks
-  public static final int JOYSTICK_GRIPPER_SYSTEMS_ID = 0;
+  public static final int JOYSTICK_MAIN_DRIVER_ID = 0;
+  public static final int JOYSTICK_SUPPORT_DRIVER_ID = 1;
 
   //JoystickButtons
   public static final int CARGO_GRIPPER_BUTTON_PULL_ID = 1;
   public static final int CARGO_GRIPPER_BUTTON_PUSH_ID = 2;
+  public static final int HATCH_GRIPPER_BUTTON_EXTEND = 3;
+  public static final int HATCH_GRIPPER_BUTTON_REJECT = 4;
+
+  //Speeds
+  public static final double STOP_SPEED = 0;
+
+  public static final double CARGO_GRIPPER_SPEED = 0.1;
+  public static final double HATCH_GRIPPER_SPEED = 0.1;
 
 }

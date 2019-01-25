@@ -19,11 +19,14 @@ import frc.robot.commands.CCargoGripperPush;
 public class OI {
 
   //Create Joystick
-  public static Joystick JoystickGripperSystems = new Joystick(RobotMap.JOYSTICK_GRIPPER_SYSTEMS_ID);
+  public static Joystick JoystickMainDriver = new Joystick(RobotMap.JOYSTICK_MAIN_DRIVER_ID);
+  public static Joystick JoystickSupportDriver = new Joystick(RobotMap.JOYSTICK_SUPPORT_DRIVER_ID);
 
   //Create JoystickButtons
   public static JoystickButton CargoGripperButtonPush;
   public static JoystickButton CargoGripperButtonPull;
+  public static JoystickButton HatchGripperButtonExtend;
+  public static JoystickButton HatchGripperButtonReject;
 
   private static OI INSTANCE;
 
@@ -38,8 +41,18 @@ public class OI {
 
     //Initialize JoystickButtons when Subystem is in use
     if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-      CargoGripperButtonPull = new JoystickButton(JoystickGripperSystems, RobotMap.CARGO_GRIPPER_BUTTON_PULL_ID);
-      CargoGripperButtonPush = new JoystickButton(JoystickGripperSystems, RobotMap.CARGO_GRIPPER_BUTTON_PUSH_ID);
+      CargoGripperButtonPull = new JoystickButton(JoystickMainDriver, RobotMap.CARGO_GRIPPER_BUTTON_PULL_ID);
+      CargoGripperButtonPush = new JoystickButton(JoystickMainDriver, RobotMap.CARGO_GRIPPER_BUTTON_PUSH_ID);
+
+      //Call Commands
+      CargoGripperButtonPull.toggleWhenPressed(new CCargoGripperPull());
+      CargoGripperButtonPush.toggleWhenPressed(new CCargoGripperPush());
+
+    }
+
+    if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+      CargoGripperButtonPull = new JoystickButton(JoystickMainDriver, RobotMap.CARGO_GRIPPER_BUTTON_PULL_ID);
+      CargoGripperButtonPush = new JoystickButton(JoystickMainDriver, RobotMap.CARGO_GRIPPER_BUTTON_PUSH_ID);
 
       //Call Commands
       CargoGripperButtonPull.toggleWhenPressed(new CCargoGripperPull());

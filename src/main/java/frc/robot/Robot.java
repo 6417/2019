@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.SCargoGripper;
+import frc.robot.subsystems.SHatchGripper;
 
 
 /**
@@ -27,6 +28,7 @@ public class Robot extends TimedRobot {
 
   //Create Subsystems
   public static SCargoGripper cargoGripper;
+  public static SHatchGripper hatchGripper;
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -39,6 +41,9 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
       cargoGripper = new SCargoGripper();
+    }
+    if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+      hatchGripper = new SHatchGripper();
     }
 
     oi = OI.getInstance();
