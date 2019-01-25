@@ -7,14 +7,11 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.SCargoGripper;
 
 public class CCargoGripperPush extends Command {
-
-  private double timeStarted;
 
   public CCargoGripperPush() {
     requires(Robot.cargoGripper);
@@ -24,8 +21,6 @@ public class CCargoGripperPush extends Command {
   @Override
   protected void initialize() {
     SCargoGripper.cargoGripperPush();
-    timeStarted = Timer.getFPGATimestamp();
-    SCargoGripper.EncoderInitialize();
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -36,7 +31,13 @@ public class CCargoGripperPush extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return SCargoGripper.healthy(timeStarted);
+    if(!SCargoGripper.isMotorLefthealthy()) {
+      return true;
+    }
+    if(!SCargoGripper.isMotorRighthealthy()) {
+      return true;
+    }
+    return false;
   }
 
   // Called once after isFinished returns true
