@@ -7,14 +7,11 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.SCargoGripper;
 
 public class CCargoGripperPull extends Command {
-
-  private static double timeStarted;
 
   public CCargoGripperPull() {
     requires(Robot.cargoGripper);
@@ -35,7 +32,13 @@ public class CCargoGripperPull extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return !SCargoGripper.healthy();
+    if(!SCargoGripper.isMotorLefthealthy()) {
+      return true;
+    }
+    if(!SCargoGripper.isMotorRighthealthy()) {
+      return true;
+    }
+    return false;
   }
 
   // Called once after isFinished returns true
