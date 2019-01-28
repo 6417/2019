@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.CCargoGripperPull;
 import frc.robot.commands.CCargoGripperPush;
+import frc.robot.commands.CHatchGripperExtend;
+import frc.robot.commands.CHatchGripperRetract;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -50,14 +52,18 @@ public class OI {
 
     }
 
-    if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-      CargoGripperButtonPull = new JoystickButton(JoystickMainDriver, RobotMap.CARGO_GRIPPER_BUTTON_PULL_ID);
-      CargoGripperButtonPush = new JoystickButton(JoystickMainDriver, RobotMap.CARGO_GRIPPER_BUTTON_PUSH_ID);
+    //Initialize JoystickButtons when Subystem is in use
+    if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+      HatchGripperButtonExtend = new JoystickButton(JoystickMainDriver, RobotMap.HATCH_GRIPPER_BUTTON_EXTEND_ID);
+      CargoGripperButtonPush = new JoystickButton(JoystickMainDriver, RobotMap.HATCH_GRIPPER_BUTTON_REJECT_ID);
 
       //Call Commands
-      CargoGripperButtonPull.toggleWhenPressed(new CCargoGripperPull());
-      CargoGripperButtonPush.toggleWhenPressed(new CCargoGripperPush());
-
+      //TODO write the code for kowing when the analoge switches on the Hatch are active
+      if(true/** Switch Sensor on Hatch Gripper to know if theres a Hatch inside the Gripper. True when theres a Hatch in there */) {
+        HatchGripperButtonExtend.toggleWhenPressed(new CHatchGripperExtend());
+        HatchGripperButtonReject.toggleWhenPressed(new CHatchGripperRetract());
+      }
+      
     }
   }
 

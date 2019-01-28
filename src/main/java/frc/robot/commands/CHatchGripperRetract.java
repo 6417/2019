@@ -28,6 +28,10 @@ public class CHatchGripperRetract extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
+    //TODO write the code for the inductive Sensors to stop rejecting
+    if(false /** when the inductive Sensor on the Hatch Gripper gives a true then the Command should stop because the Gripper is closed */) {
+      return true;
+    }
     return false;
   }
 

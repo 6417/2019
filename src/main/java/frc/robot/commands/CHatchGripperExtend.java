@@ -31,6 +31,10 @@ public class CHatchGripperExtend extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
+    //TODO write the code for the inductive Sensors to stop extending
+    if(false/** When the inductive Sensors are true, the Command should stop because the Hatch Gripper is open */) {
+      return true;
+    }
     return false;
   }
 

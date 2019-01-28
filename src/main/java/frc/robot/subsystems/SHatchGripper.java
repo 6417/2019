@@ -7,11 +7,8 @@
 
 package frc.robot.subsystems;
 
-import ch.fridolinsrobotik.motorcontrollers.FridolinsIdleModeType;
-import ch.fridolinsrobotik.motorcontrollers.FridolinsLimitSwitchPolarity;
-import ch.fridolinsrobotik.motorcontrollers.FridolinsTalonSRX;
-import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.Motors;
 import frc.robot.RobotMap;
 
 /**
@@ -19,14 +16,7 @@ import frc.robot.RobotMap;
  */
 public class SHatchGripper extends Subsystem {
 
-    private static IFridolinsMotors motorHatch;
-
   public SHatchGripper() {
-    motorHatch = new FridolinsTalonSRX(RobotMap.HATCH_GRIPPER_MOTOR_ID);
-
-    motorHatch.setIdleMode(FridolinsIdleModeType.kBrake);
-    motorHatch.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
-    motorHatch.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
   }
 
   @Override
@@ -34,15 +24,15 @@ public class SHatchGripper extends Subsystem {
   }
 
   public static void hatchGripperExtend() {
-    motorHatch.setVelocity(RobotMap.HATCH_GRIPPER_SPEED);
+    Motors.hatchGripperMotor.setVelocity(RobotMap.HATCH_GRIPPER_SPEED);
   }
 
   public static void hatchGripperRetract() {
-    motorHatch.setVelocity(-RobotMap.HATCH_GRIPPER_SPEED);
+    Motors.hatchGripperMotor.setVelocity(-RobotMap.HATCH_GRIPPER_SPEED);
   }
 
   public static void hatchGripperStop() {
-    motorHatch.setVelocity(RobotMap.STOP_SPEED);
+    Motors.hatchGripperMotor.setVelocity(RobotMap.STOP_SPEED);
   }
 
 }
