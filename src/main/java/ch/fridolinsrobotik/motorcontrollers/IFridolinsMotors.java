@@ -20,6 +20,10 @@ public interface IFridolinsMotors {
 
     public void enableReverseLimitSwitch(FridolinsLimitSwitchPolarity polarity, boolean enable);
 
+    public boolean isForwardLimitSwitchActive();
+
+    public boolean isReverseLimitSwitchActive();
+
     public void setIdleMode(FridolinsIdleModeType type);
 
     public double getEncoderTicks();

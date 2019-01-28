@@ -8,8 +8,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Motors;
 import frc.robot.Robot;
-import frc.robot.subsystems.SCargoGripper;
 import frc.robot.subsystems.SHatchGripper;
 
 public class CHatchGripperExtend extends Command {
@@ -20,28 +20,25 @@ public class CHatchGripperExtend extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    SHatchGripper.hatchGripperExtend();
+    // SHatchGripper.hatchGripperExtend();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    SHatchGripper.hatchGripperExtend();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    //TODO write the code for the inductive Sensors to stop extending
-    if(false/** When the inductive Sensors are true, the Command should stop because the Hatch Gripper is open */) {
-      return true;
-    }
-    return false;
+    return Motors.hatchGripperMotor.isForwardLimitSwitchActive();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    SCargoGripper.cargoGripperStop();
+    SHatchGripper.hatchGripperStop();
   }
 
   // Called when another command which requires one or more of the same

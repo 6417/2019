@@ -34,9 +34,9 @@ public class CCargoGripperPush extends Command {
     if(!SCargoGripper.isMotorLefthealthy()) {
       return true;
     }
-    if(!SCargoGripper.isMotorRighthealthy()) {
-      return true;
-    }
+    // if(!SCargoGripper.isMotorRighthealthy()) {
+    //   return true;
+    // }
     return false;
   }
 

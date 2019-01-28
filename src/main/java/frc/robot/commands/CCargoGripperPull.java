@@ -8,6 +8,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Motors;
 import frc.robot.Robot;
 import frc.robot.subsystems.SCargoGripper;
 
@@ -35,10 +36,10 @@ public class CCargoGripperPull extends Command {
     if(!SCargoGripper.isMotorLefthealthy()) {
       return true;
     }
-    if(!SCargoGripper.isMotorRighthealthy()) {
-      return true;
-    }
-    return false;
+    // if(!SCargoGripper.isMotorRighthealthy()) {
+    //   return true;
+    // }
+    return Motors.cargoGripperMotorLeft.isReverseLimitSwitchActive();
   }
 
   // Called once after isFinished returns true

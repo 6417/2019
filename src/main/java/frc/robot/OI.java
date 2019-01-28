@@ -28,7 +28,7 @@ public class OI {
   public static JoystickButton CargoGripperButtonPush;
   public static JoystickButton CargoGripperButtonPull;
   public static JoystickButton HatchGripperButtonExtend;
-  public static JoystickButton HatchGripperButtonReject;
+  public static JoystickButton HatchGripperButtonRetract;
 
   private static OI INSTANCE;
 
@@ -55,14 +55,12 @@ public class OI {
     //Initialize JoystickButtons when Subystem is in use
     if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
       HatchGripperButtonExtend = new JoystickButton(JoystickMainDriver, RobotMap.HATCH_GRIPPER_BUTTON_EXTEND_ID);
-      CargoGripperButtonPush = new JoystickButton(JoystickMainDriver, RobotMap.HATCH_GRIPPER_BUTTON_REJECT_ID);
+      HatchGripperButtonRetract = new JoystickButton(JoystickMainDriver, RobotMap.HATCH_GRIPPER_BUTTON_RETRACT_ID);
 
       //Call Commands
-      //TODO write the code for kowing when the analoge switches on the Hatch are active
-      if(true/** Switch Sensor on Hatch Gripper to know if theres a Hatch inside the Gripper. True when theres a Hatch in there */) {
+      //TODO write the code for Command group whitch requires the cartSubsystem
         HatchGripperButtonExtend.toggleWhenPressed(new CHatchGripperExtend());
-        HatchGripperButtonReject.toggleWhenPressed(new CHatchGripperRetract());
-      }
+        HatchGripperButtonRetract.toggleWhenPressed(new CHatchGripperRetract());
       
     }
   }

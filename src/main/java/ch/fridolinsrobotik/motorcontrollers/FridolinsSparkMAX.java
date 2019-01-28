@@ -8,8 +8,10 @@
 package ch.fridolinsrobotik.motorcontrollers;
 
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
-import com.revrobotics.CANSparkMax;
 
+import javax.naming.NotContextException;
+
+import com.revrobotics.CANSparkMax;
 /**
  * Add your docs here.
  */
@@ -70,18 +72,23 @@ public class FridolinsSparkMAX extends CANSparkMax implements IFridolinsMotors {
 
 	@Override
 	public void setIdleMode(FridolinsIdleModeType type) {
-
 		super.setIdleMode(convertFridolinIdleModeType(type));
-
 	}
 
     @Override
     public double getEncoderTicks() {
-
         super.getEncoder().getPosition();
-
         return getEncoder().getPosition();
+    }
 
+    @Override
+    public boolean isForwardLimitSwitchActive() {
+        throw new Error("NotImplemented");
+    }
+
+    @Override
+    public boolean isReverseLimitSwitchActive() {
+        throw new Error("NotImplemented");
     }
 
 

@@ -21,14 +21,18 @@ public class Motors {
     public static IFridolinsMotors cargoGripperMotorRight;
     public static IFridolinsMotors cargoGripperMotorLeft;
 
+    public static IFridolinsMotors cargoGripperMaster;
+
     public static IFridolinsMotors hatchGripperMotor;
 
-    public void initaialize() {
+    public static void initialize() {
 
         if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
             //Initialize Motors
             cargoGripperMotorRight = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_RIGHT_ID);
             cargoGripperMotorLeft = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_LEFT_ID);
+
+            cargoGripperMaster = cargoGripperMotorLeft;
 
             //Set Mode and Limit Switches
             cargoGripperMotorLeft.setIdleMode(FridolinsIdleModeType.kBrake); 

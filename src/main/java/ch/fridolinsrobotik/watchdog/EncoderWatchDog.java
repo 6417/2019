@@ -7,6 +7,7 @@
 
 package ch.fridolinsrobotik.watchdog;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -17,14 +18,16 @@ public class EncoderWatchDog {
 
     private double runTime, timeStarted, encoderTicksStarted, timeOut, minimumEncoderTicks;
     private boolean isActive;
+    private String encoderName;
     
     /**
      * A watchdog to detect malicious Enoder
      * @param timeOut timeout in seconds within the encoder ticks must ...
      * @param minimumEncoderTicks encoderticks window which the encoder must leave to be healthy
      */
-    public EncoderWatchDog(double timeOut, double minimumEncoderTicks) {
+    public EncoderWatchDog(String encoderName, double timeOut, double minimumEncoderTicks) {
       this.isActive = false;
+      this.encoderName = encoderName;
       this.timeStarted = 0;
       this.timeOut = timeOut;
       this.minimumEncoderTicks = minimumEncoderTicks;
@@ -50,6 +53,7 @@ public class EncoderWatchDog {
       //Encoder does not count any ticks
       if(runTime >= timeOut && encoderTicks >= encoderTicksStarted - minimumEncoderTicks && encoderTicks <= encoderTicksStarted + minimumEncoderTicks) {
         /* report error */
+        DriverStation.reportError("Encoder " + encoderName + " faulty!", false);
         return false;
       }
   

@@ -25,7 +25,6 @@ import frc.robot.subsystems.SHatchGripper;
  */
 public class Robot extends TimedRobot {
   public static OI oi;
-  public static Motors motors;
 
   //Create Subsystems
   public static SCargoGripper cargoGripper;
@@ -41,9 +40,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
 
-    motors = new Motors();
-
-    motors.initaialize();
+    Motors.initialize();
 
     if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
       cargoGripper = new SCargoGripper();

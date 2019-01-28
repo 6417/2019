@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
 /**
  * Add your docs here.
  * 
@@ -89,11 +88,17 @@ public class FridolinsTalonSRX extends WPI_TalonSRX implements IFridolinsMotors 
 
 	@Override
 	public double getEncoderTicks() {
-
-		super.getSelectedSensorPosition();
-
 		return getSelectedSensorPosition();
+	}
 
+	@Override
+	public boolean isForwardLimitSwitchActive() {
+		return getSensorCollection().isFwdLimitSwitchClosed();
+	}
+
+	@Override
+	public boolean isReverseLimitSwitchActive() {
+		return getSensorCollection().isRevLimitSwitchClosed();
 	}
 
 
