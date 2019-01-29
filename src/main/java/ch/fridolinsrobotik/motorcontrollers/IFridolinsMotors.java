@@ -7,6 +7,8 @@
 
 package ch.fridolinsrobotik.motorcontrollers;
 
+import com.ctre.phoenix.motorcontrol.IMotorController;
+
 /**
  * Interface to merge the MotorController classes given by the manufacturers.
  */
@@ -26,6 +28,14 @@ public interface IFridolinsMotors {
 
     public void setIdleMode(FridolinsIdleModeType type);
 
+    public void follow(IFridolinsMotors master);
+
+    public void setDirection(boolean forward);
+
+    public void followDirection(FridolinsDirectionType type);
+
     public double getEncoderTicks();
+
+    public void factoryDefault();
 
 }

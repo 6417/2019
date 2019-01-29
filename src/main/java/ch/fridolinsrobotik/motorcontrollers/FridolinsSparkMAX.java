@@ -91,5 +91,25 @@ public class FridolinsSparkMAX extends CANSparkMax implements IFridolinsMotors {
         throw new Error("NotImplemented");
     }
 
+    @Override
+    public void follow(IFridolinsMotors master) {
+        throw new Error("NotImplemented");
+    }
+
+    @Override
+    public void setDirection(boolean forward) {
+        throw new Error("NotImplemented");
+    }
+
+    @Override
+    public void followDirection(FridolinsDirectionType type) {
+        throw new Error("NotImplemented");
+    }
+
+    @Override
+    public void factoryDefault() {
+        throw new Error("NotImplemented");
+    }
+
 
 }

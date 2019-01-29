@@ -7,6 +7,8 @@
 
 package ch.fridolinsrobotik.motorcontrollers;
 
+import com.ctre.phoenix.motorcontrol.IMotorController;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -99,6 +101,41 @@ public class FridolinsTalonSRX extends WPI_TalonSRX implements IFridolinsMotors 
 	@Override
 	public boolean isReverseLimitSwitchActive() {
 		return getSensorCollection().isRevLimitSwitchClosed();
+	}
+
+	@Override
+	public void setDirection(boolean forward) {
+		super.setInverted(forward);
+	}
+
+	private InvertType convertFridolinDirectionType(FridolinsDirectionType type) {
+		switch(type) {
+            case followMaster:
+                return InvertType.FollowMaster;
+			default:
+				return InvertType.OpposeMaster;
+		}
+	}
+
+	@Override
+	public void followDirection(FridolinsDirectionType type) {
+		super.setInverted(convertFridolinDirectionType(type));
+	}
+
+	@Override
+	public void follow(IFridolinsMotors master) {
+		if(master instanceof IMotorController) {
+			super.follow((IMotorController) master);
+			return;
+		}
+
+		throw new Error("Not a type of IMotorController");
+		
+	}
+
+	@Override
+	public void factoryDefault() {
+		super.configFactoryDefault();
 	}
 
 
