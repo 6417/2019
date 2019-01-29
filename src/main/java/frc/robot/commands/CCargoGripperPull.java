@@ -33,13 +33,7 @@ public class CCargoGripperPull extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    if(!SCargoGripper.isMotorLefthealthy()) {
-      return true;
-    }
-    // if(!SCargoGripper.isMotorRighthealthy()) {
-    //   return true;
-    // }
-    return Motors.cargoGripperMotorLeft.isReverseLimitSwitchActive();
+    return Motors.cargoGripperMaster.isReverseLimitSwitchActive();
   }
 
   // Called once after isFinished returns true
