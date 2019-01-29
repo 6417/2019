@@ -7,18 +7,61 @@
 
 package frc.robot.subsystems;
 
+import ch.fridolinsrobotik.watchdog.EncoderWatchDog;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.Motors;
+import frc.robot.RobotMap;
 
 /**
  * Add your docs here.
  */
 public class SCargoGripper extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
+
+  private static double motorRightEncoderTicks;
+  private static double motorLeftEncoderTicks;
+
+  private static EncoderWatchDog motorRightEncoderChecker;
+  private static EncoderWatchDog motorLeftEncoderChecker;
+
+  public SCargoGripper() {
+  
+    motorRightEncoderChecker = new EncoderWatchDog("SCargoGripper Right", 1, 100);
+    motorLeftEncoderChecker = new EncoderWatchDog("SCargoGripper Left", 1, 100);
+  }
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
   }
+
+  public static void cargoGripperPush() {
+    Motors.cargoGripperMotorRight.setVelocity(RobotMap.CARGO_GRIPPER_SPEED);
+    Motors.cargoGripperMotorLeft.setVelocity(RobotMap.CARGO_GRIPPER_SPEED);
+  }
+
+  public static boolean cargoGripperPull() {
+
+    Motors.cargoGripperMotorRight.setVelocity(-RobotMap.CARGO_GRIPPER_SPEED);
+    Motors.cargoGripperMotorLeft.setVelocity(-RobotMap.CARGO_GRIPPER_SPEED);
+    return false;
+  }
+
+  public static void cargoGripperStop() {
+    Motors.cargoGripperMotorRight.setVelocity(RobotMap.STOP_SPEED);
+    Motors.cargoGripperMotorLeft.setVelocity(RobotMap.STOP_SPEED);
+
+    motorRightEncoderChecker.deactivate();
+    motorLeftEncoderChecker.deactivate();
+  }
+
+  //Check if the Encoders are working in another Function who can be used in all Subsystems.
+  public static boolean isMotorLefthealthy() {
+    motorLeftEncoderTicks = Motors.cargoGripperMotorLeft.getEncoderTicks();
+    return motorLeftEncoderChecker.healthy(motorLeftEncoderTicks);
+  }
+
+  public static boolean isMotorRighthealthy() {
+    motorRightEncoderTicks = Motors.cargoGripperMotorRight.getEncoderTicks();
+    return motorRightEncoderChecker.healthy(motorRightEncoderTicks);
+  }
+
 }

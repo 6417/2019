@@ -7,10 +7,14 @@
 
 package ch.fridolinsrobotik.motorcontrollers;
 
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
 /**
  * Add your docs here.
+ * 
+ * 
  */
 public class FridolinsTalonSRX extends WPI_TalonSRX implements IFridolinsMotors {
 
@@ -30,6 +34,71 @@ public class FridolinsTalonSRX extends WPI_TalonSRX implements IFridolinsMotors 
 	@Override
 	public void setPosition(double position) {
 		
+	}
+
+	private LimitSwitchNormal convertFridolinLimitSwitchPolarityToSparkMaxPolarity(FridolinsLimitSwitchPolarity polarity) {
+        switch(polarity) {
+            case kNormallyOpen:
+                return LimitSwitchNormal.NormallyOpen;
+            case kNormallyClosed:
+                return LimitSwitchNormal.NormallyClosed;
+            default:
+                return LimitSwitchNormal.Disabled;
+        }
+    }
+
+	@Override
+	public void enableForwardLimitSwitch(FridolinsLimitSwitchPolarity polarity, boolean enable) {
+		if(!enable) {
+			polarity = FridolinsLimitSwitchPolarity.kDisabled;
+		}
+		super.configForwardLimitSwitchSource(
+				LimitSwitchSource.FeedbackConnector, 
+				convertFridolinLimitSwitchPolarityToSparkMaxPolarity(polarity)
+			);
+	}
+
+	@Override
+	public void enableReverseLimitSwitch(FridolinsLimitSwitchPolarity polarity, boolean enable) {
+		if(!enable) {
+			polarity = FridolinsLimitSwitchPolarity.kDisabled;
+		}
+		super.configReverseLimitSwitchSource(
+				LimitSwitchSource.FeedbackConnector, 
+				convertFridolinLimitSwitchPolarityToSparkMaxPolarity(polarity)
+			);
+	}
+
+	private NeutralMode convertFridolinIdleModeType(FridolinsIdleModeType type) {
+		switch(type) {
+            case kBrake:
+                return NeutralMode.Brake;
+			default:
+				return NeutralMode.Coast;
+		}
+	}
+
+
+	@Override
+	public void setIdleMode(FridolinsIdleModeType type) {
+
+		super.setNeutralMode(convertFridolinIdleModeType(type));
+
+	}
+
+	@Override
+	public double getEncoderTicks() {
+		return getSelectedSensorPosition();
+	}
+
+	@Override
+	public boolean isForwardLimitSwitchActive() {
+		return getSensorCollection().isFwdLimitSwitchClosed();
+	}
+
+	@Override
+	public boolean isReverseLimitSwitchActive() {
+		return getSensorCollection().isRevLimitSwitchClosed();
 	}
 
 

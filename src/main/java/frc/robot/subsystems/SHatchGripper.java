@@ -8,17 +8,31 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.Motors;
+import frc.robot.RobotMap;
 
 /**
  * Add your docs here.
  */
 public class SHatchGripper extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
+
+  public SHatchGripper() {
+  }
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
   }
+
+  public static void hatchGripperExtend() {
+    Motors.hatchGripperMotor.setVelocity(RobotMap.HATCH_GRIPPER_SPEED);
+  }
+
+  public static void hatchGripperRetract() {
+    Motors.hatchGripperMotor.setVelocity(-RobotMap.HATCH_GRIPPER_SPEED);
+  }
+
+  public static void hatchGripperStop() {
+    Motors.hatchGripperMotor.setVelocity(RobotMap.STOP_SPEED);
+  }
+
 }
