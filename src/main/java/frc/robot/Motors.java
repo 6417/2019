@@ -55,6 +55,9 @@ public class Motors {
             //Initialize Motors
             hatchGripperMotor = new FridolinsTalonSRX(RobotMap.HATCH_GRIPPER_MOTOR_ID);
 
+            //Facory Default
+            hatchGripperMotor.factoryDefault();
+
             //Set Mode and Limit Switches
             hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);
 

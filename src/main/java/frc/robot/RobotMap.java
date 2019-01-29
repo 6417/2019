@@ -24,7 +24,7 @@ public class RobotMap {
   //Motors
   public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID = 1;
   public static final int CARGO_GRIPPER_MOTOR_LEFT_ID = 2;
-  public static final int HATCH_GRIPPER_MOTOR_ID = 2;
+  public static final int HATCH_GRIPPER_MOTOR_ID = 3;
 
   //Joysticks
   public static final int JOYSTICK_MAIN_DRIVER_ID = 0;
