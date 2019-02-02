@@ -25,6 +25,7 @@ public class RobotMap {
   public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID = 1;
   public static final int CARGO_GRIPPER_MOTOR_LEFT_ID = 2;
   public static final int HATCH_GRIPPER_MOTOR_ID = 3;
+  public static final int CART_MOTOR_ID = 2;
 
   //Joysticks
   public static final int JOYSTICK_MAIN_DRIVER_ID = 0;
@@ -41,5 +42,8 @@ public class RobotMap {
 
   public static final double CARGO_GRIPPER_SPEED = 0.1;
   public static final double HATCH_GRIPPER_SPEED = 0.1;
+
+  //Encoders
+  public static final double CART_ENCODER_DISTANCE_PER_PULSE = 1;
 
 }
