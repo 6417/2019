@@ -7,7 +7,9 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsDirectionType;
+import ch.fridolinsrobotik.motorcontrollers.FridolinsFeedbackDevice;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsIdleModeType;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsLimitSwitchPolarity;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsTalonSRX;
@@ -23,6 +25,19 @@ public class Motors {
     public static IFridolinsMotors cargoGripperFollower;
 
     public static IFridolinsMotors hatchGripperMotor;
+
+    public static IFridolinsMotors swerveDriveFrontRight;
+    public static IFridolinsMotors swerveDriveFrontLeft;
+    public static IFridolinsMotors swerveDriveBackRight;
+    public static IFridolinsMotors swerveDriveBackLeft;
+    public static IFridolinsMotors swerveAngleFrontRight;
+    public static IFridolinsMotors swerveAngleFrontLeft;
+    public static IFridolinsMotors swerveAngleBackRight;
+    public static IFridolinsMotors swerveAngleBackLeft;
+
+    public static ArrayList<IFridolinsMotors> swerveDriveMotors = new ArrayList<IFridolinsMotors>();
+    public static ArrayList<IFridolinsMotors> swerveAngleMotors = new ArrayList<IFridolinsMotors>();
+    public static ArrayList<IFridolinsMotors> swerveMotors = new ArrayList<IFridolinsMotors>();
 
     public static void initialize() {
 
@@ -60,12 +75,48 @@ public class Motors {
 
             //Set Mode and Limit Switches
             hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);
-
             hatchGripperMotor.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
-
             hatchGripperMotor.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
         }
 
-    }
+        if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
 
+            
+
+            //Initialize Motors
+            swerveDriveFrontRight = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_FRONT_RIGHT_ID);
+            swerveDriveFrontLeft = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_FRONT_LEFT_ID);
+            swerveDriveBackRight = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_BACK_RIGHT_ID);
+            swerveDriveBackLeft = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_BACK_LEFT_ID);
+            swerveAngleFrontRight = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_FRONT_RIGHT_ID);
+            swerveAngleFrontLeft = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_FRONT_LEFT_ID);
+            swerveAngleBackRight = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_BACK_RIGHT_ID);
+            swerveAngleBackLeft = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_BACK_LEFT_ID);
+
+            swerveDriveMotors.add(swerveDriveFrontRight);
+            swerveDriveMotors.add(swerveDriveFrontLeft);
+            swerveDriveMotors.add(swerveDriveBackRight);
+            swerveDriveMotors.add(swerveDriveBackLeft);
+
+            
+            swerveAngleMotors.add(swerveAngleFrontRight);
+            swerveAngleMotors.add(swerveAngleFrontLeft);
+            swerveAngleMotors.add(swerveAngleBackRight);
+            swerveAngleMotors.add(swerveAngleBackLeft);
+
+            swerveMotors.addAll(swerveDriveMotors);
+            swerveMotors.addAll(swerveAngleMotors);
+            
+            for (IFridolinsMotors motor : swerveMotors) {
+                motor.factoryDefault();
+                motor.setIdleMode(FridolinsIdleModeType.kBrake);
+                motor.setDirection(true);
+                motor.setSensorDirection(true);
+                motor.configSelectedFeedbackSensor(FridolinsFeedbackDevice.QuadEncoder, 0, 0);
+                motor.configOpenLoopRamp(0, 0);
+            }
+
+        }   
+
+    }
 }

@@ -13,6 +13,7 @@ import frc.robot.commands.CCargoGripperPull;
 import frc.robot.commands.CCargoGripperPush;
 import frc.robot.commands.CHatchGripperExtend;
 import frc.robot.commands.CHatchGripperRetract;
+import frc.robot.commands.CSwerveCalibrate;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -29,6 +30,7 @@ public class OI {
   public static JoystickButton CargoGripperButtonPull;
   public static JoystickButton HatchGripperButtonExtend;
   public static JoystickButton HatchGripperButtonRetract;
+  public static JoystickButton SwerveCalibrateButton;
 
   private static OI INSTANCE;
 
@@ -62,6 +64,12 @@ public class OI {
         HatchGripperButtonExtend.toggleWhenPressed(new CHatchGripperExtend());
         HatchGripperButtonRetract.toggleWhenPressed(new CHatchGripperRetract());
       
+    }
+
+    if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
+      SwerveCalibrateButton = new JoystickButton(JoystickMainDriver, RobotMap.SWERVE_ANGLE_CALIBRATE_BUTTON_ID);
+
+      SwerveCalibrateButton.whenPressed(new CSwerveCalibrate());
     }
   }
 

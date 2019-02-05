@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -14,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.SCargoGripper;
 import frc.robot.subsystems.SHatchGripper;
+import frc.robot.subsystems.SSwerve;
 
 
 /**
@@ -25,10 +29,12 @@ import frc.robot.subsystems.SHatchGripper;
  */
 public class Robot extends TimedRobot {
   public static OI oi;
+  public static AHRS ahrs;
 
   //Create Subsystems
   public static SCargoGripper cargoGripper;
   public static SHatchGripper hatchGripper;
+  public static SSwerve swerveDrive;
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -48,8 +54,17 @@ public class Robot extends TimedRobot {
     if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
       hatchGripper = new SHatchGripper();
     }
+    if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
+      swerveDrive = new SSwerve();
+    }
 
     oi = OI.getInstance();
+    
+    try {
+      ahrs = new AHRS(SPI.Port.kMXP); 
+    } catch (RuntimeException ex ) {
+      System.out.println("Error instantiating navX-MXP:  " + ex.getMessage());
+    }
     
 
     // chooser.addOption("My Auto", new MyAutoCommand());
@@ -135,6 +150,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+
+    swerveDrive.driveCartesian(OI.JoystickMainDriver.getX(), OI.JoystickMainDriver.getY(), OI.JoystickMainDriver.getZ(), ahrs.getYaw());
+
   }
 
   /**
