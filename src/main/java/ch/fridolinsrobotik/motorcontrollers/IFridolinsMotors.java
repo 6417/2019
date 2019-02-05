@@ -34,8 +34,15 @@ public interface IFridolinsMotors {
 
     public void followDirection(FridolinsDirectionType type);
 
-    public double getEncoderTicks();
+    public void setSensorDirection(boolean forward);
+
+    public void setSensorPosition(int position);
+
+    public int getEncoderTicks();
 
     public void factoryDefault();
 
+    public void configSelectedFeedbackSensor(FridolinsFeedbackDevice device, int pidIdx, int timeoutMs);
+
+    public void configOpenLoopRamp(double rampTime, int timeoutMs);
 }
