@@ -69,4 +69,12 @@ public class RobotMap {
   //Encoders
   public static final double CART_ENCODER_DISTANCE_PER_PULSE = 1;
 
+  //TODO change Encodertick values for Swerve Drive
+
+  //Robot
+  public static final int SWERVE_DRIVE_ROTATION_ENCODER_TICK_COUNT = 11564;
+  public static final int SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT = 25600;
+  public static final double WHEEL_DISTANCE_LENGTH = 64;
+  public static final double WHEEL_DISTANCE_WIDTH = 61;
+
 }

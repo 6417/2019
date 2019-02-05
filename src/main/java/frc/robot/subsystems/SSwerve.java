@@ -9,8 +9,6 @@ package frc.robot.subsystems;
 
 import ch.fridolinsrobotik.drivesystems.fieldoriented.FieldOrientedDrive;
 import ch.fridolinsrobotik.drivesystems.swerve.SwerveCalculation;
-import ch.fridolinsrobotik.motorcontrollers.FridolinsLimitSwitchPolarity;
-import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
 import ch.fridolinsrobotik.utilities.Deadzone;
 import ch.fridolinsrobotik.utilities.JoystickOptimizer;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
