@@ -76,9 +76,9 @@ public class FridolinsSparkMAX extends CANSparkMax implements IFridolinsMotors {
 	}
 
     @Override
-    public double getEncoderTicks() {
+    public int getEncoderTicks() {
         super.getEncoder().getPosition();
-        return getEncoder().getPosition();
+        throw new Error("NotImplemented");
     }
 
     @Override
@@ -111,5 +111,24 @@ public class FridolinsSparkMAX extends CANSparkMax implements IFridolinsMotors {
         throw new Error("NotImplemented");
     }
 
+    @Override
+    public void setSensorDirection(boolean forward) {
+        throw new Error("NotImplemented");
+    }
+
+    @Override
+    public void configSelectedFeedbackSensor(FridolinsFeedbackDevice device, int pidIdx, int timeoutMs) {
+        throw new Error("NotImplemented");
+    }
+
+    @Override
+    public void configOpenLoopRamp(double rampTime, int timeoutMs) {
+        throw new Error("NotImplemented");
+    }
+
+    @Override
+    public void setSensorPosition(int position) {
+        throw new Error("NotImplemented");
+    }
 
 }

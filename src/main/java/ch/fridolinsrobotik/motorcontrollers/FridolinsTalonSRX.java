@@ -7,6 +7,7 @@
 
 package ch.fridolinsrobotik.motorcontrollers;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
@@ -89,7 +90,7 @@ public class FridolinsTalonSRX extends WPI_TalonSRX implements IFridolinsMotors 
 	}
 
 	@Override
-	public double getEncoderTicks() {
+	public int getEncoderTicks() {
 		return getSelectedSensorPosition();
 	}
 
@@ -136,6 +137,33 @@ public class FridolinsTalonSRX extends WPI_TalonSRX implements IFridolinsMotors 
 	@Override
 	public void factoryDefault() {
 		super.configFactoryDefault();
+	}
+
+	@Override
+	public void setSensorDirection(boolean forward) {
+		super.setSensorPhase(forward);
+	}
+
+	private FeedbackDevice convertFridolinFeedbackDevice(FridolinsFeedbackDevice device) {
+		switch(device) {
+			default:
+				return FeedbackDevice.QuadEncoder;
+		}
+	}
+
+	@Override
+	public void configSelectedFeedbackSensor(FridolinsFeedbackDevice device, int pidIdx, int timeoutMs) {
+		super.configSelectedFeedbackSensor(convertFridolinFeedbackDevice(device), pidIdx, timeoutMs);
+	}
+
+	@Override
+	public void configOpenLoopRamp(double rampTime, int timeoutMs) {
+		super.configOpenloopRamp(rampTime, timeoutMs);
+	}
+
+	@Override
+	public void setSensorPosition(int position) {
+		super.setSelectedSensorPosition(0);
 	}
 
 

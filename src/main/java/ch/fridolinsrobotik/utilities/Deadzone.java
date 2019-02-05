@@ -24,4 +24,13 @@ public class Deadzone {
         return outputAxis;
     }
 
+    public static boolean isInsideDeadzone(double xAxis, double yAxis, double deadzoneValue) {
+		
+		if(xAxis <= deadzoneValue && xAxis >= -deadzoneValue && yAxis <= deadzoneValue && yAxis >= -deadzoneValue) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+
 }
