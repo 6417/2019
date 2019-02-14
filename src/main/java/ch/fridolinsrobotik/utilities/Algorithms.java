@@ -47,4 +47,23 @@ public class Algorithms {
         return Math.pow(x, a) / (Math.pow(x, a) + Math.pow(1 - x, a));
     }
 
+    /**
+     * Limits the input value between the given boundary
+     * @param number input value
+     * @param min minimum of the boundary
+     * @param max maximum of the boundary
+     */
+    public static double limit(double number, double min, double max) {
+        return Math.min(Math.max(number, min), max);
+    }
+
+    /**
+     * Limits the input value between the given boundary
+     * @param number input value
+     * @param min minimum of the boundary
+     * @param max maximum of the boundary
+     */
+    public static int limit(int number, int min, int max) {
+        return Math.min(Math.max(number, min), max);
+    }
 }
