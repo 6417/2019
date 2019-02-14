@@ -7,17 +7,15 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
-import ch.fridolinsrobotik.motorcontrollers.FridolinsTalonSRX;
-import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
 import ch.fridolinsrobotik.sensors.utils.EncoderConverter;
 import ch.fridolinsrobotik.utilities.Algorithms;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Motors;
+import frc.robot.OI;
 import frc.robot.RobotMap;
 
 /**
@@ -25,178 +23,87 @@ import frc.robot.RobotMap;
  */
 public class SCart extends Subsystem {
 
-  FridolinsTalonSRX motor;
-  EncoderConverter encoderConverter;
+  EncoderConverter encoderConverter = new EncoderConverter(RobotMap.CART_ENCODER_DISTANCE_PER_PULSE);
 
-  /**
-   * maximum travel of the cart until it hits the forwardLimitSwitch in cm
-   * (Centimeter)
-   */
-  private double maximumTravel;
+  @Override
+  protected void initDefaultCommand() {
 
-  /**
-   * Distance before end or beginning of the cart slider until it scales down the
-   * speed. E.g., speedEdgeWindow = 10 =>
-   * 0------10cm-------maximumTravel-10cm------maximumTravel. î--------î  
-   * -------------------î window window
-   */
-  private double speedEdgeWindow;
-
-  /**
-   * Distance before reaching the position and slowing down the speed
-   */
-  private double speedPositionSlowDownWindow;
-  /**
-   * matching window in cm (Centimeters) in which the encoder must lie to have
-   * reached its target
-   */
-  private double positioningWindow;
+  }
 
   public SCart() {
-    super();
-    FridolinsTalonSRX motor = new FridolinsTalonSRX(RobotMap.CART_MOTOR_ID);
-    motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-    motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-    motor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
-    motor.configClearPositionOnLimitR(true, 0);
-    // TODO check if sensor is running in correct direction
-    motor.configSelectedFeedbackCoefficient(1);
-    motor.setNeutralMode(NeutralMode.Brake);
-
-    this.motor = motor;
-
-    this.encoderConverter = new EncoderConverter();
-    this.encoderConverter.setDistancePerPulse(RobotMap.CART_ENCODER_DISTANCE_PER_PULSE);
-
-    maximumTravel = 100000;
-    speedEdgeWindow = 1000;
-    speedPositionSlowDownWindow = 1000;
-    positioningWindow = 100;
-  }
-
-  private double getDistanceTraveled() {
-    return this.encoderConverter.getDistance(motor.getEncoderTicks());
+    setSubsystem("Cart");
+    addChild(Motors.cartMotor);
   }
 
   /**
-   * Scales the speed for the cart according to its position on the robot. The
-   * closer the cart is at the edge, the slower it runs.
-   * 
-   * @param speed
-   * @return scaled speed
+   * Returns position of the cart in mm.
+   * @return Position in mm
    */
-  private double scaleEdgeSpeed(double speed) {
-    double distanceTraveled = getDistanceTraveled();
-    double distanceToLimit;
+  public double getPosition() {
+    return encoderConverter.getDistance(Motors.cartMotor.getSelectedSensorPosition());
+  }
 
-    /**
-     * check if distance traveld between beginning and speedEdgeWindow or greater
-     * than maximumTravel-speedEdgeWindow
-     */
-    if (distanceTraveled <= speedEdgeWindow) {
-      distanceToLimit = distanceTraveled;
-    } else if (distanceTraveled >= maximumTravel - speedEdgeWindow) {
-      distanceToLimit = maximumTravel - distanceTraveled;
+  /**
+   * Moves the cart to the desired position.
+   * @param targetPos Position of the cart in mm measured from the 0 point.
+   */
+  public void setPosition(double targetPos) {
+    targetPos = Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH);
+    
+    if (isInFrontWindow() && targetPos > RobotMap.CART_DRIVE_LENGTH) {
+      Motors.cartMotor.set(ControlMode.MotionMagic, RobotMap.CART_DRIVE_LENGTH);
+    } else if (isInBackWindow() && targetPos < 0) {
+      Motors.cartMotor.set(ControlMode.MotionMagic, 0);
     } else {
-      return speed;
+      Motors.cartMotor.set(ControlMode.MotionMagic, targetPos);
     }
-    
-    double x = Algorithms.scale(distanceToLimit, 0, speedEdgeWindow, 0, 1);
-    speed *= Algorithms.easeInOut(x, 1.5);
-    speed = Math.max(0.1, speed);
-    return speed;
+
+    SmartDashboard.putNumber("SensorVel", Motors.cartMotor.getSelectedSensorVelocity(0));
+    SmartDashboard.putNumber("SensorPos", Motors.cartMotor.getSelectedSensorPosition(0));
+    SmartDashboard.putNumber("MotorOutputPercent", Motors.cartMotor.getMotorOutputPercent());
+    SmartDashboard.putNumber("ClosedLoopError", Motors.cartMotor.getClosedLoopError(0));
+    SmartDashboard.putNumber("Target Position", 0);
+  }
+
+  public void driveManual() {
+    Motors.cartMotor.set(ControlMode.PercentOutput, -OI.JoystickMainDriver.getY());
   }
 
   /**
-   * Scales the speed for the cart according to its position on the robot and the target position.
-   * 
-   * @param speed desired speed
-   * @param position target position
-   * @return scaled speed
+   * Stops the motor for the cart.
    */
-  private double scalePositioningSpeed(double speed, double position) {
-    double distanceTraveled = getDistanceTraveled();
-    double distanceToPosition = Math.abs(distanceTraveled - position);
-
-    /**
-     * check if distance traveld between beginning and speedEdgeWindow or greater
-     * than maximumTravel-speedEdgeWindow
-     */
-    if (distanceToPosition <= speedPositionSlowDownWindow) {
-      double x = Algorithms.scale(distanceToPosition, 0, speedPositionSlowDownWindow, 0, 1);
-      speed *= Algorithms.easeInOut(x,  1.5);
-      speed = Math.max(0.1, speed);
-    }
-    
-    return speed;
-  }
-
-  /**
-   * Moves the motor backwards towards its zero point
-   */
-  public void moveToZeroPoint() {
-    motor.setVelocity(-0.1);
-  }
-
-  /**
-   * Move the cart to a desired position in cm measured from the zero point
-   * 
-   * @param position in cm (Centimeter)
-   */
-  public void moveToPosition(double position) {
-    double velocity = 0;
-    double distanceTraveled = getDistanceTraveled();
-
-    if (distanceTraveled < position) {
-      velocity = 1;
-    } else if (distanceTraveled > position) {
-      velocity = -1;
-    }
-
-    /**
-     * Take the lower of both scalings. Overlaying scalings would result in too low speed.
-     */
-    velocity = Math.min(scaleEdgeSpeed(velocity), scalePositioningSpeed(velocity, position));
-    motor.setVelocity(velocity);
-    System.out.println("Motor Speed after scaling:" + velocity);
-  }
-
-   /**
-   * Checks if the limit switches are pressed of the cart.
-   */
-  public boolean isLimitSwitchReached() {
-    if (motor.getSensorCollection().isFwdLimitSwitchClosed() || motor.getSensorCollection().isRevLimitSwitchClosed()) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * determines if the cart has reached its desired position (in cm) or hit the limit switches
-   */
-  public boolean isPositionReached(double position) {
-    double distanceTraveled = getDistanceTraveled();
-    boolean limitSwitchHit = false;
-    if(position <= 0 && motor.getSensorCollection().isRevLimitSwitchClosed()) {
-      limitSwitchHit = true;
-    } else if (position >= maximumTravel && motor.getSensorCollection().isFwdLimitSwitchClosed()) {
-      limitSwitchHit = true;
-    }
-    if (getDistanceTraveled() > position - positioningWindow && getDistanceTraveled() < position + positioningWindow || limitSwitchHit) {
-      return true;
-    }
-    return false;
-  }
-
   public void stopMotor() {
-    motor.setVelocity(0);
+    Motors.cartMotor.set(ControlMode.PercentOutput, 0);
   }
 
-  public void zeroPositionReached() {
-    motor.setSelectedSensorPosition(0);
+  /**
+   * Runs a manual calibration routine to find it's zero point.
+   * @return true when zero point found, false when not.
+   */
+  public boolean calibrate() {
+    driveManual();
+    return !Motors.cartMotor.getSensorCollection().isRevLimitSwitchClosed();
+  }
+
+  public boolean isInFrontWindow() {
+    return (getPosition() >= RobotMap.CART_DRIVE_LENGTH - RobotMap.CART_WINDOW_LENGTH);
+  }
+
+  public boolean isInBackWindow() {
+    return (getPosition() <= RobotMap.CART_WINDOW_LENGTH);
   }
 
   @Override
-  public void initDefaultCommand() {
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.setActuator(true);
+    builder.setSafeState(this::stopMotor);
+    builder.addDoubleProperty("Motor Speed", Motors.cartMotor::get, Motors.cartMotor::set);
+    builder.addBooleanProperty("Reverse Limit", Motors.cartMotor.getSensorCollection()::isRevLimitSwitchClosed, null);
+    builder.addBooleanProperty("Forward limit", Motors.cartMotor.getSensorCollection()::isFwdLimitSwitchClosed, null);
+    builder.addDoubleProperty("Position", this::getPosition, null);
+    builder.addBooleanProperty("In Front Window", this::isInFrontWindow, null);
+    builder.addBooleanProperty("In Back Window", this::isInBackWindow, null);
   }
+
 }

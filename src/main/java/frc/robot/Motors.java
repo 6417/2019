@@ -8,6 +8,14 @@
 package frc.robot;
 
 import java.util.ArrayList;
+
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import ch.fridolinsrobotik.motorcontrollers.FridolinsDirectionType;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsFeedbackDevice;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsIdleModeType;
@@ -25,6 +33,8 @@ public class Motors {
     public static IFridolinsMotors cargoGripperFollower;
 
     public static IFridolinsMotors hatchGripperMotor;
+
+    public static WPI_TalonSRX cartMotor;
 
     public static IFridolinsMotors swerveDriveFrontRight;
     public static IFridolinsMotors swerveDriveFrontLeft;
@@ -81,8 +91,6 @@ public class Motors {
 
         if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
 
-            
-
             //Initialize Motors
             swerveDriveFrontRight = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_FRONT_RIGHT_ID);
             swerveDriveFrontLeft = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_FRONT_LEFT_ID);
@@ -114,6 +122,7 @@ public class Motors {
                 motor.setSensorDirection(true);
                 motor.configSelectedFeedbackSensor(FridolinsFeedbackDevice.QuadEncoder, 0, 0);
                 motor.configOpenLoopRamp(0, 0);
+                
             }
 
             for (IFridolinsMotors motor : swerveDriveMotors) {
@@ -126,6 +135,37 @@ public class Motors {
             }
 
         }
+        
+        if(RobotMap.CART_SUBYSTEM_IS_IN_USE) {
+            WPI_TalonSRX cartMotor = new WPI_TalonSRX(RobotMap.CART_MOTOR_ID);
 
+            cartMotor.configFactoryDefault();
+            cartMotor.setNeutralMode(NeutralMode.Brake);
+            cartMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+            cartMotor.setSensorPhase(false);
+            cartMotor.setInverted(false);
+            cartMotor.configClosedloopRamp(0);
+            cartMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
+            cartMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
+            cartMotor.configNominalOutputForward(0, 30);
+            cartMotor.configNominalOutputReverse(0, 30);    
+            cartMotor.configPeakOutputForward(1, 30);
+            cartMotor.configPeakOutputReverse(-1, 30);
+            cartMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+            cartMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+            cartMotor.configClearPositionOnLimitR(true, 0);
+            cartMotor.configClearPositionOnLimitF(true, RobotMap.CART_DRIVE_LENGTH);
+            cartMotor.selectProfileSlot(0, 0);
+		    cartMotor.config_kF(0, 0.02, 30);
+		    cartMotor.config_kP(0, 35.0*1023/38000, 30);
+		    cartMotor.config_kI(0, 0.004, 30);
+            cartMotor.config_kD(0, 350.0*1023/38000, 30);
+            cartMotor.config_IntegralZone(0, 500);
+            cartMotor.configMotionCruiseVelocity(RobotMap.CART_ENCODER_UNITS_PER_100_MS / 20, 30);
+            cartMotor.configMotionAcceleration(RobotMap.CART_ENCODER_UNITS_PER_100_MS / 20, 30);
+            cartMotor.setSelectedSensorPosition(0, 0, 30);
+
+            // cartMotor = new FridolinsTalonSRX(RobotMap.CART_MOTOR_ID);
+        }
     }
 }
