@@ -116,7 +116,16 @@ public class Motors {
                 motor.configOpenLoopRamp(0, 0);
             }
 
-        }   
+            for (IFridolinsMotors motor : swerveDriveMotors) {
+                motor.setDirection(false);
+            }
+
+            for (IFridolinsMotors motor : swerveAngleMotors) {
+                motor.setDirection(false);
+                motor.setSensorDirection(false);
+            }
+
+        }
 
     }
 }
