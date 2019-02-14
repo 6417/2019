@@ -89,7 +89,7 @@ public class RobotMap {
 
   //Robot
   public static final int SWERVE_DRIVE_ROTATION_ENCODER_TICK_COUNT = 11564;
-  public static final int SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT = 25600;
+  public static final int SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT = 196608;
   public static final double WHEEL_DISTANCE_LENGTH = 64;
   public static final double WHEEL_DISTANCE_WIDTH = 61;
 
