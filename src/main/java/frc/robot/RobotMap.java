@@ -19,6 +19,7 @@ public class RobotMap {
   public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE = true;
   public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = true;
   public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE = true;
+  public static final boolean CART_SUBYSTEM_IS_IN_USE = true;
 
   //TODO change Motor IDs
 
@@ -26,7 +27,7 @@ public class RobotMap {
   public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID = 1;
   public static final int CARGO_GRIPPER_MOTOR_LEFT_ID = 2;
   public static final int HATCH_GRIPPER_MOTOR_ID = 3;
-  public static final int CART_MOTOR_ID = 2;
+  public static final int CART_MOTOR_ID                 = 52;
 
   public static final int SWERVE_DRIVE_FRONT_RIGHT_ID = 5;
   public static final int SWERVE_DRIVE_FRONT_LEFT_ID = 4;
@@ -67,7 +68,22 @@ public class RobotMap {
   public static double DEFAULT_FIELD_ANGLE = 0;
 
   //Encoders
-  public static final double CART_ENCODER_DISTANCE_PER_PULSE = 1;
+  /**
+   * mm per pulse
+   */
+  public static final int CART_ENCODER_DISTANCE_PER_PULSE = 1;
+  /**
+   * Cart motor velocity in units/100ms
+   */
+  public static final int CART_ENCODER_UNITS_PER_100_MS = 38000;
+  /**
+   * Cart length in mm measured from the zero point.
+   */
+  public static final int CART_DRIVE_LENGTH = 200000;
+  /**
+   * Window in which the cart should drive slowlier.
+   */
+  public static final int CART_WINDOW_LENGTH = 20000;
 
   //TODO change Encodertick values for Swerve Drive
 
