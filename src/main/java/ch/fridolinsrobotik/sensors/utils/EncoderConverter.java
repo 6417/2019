@@ -14,6 +14,11 @@ public class EncoderConverter {
 
     private double distancePerPulse = 1;
 
+    public EncoderConverter(double ditsancePerPulse) {
+        super();
+        setDistancePerPulse(distancePerPulse);
+    }
+
     public void setDistancePerPulse(double distance) {
         this.distancePerPulse = distance;
     }
