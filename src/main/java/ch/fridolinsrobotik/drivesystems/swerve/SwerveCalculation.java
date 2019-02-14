@@ -14,21 +14,9 @@ import ch.fridolinsrobotik.utilities.Algorithms;
  */
 public class SwerveCalculation {
 
-	private double[] rotationAngle = new double[4];
-	
-	private double[] a1 = new double[4];
-	private double[] a2 = new double[4];
-	private double[] a = new double[4];
-	private double[] b1 = new double[4];
-	private double[] b2 = new double[4];
-	private double[] b = new double[4];
-	private double[] drivePowerRaw = new double[4];
-	private double drivePowerRawMax = 0;
-	private double drivePowerRawMin = 0;
-	
-	private double[] drivePower = new double[4];
-	private double[] steerAngle = new double[4];
-	
+	private double[] rotationAngle, a1, a2, a, b1, b2, b, drivePowerRaw, drivePower, steerAngle = new double[4];
+
+	private double drivePowerRawMax, drivePowerRawMin = 0;
 	
 	public SwerveCalculation(double wheelDistanceLength, double wheelDistanceWidth) {
 		
@@ -99,25 +87,16 @@ public class SwerveCalculation {
     }
 
 
-    private double wheelDirection = 0;
+    private double wheelDirection, rotationDistance = 0;
 	private boolean rotationDirection = false;
-	private double rotationDistance = 0;
     
     public void calculateFastestWayToAngle(double currentAngle, double desiredAngle) {
 		
-		double wheelAngleForward = 0;
-		double wheelAngleBackward = 0;
-		double desiredAngleForward = 0;
-		double desiredAngleBackward = 0;
-		double distanceNoReverseForward = 0;
-		double distanceNoReverseBackward = 0;
-		double distanceReverseForward = 0;
-		double distanceReverseBackward = 0;
+		double wheelAngleForward, wheelAngleBackward, desiredAngleForward, 
+		desiredAngleBackward, distanceNoReverseForward, distanceNoReverseBackward, 
+		distanceReverseForward, distanceReverseBackward, distanceClockwiseForward, 
+		distanceClockwiseBackward, distanceCounterClockwiseForward, distanceCounterClockwiseBackward = 0;
 		boolean distanceDirection = false;
-		double distanceClockwiseForward = 0;
-		double distanceClockwiseBackward = 0;
-		double distanceCounterClockwiseForward = 0;
-		double distanceCounterClockwiseBackward = 0;
 
 		wheelAngleForward = currentAngle;
 		desiredAngleForward = desiredAngle;
@@ -242,10 +221,9 @@ public class SwerveCalculation {
 
     public double getWheelAngleDegrees(int encoderTicks, int encoderTicksPerRotation) {
 		
-		double wheelRotationsDecimal = 0;
+		double wheelRotationsDecimal, wheelAngle = 0;
 		int wheelRotations = 0;
 		boolean wheelAngleOperationFlip = false;
-		double wheelAngle = 0;
 
 		wheelRotationsDecimal = (double) encoderTicks / (encoderTicksPerRotation / 2);
 		
@@ -273,10 +251,8 @@ public class SwerveCalculation {
 
     public double getTalonSteerOutput(int encoderTicks, int encoderTicksPerRotation, double rotationDistance, boolean rotationDirection) {
         
-        double rampValue = 0;
-	    int desiredEncoderTicks = 0;
-	    int encoderTicksDifference = 0;
-	    double talonOutput = 0;
+        double rampValue, talonOutput = 0;
+	    int desiredEncoderTicks, encoderTicksDifference = 0;
 
 		rampValue = encoderTicksPerRotation / 360 * 20;
 		
