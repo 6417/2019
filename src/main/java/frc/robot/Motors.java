@@ -13,6 +13,9 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -35,6 +38,9 @@ public class Motors {
     public static IFridolinsMotors hatchGripperMotor;
 
     public static WPI_TalonSRX cartMotor;
+
+    public static IFridolinsMotors liftMaster;
+    public static IFridolinsMotors liftFollower;
 
     public static IFridolinsMotors swerveDriveFrontRight;
     public static IFridolinsMotors swerveDriveFrontLeft;
@@ -74,6 +80,26 @@ public class Motors {
             cargoGripperFollower.setIdleMode(FridolinsIdleModeType.kCoast);
 
             cargoGripperMaster.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
+        }
+
+        if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+            FridolinsTalonSRX liftLeft = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_LEFT_ID);
+            FridolinsTalonSRX liftRight = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_RIGHT_ID);
+            liftMaster = liftLeft;
+            liftFollower = liftRight;
+
+            liftLeft.configFactoryDefault();
+            liftLeft.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+            liftLeft.configForwardLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, liftRight.getDeviceID());
+            liftLeft.configReverseLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, liftRight.getDeviceID());
+
+            liftRight.configFactoryDefault();
+            liftRight.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+            liftRight.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+
+            liftFollower.follow(liftMaster);
+            liftFollower.followDirection(FridolinsDirectionType.invertMaster);
+            
         }
 
         if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
