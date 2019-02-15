@@ -166,6 +166,13 @@ public class Motors {
             cartMotor.setSelectedSensorPosition(0, 0, 30);
 
             // cartMotor = new FridolinsTalonSRX(RobotMap.CART_MOTOR_ID);
+        } else if(RobotMap.CART_TESTSUBYSTEM_IS_IN_USE) {
+            cartMotor = new WPI_TalonSRX(RobotMap.CART_MOTOR_ID);
+            cartMotor.configFactoryDefault();
+            cartMotor.setNeutralMode(NeutralMode.Coast);
+            cartMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+            cartMotor.configClearPositionOnLimitR(true, 30);
+            cartMotor.configClearPositionOnLimitF(false, 30);
         }
     }
 }

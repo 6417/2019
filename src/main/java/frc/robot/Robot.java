@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.SCargoGripper;
 import frc.robot.subsystems.SHatchGripper;
 import frc.robot.subsystems.SSwerve;
+import frc.robot.subsystems.test.TestSCart;
 
 
 /**
@@ -34,6 +35,7 @@ public class Robot extends TimedRobot {
   //Create Subsystems
   public static SCargoGripper cargoGripper;
   public static SHatchGripper hatchGripper;
+  public static TestSCart testCart;
   public static SSwerve swerveDrive;
 
   Command m_autonomousCommand;
@@ -56,6 +58,9 @@ public class Robot extends TimedRobot {
     }
     if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
       swerveDrive = new SSwerve();
+    }
+    if(!RobotMap.CART_SUBYSTEM_IS_IN_USE && RobotMap.CART_TESTSUBYSTEM_IS_IN_USE) {
+      testCart = new TestSCart();
     }
 
     oi = OI.getInstance();
@@ -81,6 +86,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    if(!RobotMap.CART_SUBYSTEM_IS_IN_USE && RobotMap.CART_TESTSUBYSTEM_IS_IN_USE) {
+      testCart.checkZeroPosition();
+    }
   }
 
   /**
@@ -151,8 +159,12 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
 
-    swerveDrive.driveCartesian(OI.JoystickMainDriver.getX(), OI.JoystickMainDriver.getY(), OI.JoystickMainDriver.getZ(), ahrs.getYaw());
-
+    if(!RobotMap.CART_SUBYSTEM_IS_IN_USE && RobotMap.CART_TESTSUBYSTEM_IS_IN_USE) {
+      testCart.driveManual(-OI.JoystickMainDriver.getY());
+    } else {
+      swerveDrive.driveCartesian(OI.JoystickMainDriver.getX(), OI.JoystickMainDriver.getY(), OI.JoystickMainDriver.getZ(), ahrs.getYaw());
+    }
+    
   }
 
   /**
