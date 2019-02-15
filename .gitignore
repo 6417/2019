@@ -1,6 +1,6 @@
 # FRC specific paths
 
-
+src/main/deploy
 
 
 # Created by https://www.gitignore.io/api/java,gradle,eclipse,visualstudiocode
