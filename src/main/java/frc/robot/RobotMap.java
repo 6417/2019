@@ -16,10 +16,14 @@ package frc.robot;
 public class RobotMap {
 
   //Subsystems
-  public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE = true;
-  public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = true;
-  public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE = true;
-  public static final boolean CART_SUBYSTEM_IS_IN_USE = true;
+  public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
+  public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
+  public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE = false;
+  public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE = false;
+  public static final boolean CART_SUBYSTEM_IS_IN_USE = false;
+
+  // Test Subsystems
+  public static final boolean CART_TESTSUBYSTEM_IS_IN_USE = true;
 
   //TODO change Motor IDs
 
