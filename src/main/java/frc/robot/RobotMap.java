@@ -15,7 +15,7 @@ package frc.robot;
  */
 public class RobotMap {
 
-  //Subsystems
+  // Subsystems
   public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
   public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
   public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE = false;
@@ -25,13 +25,14 @@ public class RobotMap {
   // Test Subsystems
   public static final boolean CART_TESTSUBYSTEM_IS_IN_USE = true;
 
-  //TODO change Motor IDs
+  // TODO change Motor IDs
 
-  //Motors
+  // Motors
   public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID = 1;
   public static final int CARGO_GRIPPER_MOTOR_LEFT_ID = 2;
   public static final int HATCH_GRIPPER_MOTOR_ID = 3;
   public static final int CART_MOTOR_ID                 = 52;
+  public static final int CART_REMOTE_LIMIT_SWITCH_ID = 38;
 
   public static final int SWERVE_DRIVE_FRONT_LEFT_ID    = 32;
   public static final int SWERVE_DRIVE_FRONT_RIGHT_ID   = 38;
@@ -55,7 +56,6 @@ public class RobotMap {
   public static final int FIELD_ANGLE_RESET_BUTTON_ID = 6;
 
 
-  //Speeds
   public static final double SPEED_MULTIPLIER = 1;
   public static final double DRIVE_SPEED_MULITPLIER = 1;
   public static final double TURN_SPEED_MULTIPLIER = 1;

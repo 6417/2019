@@ -171,12 +171,12 @@ public class Motors {
             cartMotor.configFactoryDefault();
             cartMotor.setNeutralMode(NeutralMode.Coast);
             cartMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
-            cartMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
-            cartMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+            cartMotor.configReverseLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, RobotMap.SWERVE_DRIVE_FRONT_RIGHT_ID, 30);
+            cartMotor.configForwardLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, RobotMap.SWERVE_DRIVE_FRONT_RIGHT_ID, 30);
             cartMotor.configClearPositionOnLimitR(false, 30);
             cartMotor.configClearPositionOnLimitF(false, 30);
             cartMotor.setInverted(false);
-            cartMotor.setSensorPhase(true);
+            cartMotor.setSensorPhase(false);
         }
     }
 }
