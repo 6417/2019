@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -19,6 +20,7 @@ import frc.robot.subsystems.SCargoGripper;
 import frc.robot.subsystems.SHatchGripper;
 import frc.robot.subsystems.SSwerve;
 import frc.robot.subsystems.test.TestSCart;
+import frc.robot.subsystems.test.TestSLiftingUnit;
 import frc.robot.subsystems.test.TestSubsystem;
 
 /**
@@ -36,6 +38,7 @@ public class Robot extends TimedRobot {
   public static SCargoGripper cargoGripper;
   public static SHatchGripper hatchGripper;
   public static TestSCart testCart;
+  public static TestSLiftingUnit testLiftingUnit;
   public static SSwerve swerveDrive;
 
   Command m_autonomousCommand;
@@ -73,7 +76,7 @@ public class Robot extends TimedRobot {
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
 
-    for(TestSubsystem val : TestSubsystem.values()) {
+    for (TestSubsystem val : TestSubsystem.values()) {
       m_testSubsystemChooser.addOption(val.name(), val);
     }
     m_testSubsystemChooser.setDefaultOption(TestSubsystem.None.name(), TestSubsystem.None);
@@ -168,12 +171,16 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     m_testSubsystem = m_testSubsystemChooser.getSelected();
-    if(m_testSubsystem == null) {
+    if (m_testSubsystem == null) {
       return;
     }
     switch (m_testSubsystem) {
     case Cart: {
       testCart = new TestSCart();
+    }
+      break;
+    case LiftingUnit: {
+      testLiftingUnit = new TestSLiftingUnit();
     }
       break;
 
@@ -188,16 +195,19 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    if(m_testSubsystem == null) {
+    if (m_testSubsystem == null) {
       return;
     }
     switch (m_testSubsystem) {
     case Cart: {
       testCart.checkZeroPosition();
       testCart.drive(-OI.JoystickMainDriver.getY());
-
     }
       break;
+    case LiftingUnit: {
+      testLiftingUnit.checkZeroPosition();
+      testLiftingUnit.drive(-OI.JoystickMainDriver.getY());
+    }
 
     default: {
 

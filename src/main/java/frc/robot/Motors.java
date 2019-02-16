@@ -98,8 +98,24 @@ public class Motors {
             liftRight.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
 
             liftFollower.follow(liftMaster);
-            liftFollower.followDirection(FridolinsDirectionType.invertMaster);
-            
+            liftFollower.followDirection(FridolinsDirectionType.invertMaster); 
+        } else if(RobotMap.LIFTING_UNIT_TESTSUBSYSTEM_IS_IN_USE) {
+            FridolinsTalonSRX liftLeft = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_LEFT_ID);
+            FridolinsTalonSRX liftRight = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_RIGHT_ID);
+            liftMaster = liftLeft;
+            liftFollower = liftRight;
+
+            liftLeft.configFactoryDefault();
+            liftLeft.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+            liftLeft.configForwardLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, liftRight.getDeviceID());
+            liftLeft.configReverseLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, liftRight.getDeviceID());
+
+            liftRight.configFactoryDefault();
+            // liftRight.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+            // liftRight.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+
+            // liftFollower.follow(liftMaster);
+            // liftFollower.followDirection(FridolinsDirectionType.invertMaster);
         }
 
         if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
