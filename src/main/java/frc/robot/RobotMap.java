@@ -29,20 +29,24 @@ public class RobotMap {
   //TODO change Motor IDs
 
   //Motors
-  public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID = 1;
-  public static final int CARGO_GRIPPER_MOTOR_LEFT_ID = 2;
-  public static final int HATCH_GRIPPER_MOTOR_ID = 3;
+  public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID  = 1;
+  public static final int CARGO_GRIPPER_MOTOR_LEFT_ID   = 2;
+  public static final int HATCH_GRIPPER_MOTOR_ID        = 3;
   public static final int CART_MOTOR_ID                 = 52;
-  public static final int CART_REMOTE_LIMIT_SWITCH_ID = 38;
+  public static final int CART_REMOTE_LIMIT_SWITCH_ID   = 38;
 
-  public static final int SWERVE_DRIVE_FRONT_LEFT_ID = 32;
-  public static final int SWERVE_DRIVE_FRONT_RIGHT_ID = 38;
-  public static final int SWERVE_DRIVE_BACK_LEFT_ID = 34;
-  public static final int SWERVE_DRIVE_BACK_RIGHT_ID = 36;
-  public static final int SWERVE_ANGLE_FRONT_LEFT_ID = 33;
-  public static final int SWERVE_ANGLE_FRONT_RIGHT_ID = 39;
-  public static final int SWERVE_ANGLE_BACK_LEFT_ID = 35;
-  public static final int SWERVE_ANGLE_BACK_RIGHT_ID = 37;
+  public static final int LIFTING_UNIT_MOTOR_LEFT_ID    = 50;
+  public static final int LIFTING_UNIT_MOTOR_RIGHT_ID   = 51;
+
+
+  public static final int SWERVE_DRIVE_FRONT_LEFT_ID    = 32;
+  public static final int SWERVE_DRIVE_FRONT_RIGHT_ID   = 38;
+  public static final int SWERVE_DRIVE_BACK_LEFT_ID     = 34;
+  public static final int SWERVE_DRIVE_BACK_RIGHT_ID    = 36;
+  public static final int SWERVE_ANGLE_FRONT_LEFT_ID    = 33;
+  public static final int SWERVE_ANGLE_FRONT_RIGHT_ID   = 39;
+  public static final int SWERVE_ANGLE_BACK_LEFT_ID     = 35;
+  public static final int SWERVE_ANGLE_BACK_RIGHT_ID    = 37;
 
   // Joysticks
   public static final int JOYSTICK_MAIN_DRIVER_ID = 0;
