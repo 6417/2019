@@ -31,7 +31,7 @@ import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
  */
 public class Motors {
 
-    //Create Motors
+    // Create Motors
     public static IFridolinsMotors cargoGripperMaster;
     public static IFridolinsMotors cargoGripperFollower;
 
@@ -39,8 +39,8 @@ public class Motors {
 
     public static WPI_TalonSRX cartMotor;
 
-    public static IFridolinsMotors liftMaster;
-    public static IFridolinsMotors liftFollower;
+    public static FridolinsTalonSRX liftMaster;
+    public static FridolinsTalonSRX liftFollower;
 
     public static IFridolinsMotors swerveDriveFrontRight;
     public static IFridolinsMotors swerveDriveFrontLeft;
@@ -57,32 +57,32 @@ public class Motors {
 
     public static void initialize() {
 
-        if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-            //Initialize Motors
+        if (RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+            // Initialize Motors
             IFridolinsMotors cargoGripperMotorRight = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_RIGHT_ID);
             IFridolinsMotors cargoGripperMotorLeft = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_LEFT_ID);
 
             cargoGripperMaster = cargoGripperMotorLeft;
             cargoGripperFollower = cargoGripperMotorRight;
 
-            //Factory Default
+            // Factory Default
             cargoGripperMaster.factoryDefault();
             cargoGripperFollower.factoryDefault();
 
-            //Set Master and Follower
+            // Set Master and Follower
             cargoGripperFollower.follow(cargoGripperMaster);
 
             cargoGripperMaster.setDirection(false);
             cargoGripperFollower.followDirection(FridolinsDirectionType.followMaster);
 
-            //Set Mode and Limit Switches
-            cargoGripperMaster.setIdleMode(FridolinsIdleModeType.kCoast); 
+            // Set Mode and Limit Switches
+            cargoGripperMaster.setIdleMode(FridolinsIdleModeType.kCoast);
             cargoGripperFollower.setIdleMode(FridolinsIdleModeType.kCoast);
 
             cargoGripperMaster.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
         }
 
-        if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+        if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
             FridolinsTalonSRX liftLeft = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_LEFT_ID);
             FridolinsTalonSRX liftRight = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_RIGHT_ID);
             liftMaster = liftLeft;
@@ -90,16 +90,26 @@ public class Motors {
 
             liftLeft.configFactoryDefault();
             liftLeft.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-            liftLeft.configForwardLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, liftRight.getDeviceID());
-            liftLeft.configReverseLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, liftRight.getDeviceID());
+            liftLeft.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                    LimitSwitchNormal.NormallyClosed, 30);
+            liftLeft.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                    LimitSwitchNormal.NormallyClosed, 30);
+                    liftLeft.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
 
             liftRight.configFactoryDefault();
-            liftRight.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
-            liftRight.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+            liftRight.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
+            liftRight.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
+            /* Configure the right Talon's selected sensor to a QuadEncoder*/
+            liftRight.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+            /* Configure the Remote Talon's selected sensor as a remote sensor for the left Talon */
+            liftLeft.configRemoteFeedbackFilter(
+                liftRight.getDeviceID(), RemoteSensorSource.TalonSRX_SelectedSensor, 0, 30);
 
-            liftFollower.follow(liftMaster);
-            liftFollower.followDirection(FridolinsDirectionType.invertMaster); 
-        } else if(RobotMap.LIFTING_UNIT_TESTSUBSYSTEM_IS_IN_USE) {
+            liftMaster.setDirection(true);
+            liftFollower.followDirection(FridolinsDirectionType.invertMaster);
+            liftFollower.follow((WPI_TalonSRX)liftMaster);
+
+        } else if (RobotMap.LIFTING_UNIT_TESTSUBSYSTEM_IS_IN_USE) {
             FridolinsTalonSRX liftLeft = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_LEFT_ID);
             FridolinsTalonSRX liftRight = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_RIGHT_ID);
             liftMaster = liftLeft;
@@ -107,33 +117,43 @@ public class Motors {
 
             liftLeft.configFactoryDefault();
             liftLeft.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-            liftLeft.configForwardLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, liftRight.getDeviceID());
-            liftLeft.configReverseLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, liftRight.getDeviceID());
+            liftLeft.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                    LimitSwitchNormal.NormallyClosed, 30);
+            liftLeft.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                    LimitSwitchNormal.NormallyClosed, 30);
+                    liftLeft.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
 
             liftRight.configFactoryDefault();
-            // liftRight.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
-            // liftRight.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+            liftRight.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
+            liftRight.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
+            /* Configure the right Talon's selected sensor to a QuadEncoder*/
+            liftRight.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+            liftRight.setSensorPhase(true);
+            /* Configure the Remote Talon's selected sensor as a remote sensor for the left Talon */
+            liftLeft.configRemoteFeedbackFilter(
+                liftRight.getDeviceID(), RemoteSensorSource.TalonSRX_SelectedSensor, 0, 30);
 
-            // liftFollower.follow(liftMaster);
-            // liftFollower.followDirection(FridolinsDirectionType.invertMaster);
+            liftMaster.setDirection(true);
+            liftFollower.followDirection(FridolinsDirectionType.invertMaster);
+            liftFollower.follow((WPI_TalonSRX)liftMaster);
         }
 
-        if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-            //Initialize Motors
+        if (RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+            // Initialize Motors
             hatchGripperMotor = new FridolinsTalonSRX(RobotMap.HATCH_GRIPPER_MOTOR_ID);
 
-            //Facory Default
+            // Facory Default
             hatchGripperMotor.factoryDefault();
 
-            //Set Mode and Limit Switches
+            // Set Mode and Limit Switches
             hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);
             hatchGripperMotor.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
             hatchGripperMotor.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
         }
 
-        if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
+        if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
 
-            //Initialize Motors
+            // Initialize Motors
             swerveDriveFrontRight = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_FRONT_RIGHT_ID);
             swerveDriveFrontLeft = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_FRONT_LEFT_ID);
             swerveDriveBackRight = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_BACK_RIGHT_ID);
@@ -148,7 +168,6 @@ public class Motors {
             swerveDriveMotors.add(swerveDriveBackRight);
             swerveDriveMotors.add(swerveDriveBackLeft);
 
-            
             swerveAngleMotors.add(swerveAngleFrontRight);
             swerveAngleMotors.add(swerveAngleFrontLeft);
             swerveAngleMotors.add(swerveAngleBackRight);
@@ -156,7 +175,7 @@ public class Motors {
 
             swerveMotors.addAll(swerveDriveMotors);
             swerveMotors.addAll(swerveAngleMotors);
-            
+
             for (IFridolinsMotors motor : swerveMotors) {
                 motor.factoryDefault();
                 motor.setIdleMode(FridolinsIdleModeType.kBrake);
@@ -164,7 +183,7 @@ public class Motors {
                 motor.setSensorDirection(true);
                 motor.configSelectedFeedbackSensor(FridolinsFeedbackDevice.QuadEncoder, 0, 0);
                 motor.configOpenLoopRamp(0, 0);
-                
+
             }
 
             for (IFridolinsMotors motor : swerveDriveMotors) {
@@ -177,8 +196,8 @@ public class Motors {
             }
 
         }
-        
-        if(RobotMap.CART_SUBYSTEM_IS_IN_USE) {
+
+        if (RobotMap.CART_SUBYSTEM_IS_IN_USE) {
             WPI_TalonSRX cartMotor = new WPI_TalonSRX(RobotMap.CART_MOTOR_ID);
 
             cartMotor.configFactoryDefault();
@@ -190,31 +209,35 @@ public class Motors {
             cartMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
             cartMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
             cartMotor.configNominalOutputForward(0, 30);
-            cartMotor.configNominalOutputReverse(0, 30);    
+            cartMotor.configNominalOutputReverse(0, 30);
             cartMotor.configPeakOutputForward(1, 30);
             cartMotor.configPeakOutputReverse(-1, 30);
-            cartMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-            cartMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+            cartMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                    LimitSwitchNormal.NormallyOpen);
+            cartMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                    LimitSwitchNormal.NormallyOpen);
             cartMotor.configClearPositionOnLimitR(true, 0);
             cartMotor.configClearPositionOnLimitF(true, RobotMap.CART_DRIVE_LENGTH);
             cartMotor.selectProfileSlot(0, 0);
-		    cartMotor.config_kF(0, 0.02, 30);
-		    cartMotor.config_kP(0, 35.0*1023/38000, 30);
-		    cartMotor.config_kI(0, 0.004, 30);
-            cartMotor.config_kD(0, 350.0*1023/38000, 30);
+            cartMotor.config_kF(0, 0.02, 30);
+            cartMotor.config_kP(0, 35.0 * 1023 / 38000, 30);
+            cartMotor.config_kI(0, 0.004, 30);
+            cartMotor.config_kD(0, 350.0 * 1023 / 38000, 30);
             cartMotor.config_IntegralZone(0, 500);
             cartMotor.configMotionCruiseVelocity(RobotMap.CART_ENCODER_UNITS_PER_100_MS / 20, 30);
             cartMotor.configMotionAcceleration(RobotMap.CART_ENCODER_UNITS_PER_100_MS / 20, 30);
             cartMotor.setSelectedSensorPosition(0, 0, 30);
 
             // cartMotor = new FridolinsTalonSRX(RobotMap.CART_MOTOR_ID);
-        } else if(RobotMap.CART_TESTSUBYSTEM_IS_IN_USE) {
+        } else if (RobotMap.CART_TESTSUBYSTEM_IS_IN_USE) {
             cartMotor = new WPI_TalonSRX(RobotMap.CART_MOTOR_ID);
             cartMotor.configFactoryDefault();
             cartMotor.setNeutralMode(NeutralMode.Coast);
             cartMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
-            cartMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
-            cartMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+            cartMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                    LimitSwitchNormal.NormallyClosed);
+            cartMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                    LimitSwitchNormal.NormallyClosed);
             cartMotor.configClearPositionOnLimitR(false, 30);
             cartMotor.configClearPositionOnLimitF(false, 30);
             cartMotor.setInverted(false);

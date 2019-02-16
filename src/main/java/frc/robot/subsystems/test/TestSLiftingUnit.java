@@ -48,7 +48,7 @@ public class TestSLiftingUnit extends Subsystem {
    * Sets the target position in mm
    */
   public void setTargetPosition(double position) {
-    targetPosition = Algorithms.limit(position, 0, RobotMap.CART_DRIVE_LENGTH);
+    targetPosition = Algorithms.limit(position, 0, RobotMap.LIFTING_UNIT_DRIVE_LENGTH);
   }
 
   public double getTargetPosition() {
@@ -57,9 +57,9 @@ public class TestSLiftingUnit extends Subsystem {
 
   public void drive(double value) {
     if(isMotionMagicEnabled()) {
-      Motors.cartMotor.set(ControlMode.MotionMagic, getTargetPosition());
+      Motors.liftMaster.set(ControlMode.MotionMagic, getTargetPosition());
     }
-    Motors.cartMotor.set(ControlMode.PercentOutput, value);
+    Motors.liftMaster.set(ControlMode.PercentOutput, value * 0.3);
   }
 
   public void drive() {
@@ -80,7 +80,7 @@ public class TestSLiftingUnit extends Subsystem {
    * Stops the motor for the cart.
    */
   public void stopMotor() {
-    Motors.cartMotor.set(ControlMode.PercentOutput, 0);
+    Motors.liftMaster.set(ControlMode.PercentOutput, 0);
   }
 
   /**
@@ -88,9 +88,9 @@ public class TestSLiftingUnit extends Subsystem {
    * in order to have a functioning Cart system.
    */
   public void checkZeroPosition() {
-    if (!Motors.cartMotor.getSensorCollection().isRevLimitSwitchClosed()) {
+    if (!Motors.liftMaster.getSensorCollection().isRevLimitSwitchClosed()) {
       zeroed = true;
-      Motors.cartMotor.setSelectedSensorPosition(0);
+      Motors.liftMaster.setSelectedSensorPosition(0);
     }
   }
 
@@ -114,12 +114,12 @@ public class TestSLiftingUnit extends Subsystem {
     super.initSendable(builder);
     // builder.setActuator(true);
     // builder.setSafeState(this::stopMotor);
-    builder.addDoubleProperty("Motor Speed", Motors.cartMotor::getSelectedSensorVelocity, Motors.cartMotor::set);
-    builder.addBooleanProperty("Reverse Limit", Motors.cartMotor.getSensorCollection()::isRevLimitSwitchClosed, null);
-    builder.addBooleanProperty("Forward limit", Motors.cartMotor.getSensorCollection()::isFwdLimitSwitchClosed, null);
+    builder.addDoubleProperty("Motor Speed", Motors.liftMaster::getSelectedSensorVelocity, Motors.liftMaster::set);
+    builder.addBooleanProperty("Reverse Limit", Motors.liftMaster.getSensorCollection()::isRevLimitSwitchClosed, null);
+    builder.addBooleanProperty("Forward limit", Motors.liftMaster.getSensorCollection()::isFwdLimitSwitchClosed, null);
     builder.addBooleanProperty("Zeroed", this::isZeroed, null);
     builder.addDoubleProperty("Position (mm)", this::getPosition, null);
-    builder.addDoubleProperty("Position raw (pulses)", Motors.cartMotor::getSelectedSensorPosition, null);
+    builder.addDoubleProperty("Position raw (pulses)", Motors.liftMaster::getSelectedSensorPosition, null);
     builder.addDoubleProperty("Target position (mm)", this::getTargetPosition, this::setTargetPosition);
     builder.addDoubleProperty("Distance per Pulse", encoderConverter::getDistancePerPulse,
         encoderConverter::setDistancePerPulse);
