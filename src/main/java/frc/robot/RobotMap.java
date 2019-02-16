@@ -31,6 +31,8 @@ public class RobotMap {
   public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID = 1;
   public static final int CARGO_GRIPPER_MOTOR_LEFT_ID = 2;
   public static final int HATCH_GRIPPER_MOTOR_ID = 3;
+  public static final int LIFTING_UNIT_MOTOR_LEFT_ID    = 50;
+  public static final int LIFTING_UNIT_MOTOR_RIGHT_ID   = 51;
   public static final int CART_MOTOR_ID                 = 52;
 
   public static final int SWERVE_DRIVE_FRONT_LEFT_ID    = 32;
