@@ -10,11 +10,8 @@ package frc.robot.subsystems.test;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import ch.fridolinsrobotik.sensors.utils.EncoderConverter;
-import edu.wpi.first.networktables.NetworkTableEntry;
+import ch.fridolinsrobotik.utilities.Algorithms;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.robot.Motors;
 import frc.robot.RobotMap;
@@ -27,16 +24,13 @@ public class TestSCart extends Subsystem {
   private EncoderConverter encoderConverter = new EncoderConverter(RobotMap.CART_ENCODER_DISTANCE_PER_PULSE);
   
   private boolean zeroed = false, motionMagicEnabled = false;
-
-  private ShuffleboardTab tab = Shuffleboard.getTab("Test Cart");
-  private NetworkTableEntry targetPos =
-      tab.add("Position target (mm)", 0)
-         .getEntry();
-
+  /**
+   * position in mm
+   */
+  private double targetPosition = 0;
 
   public TestSCart() {
     super();
-    setSubsystem("Test Cart");
     addChild(Motors.cartMotor);
   }
 
@@ -49,11 +43,26 @@ public class TestSCart extends Subsystem {
     return encoderConverter.getDistance(Motors.cartMotor.getSelectedSensorPosition());
   }
 
+  /**
+   * Sets the target position in mm
+   */
+  public void setTargetPosition(double position) {
+    targetPosition = Algorithms.limit(position, 0, RobotMap.CART_DRIVE_LENGTH);
+  }
+
+  public double getTargetPosition() {
+    return targetPosition;
+  }
+
   public void drive(double value) {
     if(isMotionMagicEnabled()) {
-      Motors.cartMotor.set(ControlMode.MotionMagic, Math.max(0, targetPos.getDouble(0)));
+      Motors.cartMotor.set(ControlMode.MotionMagic, getTargetPosition());
     }
     Motors.cartMotor.set(ControlMode.PercentOutput, value);
+  }
+
+  public void drive() {
+    drive(0);
   }
 
   private void setMotionMagicEnabled(boolean enabled) {
@@ -78,8 +87,9 @@ public class TestSCart extends Subsystem {
    * in order to have a functioning Cart system.
    */
   public void checkZeroPosition() {
-    if (!zeroed && Motors.cartMotor.getSensorCollection().isRevLimitSwitchClosed()) {
+    if (!Motors.cartMotor.getSensorCollection().isRevLimitSwitchClosed()) {
       zeroed = true;
+      Motors.cartMotor.setSelectedSensorPosition(0);
     }
   }
 
@@ -101,16 +111,17 @@ public class TestSCart extends Subsystem {
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
-    builder.setActuator(true);
-    builder.setSafeState(this::stopMotor);
-    builder.addDoubleProperty("Motor Speed", Motors.cartMotor::get, Motors.cartMotor::set);
+    // builder.setActuator(true);
+    // builder.setSafeState(this::stopMotor);
+    builder.addDoubleProperty("Motor Speed", Motors.cartMotor::getSelectedSensorVelocity, Motors.cartMotor::set);
     builder.addBooleanProperty("Reverse Limit", Motors.cartMotor.getSensorCollection()::isRevLimitSwitchClosed, null);
     builder.addBooleanProperty("Forward limit", Motors.cartMotor.getSensorCollection()::isFwdLimitSwitchClosed, null);
     builder.addBooleanProperty("Zeroed", this::isZeroed, null);
     builder.addDoubleProperty("Position (mm)", this::getPosition, null);
     builder.addDoubleProperty("Position raw (pulses)", Motors.cartMotor::getSelectedSensorPosition, null);
+    builder.addDoubleProperty("Target position (mm)", this::getTargetPosition, this::setTargetPosition);
     builder.addDoubleProperty("Distance per Pulse", encoderConverter::getDistancePerPulse,
         encoderConverter::setDistancePerPulse);
     builder.addBooleanProperty("Enable Motion Magic", this::isMotionMagicEnabled, this::setMotionMagicEnabled);
-  }
+   }
 }

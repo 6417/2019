@@ -19,7 +19,7 @@ import frc.robot.subsystems.SCargoGripper;
 import frc.robot.subsystems.SHatchGripper;
 import frc.robot.subsystems.SSwerve;
 import frc.robot.subsystems.test.TestSCart;
-
+import frc.robot.subsystems.test.TestSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
   public static OI oi;
   public static AHRS ahrs;
 
-  //Create Subsystems
+  // Create Subsystems
   public static SCargoGripper cargoGripper;
   public static SHatchGripper hatchGripper;
   public static TestSCart testCart;
@@ -40,61 +40,63 @@ public class Robot extends TimedRobot {
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
+  TestSubsystem m_testSubsystem;
+  SendableChooser<TestSubsystem> m_testSubsystemChooser = new SendableChooser<>();
 
   /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
+   * This function is run when the robot is first started up and should be used
+   * for any initialization code.
    */
   @Override
   public void robotInit() {
 
     Motors.initialize();
 
-    if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+    if (RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
       cargoGripper = new SCargoGripper();
     }
-    if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+    if (RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
       hatchGripper = new SHatchGripper();
     }
-    if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
+    if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
       swerveDrive = new SSwerve();
-    }
-    if(!RobotMap.CART_SUBYSTEM_IS_IN_USE && RobotMap.CART_TESTSUBYSTEM_IS_IN_USE) {
-      testCart = new TestSCart();
     }
 
     oi = OI.getInstance();
-    
+
     try {
-      ahrs = new AHRS(SPI.Port.kMXP); 
-    } catch (RuntimeException ex ) {
+      ahrs = new AHRS(SPI.Port.kMXP);
+    } catch (RuntimeException ex) {
       System.out.println("Error instantiating navX-MXP:  " + ex.getMessage());
     }
-    
 
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
+
+    for(TestSubsystem val : TestSubsystem.values()) {
+      m_testSubsystemChooser.addOption(val.name(), val);
+    }
+    m_testSubsystemChooser.setDefaultOption(TestSubsystem.None.name(), TestSubsystem.None);
+    SmartDashboard.putData("Test Subsystem", m_testSubsystemChooser);
   }
 
   /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
+   * This function is called every robot packet, no matter the mode. Use this for
+   * items like diagnostics that you want ran during disabled, autonomous,
+   * teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
-    if(!RobotMap.CART_SUBYSTEM_IS_IN_USE && RobotMap.CART_TESTSUBYSTEM_IS_IN_USE) {
-      testCart.checkZeroPosition();
-    }
   }
 
   /**
-   * This function is called once each time the robot enters Disabled mode.
-   * You can use it to reset any subsystem information you want to clear when
-   * the robot is disabled.
+   * This function is called once each time the robot enters Disabled mode. You
+   * can use it to reset any subsystem information you want to clear when the
+   * robot is disabled.
    */
   @Override
   public void disabledInit() {
@@ -107,24 +109,25 @@ public class Robot extends TimedRobot {
 
   /**
    * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable
-   * chooser code works with the Java SmartDashboard. If you prefer the
-   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-   * getString code to get the auto name from the text box below the Gyro
+   * between different autonomous modes using the dashboard. The sendable chooser
+   * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
+   * remove all of the chooser code and uncomment the getString code to get the
+   * auto name from the text box below the Gyro
    *
-   * <p>You can add additional auto modes by adding additional commands to the
-   * chooser code above (like the commented example) or additional comparisons
-   * to the switch structure below with additional strings & commands.
+   * <p>
+   * You can add additional auto modes by adding additional commands to the
+   * chooser code above (like the commented example) or additional comparisons to
+   * the switch structure below with additional strings & commands.
    */
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_chooser.getSelected();
 
     /*
-     * String autoSelected = SmartDashboard.getString("Auto Selector",
-     * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-     * = new MyAutoCommand(); break; case "Default Auto": default:
-     * autonomousCommand = new ExampleCommand(); break; }
+     * String autoSelected = SmartDashboard.getString("Auto Selector", "Default");
+     * switch(autoSelected) { case "My Auto": autonomousCommand = new
+     * MyAutoCommand(); break; case "Default Auto": default: autonomousCommand = new
+     * ExampleCommand(); break; }
      */
 
     // schedule the autonomous command (example)
@@ -158,13 +161,26 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+    swerveDrive.driveCartesian(OI.JoystickMainDriver.getX(), OI.JoystickMainDriver.getY(), OI.JoystickMainDriver.getZ(),
+        ahrs.getYaw());
+  }
 
-    if(!RobotMap.CART_SUBYSTEM_IS_IN_USE && RobotMap.CART_TESTSUBYSTEM_IS_IN_USE) {
-      testCart.driveManual(-OI.JoystickMainDriver.getY());
-    } else {
-      swerveDrive.driveCartesian(OI.JoystickMainDriver.getX(), OI.JoystickMainDriver.getY(), OI.JoystickMainDriver.getZ(), ahrs.getYaw());
+  @Override
+  public void testInit() {
+    m_testSubsystem = m_testSubsystemChooser.getSelected();
+    if(m_testSubsystem == null) {
+      return;
     }
-    
+    switch (m_testSubsystem) {
+    case Cart: {
+      testCart = new TestSCart();
+    }
+      break;
+
+    default: {
+
+    }
+    }
   }
 
   /**
@@ -172,5 +188,20 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+    if(m_testSubsystem == null) {
+      return;
+    }
+    switch (m_testSubsystem) {
+    case Cart: {
+      testCart.checkZeroPosition();
+      testCart.drive(-OI.JoystickMainDriver.getY());
+
+    }
+      break;
+
+    default: {
+
+    }
+    }
   }
 }

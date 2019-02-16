@@ -171,8 +171,12 @@ public class Motors {
             cartMotor.configFactoryDefault();
             cartMotor.setNeutralMode(NeutralMode.Coast);
             cartMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
-            cartMotor.configClearPositionOnLimitR(true, 30);
+            cartMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+            cartMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+            cartMotor.configClearPositionOnLimitR(false, 30);
             cartMotor.configClearPositionOnLimitF(false, 30);
+            cartMotor.setInverted(false);
+            cartMotor.setSensorPhase(true);
         }
     }
 }
