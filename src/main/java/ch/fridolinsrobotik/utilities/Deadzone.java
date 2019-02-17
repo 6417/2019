@@ -14,12 +14,11 @@ public class Deadzone {
 
     public static double getAxis(double inputAxis, double inputDeadzone) {
         double outputAxis = 0;
-
+        double signum = Math.signum(inputAxis);
+        inputAxis = Math.abs(inputAxis);
         // Tests if the Value is positive or negative
         if (inputAxis > inputDeadzone) {
-            outputAxis = Algorithms.scale(inputAxis, inputDeadzone, 1, 0, 1);
-        } else if (inputAxis < -inputDeadzone) {
-            outputAxis = Algorithms.scale(inputAxis, -inputDeadzone, -1, 0, -1);
+            outputAxis = Algorithms.scale(inputAxis, inputDeadzone, 1, 0, 1) * signum;
         }
         return outputAxis;
     }

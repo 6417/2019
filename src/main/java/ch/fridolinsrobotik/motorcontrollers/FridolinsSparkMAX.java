@@ -7,11 +7,13 @@
 
 package ch.fridolinsrobotik.motorcontrollers;
 
+import com.ctre.phoenix.ErrorCode;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 
 import javax.naming.NotContextException;
 
 import com.revrobotics.CANSparkMax;
+
 /**
  * Add your docs here.
  */
@@ -25,55 +27,56 @@ public class FridolinsSparkMAX extends CANSparkMax implements IFridolinsMotors {
 
     @Override
     public void setVelocity(double velocity) {
-
-        this.set(velocity);
-
+        throw new Error("NotImplemented");
     }
 
     @Override
-    public void setPosition(double position) {
+    public void setPercent(double percent) {
+        this.set(percent);
+    }
+
+    @Override
+    public void setPosition(int position) {
 
     }
 
-    private LimitSwitchPolarity convertFridolinLimitSwitchPolarityToSparkMaxPolarity(FridolinsLimitSwitchPolarity polarity) {
-        switch(polarity) {
-            case kNormallyOpen:
-                return LimitSwitchPolarity.kNormallyOpen;
-            case kNormallyClosed:
-                return LimitSwitchPolarity.kNormallyClosed;
-            default:
-                return LimitSwitchPolarity.kNormallyOpen;
+    private LimitSwitchPolarity convertFridolinLimitSwitchPolarityToSparkMaxPolarity(
+            FridolinsLimitSwitchPolarity polarity) {
+        switch (polarity) {
+        case kNormallyOpen:
+            return LimitSwitchPolarity.kNormallyOpen;
+        case kNormallyClosed:
+            return LimitSwitchPolarity.kNormallyClosed;
+        default:
+            return LimitSwitchPolarity.kNormallyOpen;
         }
     }
 
     @Override
     public void enableForwardLimitSwitch(FridolinsLimitSwitchPolarity polarity, boolean enable) {
-        super.getForwardLimitSwitch(
-            convertFridolinLimitSwitchPolarityToSparkMaxPolarity(polarity)
-        ).enableLimitSwitch(enable);
+        super.getForwardLimitSwitch(convertFridolinLimitSwitchPolarityToSparkMaxPolarity(polarity))
+                .enableLimitSwitch(enable);
     }
 
     @Override
     public void enableReverseLimitSwitch(FridolinsLimitSwitchPolarity polarity, boolean enable) {
-        super.getReverseLimitSwitch(
-            convertFridolinLimitSwitchPolarityToSparkMaxPolarity(polarity)
-        ).enableLimitSwitch(enable);
+        super.getReverseLimitSwitch(convertFridolinLimitSwitchPolarityToSparkMaxPolarity(polarity))
+                .enableLimitSwitch(enable);
     }
 
     private IdleMode convertFridolinIdleModeType(FridolinsIdleModeType type) {
-		switch(type) {
-            case kBrake:
-                return IdleMode.kBrake;
-			default:
-				return IdleMode.kCoast;
-		}
-	}
+        switch (type) {
+        case kBrake:
+            return IdleMode.kBrake;
+        default:
+            return IdleMode.kCoast;
+        }
+    }
 
-
-	@Override
-	public void setIdleMode(FridolinsIdleModeType type) {
-		super.setIdleMode(convertFridolinIdleModeType(type));
-	}
+    @Override
+    public void setIdleMode(FridolinsIdleModeType type) {
+        super.setIdleMode(convertFridolinIdleModeType(type));
+    }
 
     @Override
     public int getEncoderTicks() {
@@ -129,6 +132,16 @@ public class FridolinsSparkMAX extends CANSparkMax implements IFridolinsMotors {
     @Override
     public void setSensorPosition(int position) {
         throw new Error("NotImplemented");
+    }
+
+    @Override
+    public int getClosedLoopError() {
+        throw new Error("NotImplemented");
+    }
+
+    @Override
+    public ErrorCode setSelectedSensorPosition(int sensorPosition) {
+        throw new Error("NotImplemented");    
     }
 
 }

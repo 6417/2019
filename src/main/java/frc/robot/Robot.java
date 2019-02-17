@@ -9,7 +9,8 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.Joystick;
+import ch.fridolinsrobotik.utilities.Deadzone;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -33,6 +34,7 @@ import frc.robot.subsystems.test.TestSubsystem;
 public class Robot extends TimedRobot {
   public static OI oi;
   public static AHRS ahrs;
+  public static PowerDistributionPanel PDP;
 
   // Create Subsystems
   public static SCargoGripper cargoGripper;
@@ -66,6 +68,8 @@ public class Robot extends TimedRobot {
     }
 
     oi = OI.getInstance();
+
+    PDP = new PowerDistributionPanel(62);
 
     try {
       ahrs = new AHRS(SPI.Port.kMXP);
@@ -164,8 +168,16 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    swerveDrive.driveCartesian(OI.JoystickMainDriver.getX(), OI.JoystickMainDriver.getY(), OI.JoystickMainDriver.getZ(),
-        ahrs.getYaw());
+
+    if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
+
+      SmartDashboard.putNumber("Joystick 1 X", -OI.JoystickMainDriver.getX());
+      double joystickX = Deadzone.getAxis(OI.JoystickMainDriver.getX(), RobotMap.DEADZONE_RANGE);
+      double joystickY = Deadzone.getAxis(-OI.JoystickMainDriver.getY(), RobotMap.DEADZONE_RANGE);
+      double joystickZ = Deadzone.getAxis(-OI.JoystickMainDriver.getZ(), RobotMap.DEADZONE_RANGE);
+
+      swerveDrive.manualDrive(joystickX, joystickY, joystickZ, ahrs.getYaw());
+    }
   }
 
   @Override
