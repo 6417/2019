@@ -15,6 +15,7 @@ import frc.robot.subsystems.SHatchGripper;
 public class CHatchGripperRetract extends Command {
   public CHatchGripperRetract() {
     requires(Robot.hatchGripper);
+    
   }
 
   // Called just before this Command runs the first time
@@ -33,6 +34,7 @@ public class CHatchGripperRetract extends Command {
   @Override
   protected boolean isFinished() {
     return Motors.hatchGripperMotor.isReverseLimitSwitchActive();
+    // return false;
   }
 
   // Called once after isFinished returns true

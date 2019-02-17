@@ -24,15 +24,15 @@ public class SCargoGripper extends Subsystem {
   }
 
   public static void cargoGripperPush() {
-    Motors.cargoGripperMaster.setVelocity(RobotMap.CARGO_GRIPPER_SPEED);
+    Motors.cargoGripperMaster.setPercent(RobotMap.CARGO_GRIPPER_SPEED);
   }
 
   public static void cargoGripperPull() {
-    Motors.cargoGripperMaster.setVelocity(-RobotMap.CARGO_GRIPPER_SPEED);
+    Motors.cargoGripperMaster.setPercent(-RobotMap.CARGO_GRIPPER_SPEED);
   }
 
   public static void cargoGripperStop() {
-    Motors.cargoGripperMaster.setVelocity(RobotMap.STOP_SPEED);
+    Motors.cargoGripperMaster.setPercent(RobotMap.STOP_SPEED);
   }
 
 }

@@ -7,156 +7,161 @@
 
 package frc.robot.subsystems;
 
-import ch.fridolinsrobotik.drivesystems.fieldoriented.FieldOrientedDrive;
-import ch.fridolinsrobotik.drivesystems.swerve.SwerveCalculation;
-import ch.fridolinsrobotik.utilities.Deadzone;
-import ch.fridolinsrobotik.utilities.JoystickOptimizer;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import java.util.ArrayList;
+
+import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.drive.Vector2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Motors;
 import frc.robot.OI;
-import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.commands.CSwerveDriveManual;
 
 /**
  * Add your docs here.
  */
 public class SSwerve extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
 
+	@Override
+	protected void initDefaultCommand() {
+		setDefaultCommand(new CSwerveDriveManual());
+	}
   
-  //Variables
-  private double joystickY, joystickX, joystickZ, joystickAngle, joystickPower, resultingAngle = 0;
+	ArrayList<Double> idealMotorRotateAngle = new ArrayList<Double>();
 
-  private int[] encoderDriveCount, encoderSteerCount = new int[4];
+	public static final double _90DegreesInRad = Math.PI / 2;
+	public static final double _180DegreesInRad = Math.PI;
+	public static final double _360DegreesInRad = 2 * Math.PI;
 
-  private double[] wheelDirection, rotationDistance, currentWheelAngle, swerveDrivePower, swerveSteerAngle, talonSteerOutput, talonDriveOutput = new double[4];
-  
-  public static boolean[] rotationDirection = new boolean[4];
+	private double driveX;
+	private double driveY;
+	private double rotationMagnitude;
+	private double gyro;
 
-  private static final JoystickButton buttonEncoderSetZero = new JoystickButton(OI.JoystickMainDriver, 6);
-	private static final JoystickButton buttonFieldAngleSetZero = new JoystickButton(OI.JoystickMainDriver, 5);
-	private static final JoystickButton buttonCalibrateFrontLeft = new JoystickButton(OI.JoystickMainDriver, 4);
-	private static final JoystickButton buttonCalibrateFrontRight = new JoystickButton(OI.JoystickMainDriver, 2);
-	private static final JoystickButton buttonCalibrateBackLeft = new JoystickButton(OI.JoystickMainDriver, 1);
-  private static final JoystickButton buttonCalibrateBackRight = new JoystickButton(OI.JoystickMainDriver, 3);
-  
-  private boolean buttonEncoderSetZeroState, buttonNavXSetZeroState, buttonCalibrateFrontLeftState, buttonCalibrateFrontRightState, buttonCalibrateBackLeftState, buttonCalibrateBackRightState = false;
-
-  private SwerveCalculation swerveCalculation;
-
-  public SSwerve() {
-    swerveCalculation = new SwerveCalculation(RobotMap.WHEEL_DISTANCE_LENGTH, RobotMap.WHEEL_DISTANCE_WIDTH);
-  }
-
-  @Override
-  public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
-  }
-
-  public void driveCartesian(double x, double y, double rotation, double gyro) {
-    joystickX = Deadzone.getAxis(OI.JoystickMainDriver.getX(), RobotMap.DEADZONE_RANGE);
-		joystickY = Deadzone.getAxis(-OI.JoystickMainDriver.getY(), RobotMap.DEADZONE_RANGE);
-		joystickZ = Deadzone.getAxis(-OI.JoystickMainDriver.getZ(), RobotMap.DEADZONE_RANGE);
-
-    joystickAngle = JoystickOptimizer.getJoystickAngle(OI.JoystickMainDriver.getX(), -OI.JoystickMainDriver.getY(), RobotMap.DEADZONE_RANGE);
-    joystickPower = JoystickOptimizer.getDrivePower(OI.JoystickMainDriver.getX(), -OI.JoystickMainDriver.getY(), RobotMap.DEADZONE_RANGE);
-    
-    resultingAngle = FieldOrientedDrive.resultingAngle(joystickAngle, gyro);
-
-    encoderSteerCount[0] = Motors.swerveAngleFrontLeft.getEncoderTicks();
-		encoderSteerCount[1] = -Motors.swerveAngleFrontRight.getEncoderTicks();
-		encoderSteerCount[2] = -Motors.swerveAngleBackLeft.getEncoderTicks();
-    encoderSteerCount[3] = -Motors.swerveAngleBackRight.getEncoderTicks();
-		encoderDriveCount[0] = Motors.swerveDriveFrontLeft.getEncoderTicks();
-		encoderDriveCount[1] = Motors.swerveDriveFrontRight.getEncoderTicks();
-		encoderDriveCount[2] = Motors.swerveDriveBackLeft.getEncoderTicks();
-    encoderDriveCount[3] = Motors.swerveDriveBackRight.getEncoderTicks();
-
-    buttonEncoderSetZeroState = buttonEncoderSetZero.get();
-		buttonNavXSetZeroState = buttonFieldAngleSetZero.get();
-		buttonCalibrateFrontLeftState = buttonCalibrateFrontLeft.get();
-		buttonCalibrateFrontRightState = buttonCalibrateFrontRight.get();
-		buttonCalibrateBackLeftState = buttonCalibrateBackLeft.get();
-		buttonCalibrateBackRightState = buttonCalibrateBackRight.get();
-    
-    swerveCalculation.calculateValues(resultingAngle, joystickPower, joystickZ);
-		swerveDrivePower = swerveCalculation.getDrivePower();
-		swerveSteerAngle = swerveCalculation.getSteerAngle();
-		
-		if(buttonCalibrateFrontLeftState == true) {
+	/**
+	 * 
+	 * @param driveMotors               Motor list in this order: front left, front
+	 *                                  right, back right, back left
+	 * @param steeringMotors            Motor list in this order: front left, front
+	 *                                  right, back right, back left
+	 * @param robotWidth                motors width distance width in cm
+	 * @param robotLength               motors length distance in cm
+	 * @param pulsesPerRotationSteering Pulses per rotation of the wheel when
+	 *                                  rotating
+	 * @param pulsesPerRotationDriving  Pulses per rotation of the wheel when
+	 *                                  driving
+	 */
+	public SSwerve() {
 			
-			Motors.swerveAngleFrontLeft.setVelocity(OI.JoystickMainDriver.getX());
-			
-		}else if(buttonCalibrateFrontRightState == true) {
-			
-			Motors.swerveAngleFrontRight.setVelocity(OI.JoystickMainDriver.getX());
-			
-		}else if(buttonCalibrateBackLeftState == true) {
-			
-			Motors.swerveAngleBackLeft.setVelocity(OI.JoystickMainDriver.getX());
-			
-		}else if(buttonCalibrateBackRightState == true) {
-			
-			Motors.swerveAngleBackRight.setVelocity(OI.JoystickMainDriver.getX());
-			
-		}else {
-						
-			currentWheelAngle[0] = swerveCalculation.getWheelAngleDegrees(encoderSteerCount[0], RobotMap.SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT);
-			currentWheelAngle[1] = swerveCalculation.getWheelAngleDegrees(encoderSteerCount[1], RobotMap.SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT);
-			currentWheelAngle[2] = swerveCalculation.getWheelAngleDegrees(encoderSteerCount[2], RobotMap.SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT);
-			currentWheelAngle[3] = swerveCalculation.getWheelAngleDegrees(encoderSteerCount[3], RobotMap.SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT);
-	
-			for(int i = 0; i < 4; i++) {
-				swerveCalculation.calculateFastestWayToAngle(currentWheelAngle[i], swerveSteerAngle[i]);
-				wheelDirection[i] = swerveCalculation.getWheelDirection();
-				rotationDirection[i] = swerveCalculation.getRotationDirection();
-				rotationDistance[i] = swerveCalculation.getRotationDistance();
+			double alpha = Math.atan(RobotMap.WHEEL_DISTANCE_WIDTH / RobotMap.WHEEL_DISTANCE_LENGTH);
+
+			/***
+			 * front left and back right are equal, and front right and back left are equal
+			 * in rectangles. front left and front right are mirrored in cartesian plane.
+			 */
+
+			// calculate angle for front left
+			idealMotorRotateAngle.add(alpha);
+			// calculate angle for front right
+			idealMotorRotateAngle.add(- alpha);
+			// copy front left to back right but let it face in the opposite direction
+			idealMotorRotateAngle.add(alpha + _180DegreesInRad);// + _180DegreesInRad);
+			// for back left it's same as front right but let it face in the opposite
+			// direction
+			idealMotorRotateAngle.add(- alpha + _180DegreesInRad);// + _180DegreesInRad);
+
+			for(Double angle : idealMotorRotateAngle) {
+					System.out.println(Math.toDegrees(angle));
 			}
-			
-			talonSteerOutput[0] = swerveCalculation.getTalonSteerOutput(encoderSteerCount[0], RobotMap.SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT, rotationDistance[0], rotationDirection[0]);
-			talonSteerOutput[1] = swerveCalculation.getTalonSteerOutput(encoderSteerCount[1], RobotMap.SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT, rotationDistance[1], rotationDirection[1]);
-			talonSteerOutput[2] = swerveCalculation.getTalonSteerOutput(encoderSteerCount[2], RobotMap.SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT, rotationDistance[2], rotationDirection[2]);
-			talonSteerOutput[3] = swerveCalculation.getTalonSteerOutput(encoderSteerCount[3], RobotMap.SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT, rotationDistance[3], rotationDirection[3]);
-	
-			for(int i = 0; i < 4; i++) {
-				talonDriveOutput[i] = swerveDrivePower[i] * wheelDirection[i] * RobotMap.DRIVE_SPEED_MULITPLIER;
-			}
-				
-			Motors.swerveAngleFrontLeft.setVelocity(talonSteerOutput[0]);
-			Motors.swerveAngleFrontRight.setVelocity(talonSteerOutput[1]);
-      Motors.swerveAngleBackLeft.setVelocity(talonSteerOutput[2]);
-			Motors.swerveAngleBackRight.setVelocity(talonSteerOutput[3]);
-			
-      Motors.swerveDriveFrontLeft.setVelocity(-talonDriveOutput[0]);
-			Motors.swerveDriveFrontRight.setVelocity(talonDriveOutput[1]);
-			Motors.swerveDriveBackLeft.setVelocity(-talonDriveOutput[2]);
-			Motors.swerveDriveBackRight.setVelocity(talonDriveOutput[3]);
-			
-		}
-	
-		if(buttonEncoderSetZeroState == true) {
-      Motors.swerveDriveFrontLeft.setSensorPosition(0);
-      Motors.swerveDriveFrontRight.setSensorPosition(0);
-      Motors.swerveDriveBackLeft.setSensorPosition(0);
-      Motors.swerveDriveBackRight.setSensorPosition(0);
-      Motors.swerveAngleFrontLeft.setSensorPosition(0);
-      Motors.swerveAngleFrontRight.setSensorPosition(0);
-      Motors.swerveAngleBackLeft.setSensorPosition(0);
-      Motors.swerveAngleBackRight.setSensorPosition(0);
-		}
-		
-		if(buttonNavXSetZeroState == true) {
-			Robot.ahrs.reset();		
-		}
-
-		
 	}
 
-  public void driveCartesian(double x, double y, double rotation) {
-    driveCartesian(x, y, rotation, 0.0);
+	public void manualDrive(double driveX, double driveY, double rotationMagnitude, double gyro) {
+		this.driveX = driveX;
+		this.driveY = driveY;
+		this.rotationMagnitude = rotationMagnitude;
+		this.gyro = gyro;
+	}
+
+	/**
+	 * 
+	 * @param driveX            power to translate sideways
+	 * @param driveY            power to translate forward/backward
+	 * @param rotationMagnitude rotation around the robot's own Z axis
+	 * @param gyro              The current angle reading from the gyro in degrees
+	 *                          around the Z axis. Use this to implement
+	 *                          field-oriented controls
+	 */
+	public void driveCartesian() {
+
+			for (int i = 0; i < idealMotorRotateAngle.size(); i++) {
+					Double angle = idealMotorRotateAngle.get(i);
+					Vector2d rotationVector = new Vector2d(rotationMagnitude * Math.cos(angle), rotationMagnitude * Math.sin(angle));
+					Vector2d striveVector = new Vector2d(driveX, driveY);
+					striveVector.rotate(gyro);
+					Vector2d movingVector = new Vector2d(rotationVector.x + striveVector.x, rotationVector.y + striveVector.y);
+
+					SmartDashboard.putNumber("rotation x " + i, rotationVector.x);
+					SmartDashboard.putNumber("rotation y " + i, rotationVector.y);
+					SmartDashboard.putNumber("strive x " + i, striveVector.x);
+					SmartDashboard.putNumber("strive y " + i, striveVector.y);
+					SmartDashboard.putNumber("moving x " + i, movingVector.x);
+					SmartDashboard.putNumber("moving y " + i, movingVector.y);
+					
+					drive(Motors.swerveAngleMotors.get(i), Motors.swerveDriveMotors.get(i), Math.atan2(movingVector.x, movingVector.y), movingVector.magnitude(), i);
+					// drive(Motors.swerveAngleMotors.get(i), Motors.swerveDriveMotors.get(i), OI.JoystickMainDriver.getDirectionRadians(), movingVector.magnitude(), i);
+			}
+
+	}
+
+	private void drive(IFridolinsMotors iFridolinsMotors, IFridolinsMotors iFridolinsMotors2, double targetRadians, double magnitude, int debugI) {
+			int steeringEncoderPulses = iFridolinsMotors.getEncoderTicks();
+			double currentRadians = remainder(convertEncoderPulsesToRadians(steeringEncoderPulses, RobotMap.SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT), _360DegreesInRad);
+			double deltaRadians = targetRadians - currentRadians + _360DegreesInRad;
+
+			double steer = (deltaRadians + _90DegreesInRad) % _180DegreesInRad - _90DegreesInRad;
+			double drive = -1 * (Math.floor((deltaRadians + _90DegreesInRad) / _180DegreesInRad) % 2 * 2 -1);
+
+			int steeringEncoderGoal = steeringEncoderPulses + convertRadiansToEncoderPulses(steer, RobotMap.SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT);
+			
+			SmartDashboard.putNumber("steer " + debugI, Math.toDegrees(steer));
+			SmartDashboard.putNumber("deltaPos " + debugI, Math.toDegrees(deltaRadians));
+			SmartDashboard.putNumber("Current Radians" + debugI, Math.toDegrees(currentRadians));
+			SmartDashboard.putNumber("Target Radians" + debugI, Math.toDegrees(targetRadians));
+			SmartDashboard.putNumber("encoder pos " + debugI, steeringEncoderPulses);
+			SmartDashboard.putNumber("SteeringEncoderGoal" + debugI, steeringEncoderGoal);
+			SmartDashboard.putNumber("drive" + debugI, drive);
+			SmartDashboard.putNumber("Drive Encoder " +debugI, iFridolinsMotors2.getEncoderTicks());
+			iFridolinsMotors.setPosition(steeringEncoderGoal);
+			iFridolinsMotors2.setPercent(drive * magnitude * RobotMap.DRIVE_SPEED_MULITPLIER);
+			
+	}
+
+	private double convertEncoderPulsesToRadians(int pulses, int pulsesPerRotation) {
+			return (2 * Math.PI) / pulsesPerRotation * pulses;
+	}
+
+	private int convertRadiansToEncoderPulses(double radians, int pulsesPerRotation) {
+			return (int) (pulsesPerRotation / (2 * Math.PI) * radians);
+	}
+
+
+	/**
+	 * Modulo function, since Java implements % for negative values different. E.g., -182 % 180 => -2.
+	 * This function calculates the remainder for negative inputs differently. E.g., -182 % 180 => -2 + 180 => 178
+	 */
+	public double remainder(double x, double m) {
+			return ((x % m) + m) % m;
+	}
+
+	@Override
+	public void initSendable(SendableBuilder builder) {
+		super.initSendable(builder);
+		builder.addBooleanProperty("HallSteeringFrontLeft", Motors.swerveAngleFrontLeft::isForwardLimitSwitchActive, null);
+		builder.addBooleanProperty("HallSteeringFrontRight", Motors.swerveAngleFrontRight::isForwardLimitSwitchActive, null);
+		builder.addBooleanProperty("HallSteeringBackLeft", Motors.swerveAngleBackLeft::isForwardLimitSwitchActive, null);
+		builder.addBooleanProperty("HallSteeringBackRight", Motors.swerveAngleBackRight::isForwardLimitSwitchActive, null);
 	}
 
 }

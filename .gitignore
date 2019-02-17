@@ -1,6 +1,6 @@
 # FRC specific paths
 
-
+src/main/deploy
 
 
 # Created by https://www.gitignore.io/api/java,gradle,eclipse,visualstudiocode
@@ -67,9 +67,6 @@ local.properties
 ### Eclipse Patch ###
 # Eclipse Core
 .project
-
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
 
 # Annotation Processing
 .apt_generated

@@ -7,6 +7,7 @@
 
 package ch.fridolinsrobotik.motorcontrollers;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -29,14 +30,17 @@ public class FridolinsTalonSRX extends WPI_TalonSRX implements IFridolinsMotors 
     
 	@Override
 	public void setVelocity(double velocity) {
-        
-        this.set(velocity);
-
+		this.set(ControlMode.Velocity, velocity);
 	}
 
 	@Override
-	public void setPosition(double position) {
-		
+	public void setPercent(double percent) {
+		this.set(percent);
+	}
+
+	@Override
+	public void setPosition(int position) {
+		this.set(ControlMode.Position, position);
 	}
 
 	private LimitSwitchNormal convertFridolinLimitSwitchPolarityToSparkMaxPolarity(FridolinsLimitSwitchPolarity polarity) {
@@ -165,7 +169,5 @@ public class FridolinsTalonSRX extends WPI_TalonSRX implements IFridolinsMotors 
 	public void setSensorPosition(int position) {
 		super.setSelectedSensorPosition(0);
 	}
-
-
 
 }

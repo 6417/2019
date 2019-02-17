@@ -33,6 +33,7 @@ public class CHatchGripperExtend extends Command {
   @Override
   protected boolean isFinished() {
     return Motors.hatchGripperMotor.isForwardLimitSwitchActive();
+    // return false;
   }
 
   // Called once after isFinished returns true

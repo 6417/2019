@@ -7,6 +7,7 @@
 
 package ch.fridolinsrobotik.motorcontrollers;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 
 /**
@@ -16,7 +17,9 @@ public interface IFridolinsMotors {
      
     public void setVelocity(double velocity);
 
-    public void setPosition(double position);
+    public void setPercent(double percent);
+
+    public void setPosition(int position);
 
     public void enableForwardLimitSwitch(FridolinsLimitSwitchPolarity polarity, boolean enable);
 
@@ -45,4 +48,8 @@ public interface IFridolinsMotors {
     public void configSelectedFeedbackSensor(FridolinsFeedbackDevice device, int pidIdx, int timeoutMs);
 
     public void configOpenLoopRamp(double rampTime, int timeoutMs);
+
+    public int getClosedLoopError();
+
+    public ErrorCode setSelectedSensorPosition(int sensorPosition);
 }
