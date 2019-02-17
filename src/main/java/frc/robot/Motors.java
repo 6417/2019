@@ -9,18 +9,17 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import com.ctre.phoenix.motorcontrol.ControlFrame;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
-import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import ch.fridolinsrobotik.motorcontrollers.FridolinsDirectionType;
-import ch.fridolinsrobotik.motorcontrollers.FridolinsFeedbackDevice;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsIdleModeType;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsLimitSwitchPolarity;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsTalonSRX;
@@ -37,7 +36,7 @@ public class Motors {
 
     public static IFridolinsMotors hatchGripperMotor;
 
-    public static WPI_TalonSRX cartMotor;
+    public static FridolinsTalonSRX cartMotor;
 
     public static FridolinsTalonSRX liftMaster;
     public static FridolinsTalonSRX liftFollower;
@@ -145,7 +144,9 @@ public class Motors {
             // Facory Default
             hatchGripperMotor.factoryDefault();
 
-            // Set Mode and Limit Switches
+            //Set Mode and Limit Switches
+            hatchGripperMotor.setDirection(true);
+            hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);
             hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);
             hatchGripperMotor.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
             hatchGripperMotor.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
@@ -153,95 +154,137 @@ public class Motors {
 
         if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
 
-            // Initialize Motors
-            swerveDriveFrontRight = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_FRONT_RIGHT_ID);
-            swerveDriveFrontLeft = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_FRONT_LEFT_ID);
-            swerveDriveBackRight = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_BACK_RIGHT_ID);
-            swerveDriveBackLeft = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_BACK_LEFT_ID);
-            swerveAngleFrontRight = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_FRONT_RIGHT_ID);
-            swerveAngleFrontLeft = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_FRONT_LEFT_ID);
-            swerveAngleBackRight = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_BACK_RIGHT_ID);
-            swerveAngleBackLeft = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_BACK_LEFT_ID);
+            //Initialize Motors
+            FridolinsTalonSRX talonSwerveDriveFrontRight = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_FRONT_RIGHT_ID);
+            FridolinsTalonSRX talonSwerveDriveFrontLeft = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_FRONT_LEFT_ID);
+            FridolinsTalonSRX talonSwerveDriveBackRight = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_BACK_RIGHT_ID);
+            FridolinsTalonSRX talonSwerveDriveBackLeft = new FridolinsTalonSRX(RobotMap.SWERVE_DRIVE_BACK_LEFT_ID);
+            FridolinsTalonSRX talonSwerveAngleFrontRight = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_FRONT_RIGHT_ID);
+            FridolinsTalonSRX talonSwerveAngleFrontLeft = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_FRONT_LEFT_ID);
+            FridolinsTalonSRX talonSwerveAngleBackRight = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_BACK_RIGHT_ID);
+            FridolinsTalonSRX talonSwerveAngleBackLeft = new FridolinsTalonSRX(RobotMap.SWERVE_ANGLE_BACK_LEFT_ID);
 
-            swerveDriveMotors.add(swerveDriveFrontRight);
-            swerveDriveMotors.add(swerveDriveFrontLeft);
-            swerveDriveMotors.add(swerveDriveBackRight);
-            swerveDriveMotors.add(swerveDriveBackLeft);
+            ArrayList<FridolinsTalonSRX> talonSwerveDriveMotors = new ArrayList<FridolinsTalonSRX>();
+            ArrayList<FridolinsTalonSRX> talonSwerveAngleMotors = new ArrayList<FridolinsTalonSRX>();
+            ArrayList<FridolinsTalonSRX> talonSwerveMotors = new ArrayList<FridolinsTalonSRX>();
 
-            swerveAngleMotors.add(swerveAngleFrontRight);
-            swerveAngleMotors.add(swerveAngleFrontLeft);
-            swerveAngleMotors.add(swerveAngleBackRight);
-            swerveAngleMotors.add(swerveAngleBackLeft);
+            talonSwerveDriveMotors.add(talonSwerveDriveFrontLeft);
+            talonSwerveDriveMotors.add(talonSwerveDriveFrontRight);
+            talonSwerveDriveMotors.add(talonSwerveDriveBackRight);
+            talonSwerveDriveMotors.add(talonSwerveDriveBackLeft);
+            
+            talonSwerveAngleMotors.add(talonSwerveAngleFrontLeft);
+            talonSwerveAngleMotors.add(talonSwerveAngleFrontRight);
+            talonSwerveAngleMotors.add(talonSwerveAngleBackRight);
+            talonSwerveAngleMotors.add(talonSwerveAngleBackLeft);
 
-            swerveMotors.addAll(swerveDriveMotors);
-            swerveMotors.addAll(swerveAngleMotors);
+            talonSwerveMotors.addAll(talonSwerveDriveMotors);
+            talonSwerveMotors.addAll(talonSwerveAngleMotors);
 
-            for (IFridolinsMotors motor : swerveMotors) {
-                motor.factoryDefault();
-                motor.setIdleMode(FridolinsIdleModeType.kBrake);
-                motor.setDirection(true);
-                motor.setSensorDirection(true);
-                motor.configSelectedFeedbackSensor(FridolinsFeedbackDevice.QuadEncoder, 0, 0);
-                motor.configOpenLoopRamp(0, 0);
+            swerveDriveMotors.addAll(talonSwerveDriveMotors);
+            swerveAngleMotors.addAll(talonSwerveAngleMotors);
+            swerveMotors.addAll(talonSwerveMotors);
 
+            for (FridolinsTalonSRX motor : talonSwerveMotors) {
+                motor.configFactoryDefault(20);
+			    motor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 20);
+
+			    /* Set the peak and nominal outputs */
+			    motor.configNominalOutputForward(0, 20);
+			    motor.configNominalOutputReverse(0, 20);
+			    motor.configPeakOutputForward(1, 20);
+                motor.configPeakOutputReverse(-1, 20);
+      
+                /* Zero the sensor */
+			    motor.setSelectedSensorPosition(0, 0, 20);
             }
 
-            for (IFridolinsMotors motor : swerveDriveMotors) {
-                motor.setDirection(false);
+            for (FridolinsTalonSRX motor : talonSwerveAngleMotors) {
+                
+                motor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 20);
+                // motor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 30);
+                // motor.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, 30);
+                // motor.setStatusFramePeriod(StatusFrame.Status_12_Feedback1, 30);
+                // motor.setStatusFramePeriod(StatusFrame.Status_1_General, 30);
+                // motor.setControlFramePeriod(ControlFrame.Control_3_General, 30);
+    
+                /* PID settings */
+                motor.selectProfileSlot(0, 0);
+                motor.config_IntegralZone(0, 100);
+                motor.config_kF(0, 0);
+                motor.config_kP(0, 0.6);
+                motor.config_kI(0, 0.16);
+                motor.config_kD(0,4);
+                motor.configClosedLoopPeakOutput(0, 0.5);
+
+                motor.setSensorPhase(false);
+                motor.setInverted(false);
+                motor.set(ControlMode.Position, 0);
             }
 
-            for (IFridolinsMotors motor : swerveAngleMotors) {
-                motor.setDirection(false);
-                motor.setSensorDirection(false);
-            }
+            talonSwerveDriveFrontRight.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled, 30);
+            talonSwerveDriveFrontRight.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled, 30);
+
+            talonSwerveDriveBackLeft.setDirection(false);
+            talonSwerveDriveBackRight.setDirection(true);
+            talonSwerveDriveFrontLeft.setDirection(false);
+            talonSwerveDriveFrontRight.setDirection(true);
+
+            swerveDriveFrontRight = talonSwerveDriveFrontRight;
+            swerveDriveFrontLeft = talonSwerveDriveFrontLeft;
+            swerveDriveBackRight = talonSwerveDriveBackRight;
+            swerveDriveBackLeft = talonSwerveDriveBackLeft;
+            swerveAngleFrontRight = talonSwerveAngleFrontRight;
+            swerveAngleFrontLeft = talonSwerveAngleFrontLeft;
+            swerveAngleBackRight = talonSwerveAngleBackRight;
+            swerveAngleBackLeft = talonSwerveAngleBackLeft;
 
         }
+        
+        if(RobotMap.CART_SUBYSTEM_IS_IN_USE) {
+            FridolinsTalonSRX talonCart = new FridolinsTalonSRX(RobotMap.CART_MOTOR_ID);
 
-        if (RobotMap.CART_SUBYSTEM_IS_IN_USE) {
-            WPI_TalonSRX cartMotor = new WPI_TalonSRX(RobotMap.CART_MOTOR_ID);
+            talonCart.configFactoryDefault();
+            talonCart.setNeutralMode(NeutralMode.Brake);
+            talonCart.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+            talonCart.setSensorPhase(false);
+            talonCart.setInverted(false);
+            talonCart.configClosedloopRamp(0);
+            talonCart.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
+            talonCart.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
+            talonCart.configNominalOutputForward(0, 30);
+            talonCart.configNominalOutputReverse(0, 30);    
+            talonCart.configPeakOutputForward(1, 30);
+            talonCart.configPeakOutputReverse(-1, 30);
+            talonCart.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+            talonCart.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+            talonCart.configClearPositionOnLimitR(true, 0);
+            talonCart.configClearPositionOnLimitF(true, RobotMap.CART_DRIVE_LENGTH);
+            talonCart.selectProfileSlot(0, 0);
+		    talonCart.config_kF(0, 0.02, 30);
+		    talonCart.config_kP(0, 35.0*1023/38000, 30);
+		    talonCart.config_kI(0, 0.004, 30);
+            talonCart.config_kD(0, 350.0*1023/38000, 30);
+            talonCart.config_IntegralZone(0, 500);
+            talonCart.configMotionCruiseVelocity(RobotMap.CART_ENCODER_UNITS_PER_100_MS / 20, 30);
+            talonCart.configMotionAcceleration(RobotMap.CART_ENCODER_UNITS_PER_100_MS / 20, 30);
+            talonCart.setSelectedSensorPosition(0, 0, 30);
 
-            cartMotor.configFactoryDefault();
-            cartMotor.setNeutralMode(NeutralMode.Brake);
-            cartMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
-            cartMotor.setSensorPhase(false);
-            cartMotor.setInverted(false);
-            cartMotor.configClosedloopRamp(0);
-            cartMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
-            cartMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
-            cartMotor.configNominalOutputForward(0, 30);
-            cartMotor.configNominalOutputReverse(0, 30);
-            cartMotor.configPeakOutputForward(1, 30);
-            cartMotor.configPeakOutputReverse(-1, 30);
-            cartMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-                    LimitSwitchNormal.NormallyOpen);
-            cartMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-                    LimitSwitchNormal.NormallyOpen);
-            cartMotor.configClearPositionOnLimitR(true, 0);
-            cartMotor.configClearPositionOnLimitF(true, RobotMap.CART_DRIVE_LENGTH);
-            cartMotor.selectProfileSlot(0, 0);
-            cartMotor.config_kF(0, 0.02, 30);
-            cartMotor.config_kP(0, 35.0 * 1023 / 38000, 30);
-            cartMotor.config_kI(0, 0.004, 30);
-            cartMotor.config_kD(0, 350.0 * 1023 / 38000, 30);
-            cartMotor.config_IntegralZone(0, 500);
-            cartMotor.configMotionCruiseVelocity(RobotMap.CART_ENCODER_UNITS_PER_100_MS / 20, 30);
-            cartMotor.configMotionAcceleration(RobotMap.CART_ENCODER_UNITS_PER_100_MS / 20, 30);
-            cartMotor.setSelectedSensorPosition(0, 0, 30);
+            cartMotor = talonCart;
 
-            // cartMotor = new FridolinsTalonSRX(RobotMap.CART_MOTOR_ID);
-        } else if (RobotMap.CART_TESTSUBYSTEM_IS_IN_USE) {
-            cartMotor = new WPI_TalonSRX(RobotMap.CART_MOTOR_ID);
-            cartMotor.configFactoryDefault();
-            cartMotor.setNeutralMode(NeutralMode.Coast);
-            cartMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
-            cartMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-                    LimitSwitchNormal.NormallyClosed);
-            cartMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-                    LimitSwitchNormal.NormallyClosed);
-            cartMotor.configClearPositionOnLimitR(false, 30);
-            cartMotor.configClearPositionOnLimitF(false, 30);
-            cartMotor.setInverted(false);
-            cartMotor.setSensorPhase(true);
+        } else if(RobotMap.CART_TESTSUBYSTEM_IS_IN_USE) {
+            FridolinsTalonSRX talonTestCart = new FridolinsTalonSRX(RobotMap.CART_MOTOR_ID);
+            talonTestCart.configFactoryDefault();
+            talonTestCart.setNeutralMode(NeutralMode.Coast);
+            talonTestCart.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+            talonTestCart.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+            talonTestCart.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+            talonTestCart.configClearPositionOnLimitR(false, 30);
+            talonTestCart.configClearPositionOnLimitF(false, 30);
+            talonTestCart.setInverted(false);
+            talonTestCart.setSensorPhase(true);
+
+            cartMotor = talonTestCart;
         }
     }
 }

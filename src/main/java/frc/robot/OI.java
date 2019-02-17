@@ -13,6 +13,7 @@ import frc.robot.commands.CCargoGripperPull;
 import frc.robot.commands.CCargoGripperPush;
 import frc.robot.commands.CHatchGripperExtend;
 import frc.robot.commands.CHatchGripperRetract;
+import frc.robot.commands.CNavXReset;
 import frc.robot.commands.CSwerveCalibrate;
 
 /**
@@ -31,6 +32,7 @@ public class OI {
   public static JoystickButton HatchGripperButtonExtend;
   public static JoystickButton HatchGripperButtonRetract;
   public static JoystickButton SwerveCalibrateButton;
+  public static JoystickButton NavXResetButton;
 
   private static OI INSTANCE;
 
@@ -68,8 +70,10 @@ public class OI {
 
     if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
       SwerveCalibrateButton = new JoystickButton(JoystickMainDriver, RobotMap.SWERVE_ANGLE_CALIBRATE_BUTTON_ID);
+      NavXResetButton = new JoystickButton(JoystickMainDriver, RobotMap.FIELD_ANGLE_RESET_BUTTON_ID);
 
       SwerveCalibrateButton.whenPressed(new CSwerveCalibrate());
+      NavXResetButton.whenPressed(new CNavXReset());
     }
   }
 

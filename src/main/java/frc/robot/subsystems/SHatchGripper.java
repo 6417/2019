@@ -24,15 +24,15 @@ public class SHatchGripper extends Subsystem {
   }
 
   public static void hatchGripperExtend() {
-    Motors.hatchGripperMotor.setVelocity(RobotMap.HATCH_GRIPPER_SPEED);
+    Motors.hatchGripperMotor.setPercent(RobotMap.HATCH_GRIPPER_SPEED);
   }
 
   public static void hatchGripperRetract() {
-    Motors.hatchGripperMotor.setVelocity(-RobotMap.HATCH_GRIPPER_SPEED);
+    Motors.hatchGripperMotor.setPercent(-RobotMap.HATCH_GRIPPER_SPEED);
   }
 
   public static void hatchGripperStop() {
-    Motors.hatchGripperMotor.setVelocity(RobotMap.STOP_SPEED);
+    Motors.hatchGripperMotor.setPercent(RobotMap.STOP_SPEED);
   }
 
 }

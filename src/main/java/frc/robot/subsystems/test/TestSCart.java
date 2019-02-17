@@ -9,6 +9,8 @@ package frc.robot.subsystems.test;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import ch.fridolinsrobotik.motorcontrollers.FridolinsTalonSRX;
+import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
 import ch.fridolinsrobotik.sensors.utils.EncoderConverter;
 import ch.fridolinsrobotik.utilities.Algorithms;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -22,6 +24,7 @@ import frc.robot.RobotMap;
 public class TestSCart extends Subsystem {
 
   private EncoderConverter encoderConverter = new EncoderConverter(RobotMap.CART_ENCODER_DISTANCE_PER_PULSE);
+  private IFridolinsMotors remoteLimitSwitch = new FridolinsTalonSRX(RobotMap.CART_REMOTE_LIMIT_SWITCH_ID);
   
   private boolean zeroed = false, motionMagicEnabled = false;
   /**
@@ -87,7 +90,7 @@ public class TestSCart extends Subsystem {
    * in order to have a functioning Cart system.
    */
   public void checkZeroPosition() {
-    if (!Motors.cartMotor.getSensorCollection().isRevLimitSwitchClosed()) {
+    if (!this.remoteLimitSwitch.isReverseLimitSwitchActive()) {
       zeroed = true;
       Motors.cartMotor.setSelectedSensorPosition(0);
     }
@@ -114,8 +117,8 @@ public class TestSCart extends Subsystem {
     // builder.setActuator(true);
     // builder.setSafeState(this::stopMotor);
     builder.addDoubleProperty("Motor Speed", Motors.cartMotor::getSelectedSensorVelocity, Motors.cartMotor::set);
-    builder.addBooleanProperty("Reverse Limit", Motors.cartMotor.getSensorCollection()::isRevLimitSwitchClosed, null);
-    builder.addBooleanProperty("Forward limit", Motors.cartMotor.getSensorCollection()::isFwdLimitSwitchClosed, null);
+    builder.addBooleanProperty("Reverse Limit", this.remoteLimitSwitch::isReverseLimitSwitchActive, null);
+    builder.addBooleanProperty("Forward limit", this.remoteLimitSwitch::isForwardLimitSwitchActive, null);
     builder.addBooleanProperty("Zeroed", this::isZeroed, null);
     builder.addDoubleProperty("Position (mm)", this::getPosition, null);
     builder.addDoubleProperty("Position raw (pulses)", Motors.cartMotor::getSelectedSensorPosition, null);

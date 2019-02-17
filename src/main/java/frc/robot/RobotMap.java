@@ -15,23 +15,23 @@ package frc.robot;
  */
 public class RobotMap {
 
-  //Subsystems
+  // Subsystems
   public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
   public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
   public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE = false;
-  public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE = false;
+  public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE = true;
   public static final boolean CART_SUBYSTEM_IS_IN_USE = false;
 
   // Test Subsystems
-  public static final boolean CART_TESTSUBYSTEM_IS_IN_USE = true;
-  public static final boolean LIFTING_UNIT_TESTSUBSYSTEM_IS_IN_USE = true;
+  public static final boolean CART_TESTSUBYSTEM_IS_IN_USE = false;
+  public static final boolean LIFTING_UNIT_TESTSUBSYSTEM_IS_IN_USE = false;
 
-  //TODO change Motor IDs
+  // TODO change Motor IDs
 
   //Motors
   public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID  = 1;
   public static final int CARGO_GRIPPER_MOTOR_LEFT_ID   = 2;
-  public static final int HATCH_GRIPPER_MOTOR_ID        = 3;
+  public static final int HATCH_GRIPPER_MOTOR_ID        = 47;
   public static final int CART_MOTOR_ID                 = 52;
   public static final int CART_REMOTE_LIMIT_SWITCH_ID   = 38;
 
@@ -57,18 +57,19 @@ public class RobotMap {
   public static final int CARGO_GRIPPER_BUTTON_PUSH_ID = 2;
   public static final int HATCH_GRIPPER_BUTTON_EXTEND_ID = 3;
   public static final int HATCH_GRIPPER_BUTTON_RETRACT_ID = 4;
-  public static final int SWERVE_ANGLE_CALIBRATE_BUTTON_ID = 5;
-  public static final int FIELD_ANGLE_RESET_BUTTON_ID = 6;
+  public static final int SWERVE_ANGLE_CALIBRATE_BUTTON_ID = 9;
+  public static final int FIELD_ANGLE_RESET_BUTTON_ID = 10;
 
 
   public static final double SPEED_MULTIPLIER = 1;
-  public static final double DRIVE_SPEED_MULITPLIER = 1;
+  public static final double DRIVE_SPEED_MULITPLIER = 0.3;
   public static final double TURN_SPEED_MULTIPLIER = 1;
 
   public static final double STOP_SPEED = 0;
 
   public static final double CARGO_GRIPPER_SPEED = 0.1;
-  public static final double HATCH_GRIPPER_SPEED = 0.1;
+  public static final double HATCH_GRIPPER_SPEED = 0.5;
+  public static final double SWERVE_CALIBRATE_SPEED = 0.4; 
 
   // Deadzone
   public static final double DEADZONE_RANGE = 0.1;
