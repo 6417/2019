@@ -9,13 +9,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import ch.fridolinsrobotik.motorcontrollers.FridolinsTalonSRX;
 import ch.fridolinsrobotik.sensors.utils.EncoderConverter;
 import ch.fridolinsrobotik.utilities.Algorithms;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Motors;
-import frc.robot.OI;
 import frc.robot.RobotMap;
 
 /**
@@ -24,7 +23,11 @@ import frc.robot.RobotMap;
 public class SCart extends Subsystem {
 
   EncoderConverter encoderConverter = new EncoderConverter(RobotMap.CART_ENCODER_DISTANCE_PER_PULSE);
-
+  boolean m_isHomed;
+  /**
+   * Limit switches of the cart are connected to a remote Talon SRX
+   */
+  FridolinsTalonSRX remoteTalon = new FridolinsTalonSRX(RobotMap.CART_REMOTE_LIMIT_SWITCH_ID);
   @Override
   protected void initDefaultCommand() {
 
@@ -33,6 +36,15 @@ public class SCart extends Subsystem {
   public SCart() {
     setSubsystem("Cart");
     addChild(Motors.cartMotor);
+    resetSubsystem();
+  }
+
+  private void resetSubsystem() {
+    m_isHomed = false;
+  }
+
+  public boolean isHomed() {
+    return m_isHomed;
   }
 
   /**
@@ -48,25 +60,20 @@ public class SCart extends Subsystem {
    * @param targetPos Position of the cart in mm measured from the 0 point.
    */
   public void setPosition(double targetPos) {
-    targetPos = Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH);
-    
-    if (isInFrontWindow() && targetPos > RobotMap.CART_DRIVE_LENGTH) {
-      Motors.cartMotor.set(ControlMode.MotionMagic, RobotMap.CART_DRIVE_LENGTH);
-    } else if (isInBackWindow() && targetPos < 0) {
-      Motors.cartMotor.set(ControlMode.MotionMagic, 0);
-    } else {
-      Motors.cartMotor.set(ControlMode.MotionMagic, targetPos);
+    targetPos = encoderConverter.getPulses(Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH_MM));
+
+    // when the system is not homed, do not drive the cart!
+    if(!isHomed()) {
+      return;
     }
 
-    SmartDashboard.putNumber("SensorVel", Motors.cartMotor.getSelectedSensorVelocity(0));
-    SmartDashboard.putNumber("SensorPos", Motors.cartMotor.getSelectedSensorPosition(0));
-    SmartDashboard.putNumber("MotorOutputPercent", Motors.cartMotor.getMotorOutputPercent());
-    SmartDashboard.putNumber("ClosedLoopError", Motors.cartMotor.getClosedLoopError(0));
-    SmartDashboard.putNumber("Target Position", 0);
+    // TODO check if position is allowed in regard of height of the lifting unit
+
+    Motors.cartMotor.set(ControlMode.MotionMagic, targetPos);
   }
 
-  public void driveManual() {
-    Motors.cartMotor.set(ControlMode.PercentOutput, -OI.JoystickMainDriver.getY());
+  public void driveManual(double speed) {
+    Motors.cartMotor.set(ControlMode.PercentOutput, speed);
   }
 
   /**
@@ -77,12 +84,25 @@ public class SCart extends Subsystem {
   }
 
   /**
-   * Runs a manual calibration routine to find it's zero point.
+   * Check Limit switches and set the encoder to the specific encoder ticks
+   */
+  public void checkLimitSwitches() {
+    if(!remoteTalon.getSensorCollection().isRevLimitSwitchClosed()) {
+      Motors.cartMotor.setSelectedSensorPosition(0);
+      m_isHomed = true;
+    } else if(!remoteTalon.getSensorCollection().isFwdLimitSwitchClosed()) {
+      Motors.cartMotor.setSelectedSensorPosition(RobotMap.CART_DRIVE_LENGTH);
+      m_isHomed = true;
+    }
+  }
+
+  /**
+   * Runs a automatic calibration routine to find it's zero point.
    * @return true when zero point found, false when not.
    */
   public boolean calibrate() {
-    driveManual();
-    return !Motors.cartMotor.getSensorCollection().isRevLimitSwitchClosed();
+    driveManual(-0.1);
+    return !remoteTalon.getSensorCollection().isRevLimitSwitchClosed();
   }
 
   public boolean isInFrontWindow() {
@@ -94,13 +114,18 @@ public class SCart extends Subsystem {
   }
 
   @Override
+  public void periodic() {
+    checkLimitSwitches();
+  }
+
+  @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
     builder.setActuator(true);
     builder.setSafeState(this::stopMotor);
     builder.addDoubleProperty("Motor Speed", Motors.cartMotor::get, Motors.cartMotor::set);
-    builder.addBooleanProperty("Reverse Limit", Motors.cartMotor.getSensorCollection()::isRevLimitSwitchClosed, null);
-    builder.addBooleanProperty("Forward limit", Motors.cartMotor.getSensorCollection()::isFwdLimitSwitchClosed, null);
+    builder.addBooleanProperty("Reverse Limit", remoteTalon.getSensorCollection()::isRevLimitSwitchClosed, null);
+    builder.addBooleanProperty("Forward limit", remoteTalon.getSensorCollection()::isFwdLimitSwitchClosed, null);
     builder.addDoubleProperty("Position", this::getPosition, null);
     builder.addBooleanProperty("In Front Window", this::isInFrontWindow, null);
     builder.addBooleanProperty("In Back Window", this::isInBackWindow, null);

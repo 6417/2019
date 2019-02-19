@@ -12,23 +12,27 @@ package ch.fridolinsrobotik.sensors.utils;
  */
 public class EncoderConverter {
 
-    private double distancePerPulse = 1;
+    private double m_distancePerPulse = 1;
 
-    public EncoderConverter(double ditsancePerPulse) {
+    public EncoderConverter(double distancePerPulse) {
         super();
         setDistancePerPulse(distancePerPulse);
     }
 
-    public void setDistancePerPulse(double distance) {
-        this.distancePerPulse = distance;
+    public void setDistancePerPulse(double distancePerPulse) {
+        this.m_distancePerPulse = distancePerPulse;
     }
 
     public double getDistancePerPulse() {
-        return this.distancePerPulse;
+        return this.m_distancePerPulse;
     }
 
     public double getDistance(double encoderPulses) {
-        return encoderPulses * this.distancePerPulse;
+        return encoderPulses * this.m_distancePerPulse;
+    }
+
+    public double getPulses(double distance) {
+        return distance / this.m_distancePerPulse;
     }
     
 }

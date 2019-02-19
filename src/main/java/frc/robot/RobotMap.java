@@ -20,7 +20,7 @@ public class RobotMap {
   public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
   public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE = false;
   public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE = true;
-  public static final boolean CART_SUBYSTEM_IS_IN_USE = false;
+  public static final boolean CART_SUBYSTEM_IS_IN_USE = true;
 
   // Test Subsystems
   public static final boolean CART_TESTSUBYSTEM_IS_IN_USE = false;
@@ -48,6 +48,8 @@ public class RobotMap {
   public static final int SWERVE_ANGLE_BACK_LEFT_ID     = 35;
   public static final int SWERVE_ANGLE_BACK_RIGHT_ID    = 37;
 
+  public static final int CART_MOTOR_ID                 = 52;
+  public static final int CART_REMOTE_LIMIT_SWITCH_ID   = SWERVE_DRIVE_FRONT_RIGHT_ID;
   // Joysticks
   public static final int JOYSTICK_MAIN_DRIVER_ID = 0;
   public static final int JOYSTICK_SUPPORT_DRIVER_ID = 1;
@@ -83,17 +85,25 @@ public class RobotMap {
    */
   public static final int CART_ENCODER_DISTANCE_PER_PULSE = 1;
   /**
-   * Cart motor velocity in units/100ms
+   * Cart motor max velocity in units/100ms
    */
-  public static final int CART_ENCODER_UNITS_PER_100_MS = 38000;
+  public static final int CART_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS = 2200;
   /**
    * Cart length in mm measured from the zero point.
    */
-  public static final int CART_DRIVE_LENGTH = 200000;
+  public static final double CART_DRIVE_LENGTH_MM = 448;
   /**
-   * Window in which the cart should drive slowlier.
+   * Cart length in encoder pulses
    */
-  public static final int CART_WINDOW_LENGTH = 20000;
+  public static final int CART_DRIVE_LENGTH = 15450;
+  /**
+   * Window in mm in which the cart should drive slowlier.
+   */
+  public static final int CART_WINDOW_LENGTH = 50;
+  /**
+  * mm per pulse
+  */
+  public static final double CART_ENCODER_DISTANCE_PER_PULSE = CART_DRIVE_LENGTH_MM/CART_DRIVE_LENGTH;
   /**
    * mm per pulse
    */

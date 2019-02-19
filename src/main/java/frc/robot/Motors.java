@@ -248,7 +248,8 @@ public class Motors {
             talonCart.setNeutralMode(NeutralMode.Brake);
             talonCart.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
             talonCart.setSensorPhase(false);
-            talonCart.setInverted(false);
+            talonCart.setInverted(true);
+            talonCart.configOpenloopRamp(1);
             talonCart.configClosedloopRamp(0);
             talonCart.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
             talonCart.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
@@ -256,18 +257,18 @@ public class Motors {
             talonCart.configNominalOutputReverse(0, 30);    
             talonCart.configPeakOutputForward(1, 30);
             talonCart.configPeakOutputReverse(-1, 30);
-            talonCart.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-            talonCart.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-            talonCart.configClearPositionOnLimitR(true, 0);
-            talonCart.configClearPositionOnLimitF(true, RobotMap.CART_DRIVE_LENGTH);
+            talonCart.configReverseLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, RobotMap.CART_REMOTE_LIMIT_SWITCH_ID);
+            talonCart.configForwardLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, RobotMap.CART_REMOTE_LIMIT_SWITCH_ID);
+            // talonCart.configClearPositionOnLimitR(true, 0);
+            // talonCart.configClearPositionOnLimitF(true, RobotMap.CART_DRIVE_LENGTH);
             talonCart.selectProfileSlot(0, 0);
-		    talonCart.config_kF(0, 0.02, 30);
-		    talonCart.config_kP(0, 35.0*1023/38000, 30);
-		    talonCart.config_kI(0, 0.004, 30);
-            talonCart.config_kD(0, 350.0*1023/38000, 30);
+		    talonCart.config_kF(0, 1 * 1023.0 / RobotMap.CART_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
+		    talonCart.config_kP(0, 0.8, 30);
+		    talonCart.config_kI(0, 0, 30);
+            talonCart.config_kD(0, 80, 30);
             talonCart.config_IntegralZone(0, 500);
-            talonCart.configMotionCruiseVelocity(RobotMap.CART_ENCODER_UNITS_PER_100_MS / 20, 30);
-            talonCart.configMotionAcceleration(RobotMap.CART_ENCODER_UNITS_PER_100_MS / 20, 30);
+            talonCart.configMotionCruiseVelocity(RobotMap.CART_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS / 2, 30);
+            talonCart.configMotionAcceleration(RobotMap.CART_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
             talonCart.setSelectedSensorPosition(0, 0, 30);
 
             cartMotor = talonCart;

@@ -9,7 +9,9 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import ch.fridolinsrobotik.utilities.Algorithms;
 import ch.fridolinsrobotik.utilities.Deadzone;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.SCargoGripper;
+import frc.robot.subsystems.SCart;
 import frc.robot.subsystems.SHatchGripper;
 import frc.robot.subsystems.SSwerve;
 import frc.robot.subsystems.test.TestSCart;
@@ -39,8 +42,9 @@ public class Robot extends TimedRobot {
   // Create Subsystems
   public static SCargoGripper cargoGripper;
   public static SHatchGripper hatchGripper;
+  public static SCart cart;
   public static TestSCart testCart;
-  public static TestSLiftingUnit testLiftingUnit;
+  public static SLiftingUnit liftingUnit;
   public static SSwerve swerveDrive;
 
   Command m_autonomousCommand;
@@ -66,6 +70,9 @@ public class Robot extends TimedRobot {
     if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
       swerveDrive = new SSwerve();
     }
+    if (RobotMap.CART_SUBYSTEM_IS_IN_USE) {
+      cart = new SCart();
+    }
 
     oi = OI.getInstance();
 
@@ -85,6 +92,7 @@ public class Robot extends TimedRobot {
     }
     m_testSubsystemChooser.setDefaultOption(TestSubsystem.None.name(), TestSubsystem.None);
     SmartDashboard.putData("Test Subsystem", m_testSubsystemChooser);
+    // Motors.liftMaster.set(-0.1);
   }
 
   /**
@@ -177,6 +185,13 @@ public class Robot extends TimedRobot {
       double joystickZ = Deadzone.getAxis(-OI.JoystickMainDriver.getZ(), RobotMap.DEADZONE_RANGE);
 
       swerveDrive.manualDrive(joystickX, joystickY, joystickZ, ahrs.getYaw());
+    }
+    if(RobotMap.CART_SUBYSTEM_IS_IN_USE) {
+      if(OI.JoystickSupportDriver.getRawButton(1)) {
+        cart.setPosition(Algorithms.limit(joystickYsupport * RobotMap.CART_DRIVE_LENGTH_MM,0,RobotMap.CART_DRIVE_LENGTH_MM));
+      } else {
+        cart.driveManual(joystickYsupport);
+      }
     }
   }
 
