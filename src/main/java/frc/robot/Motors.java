@@ -114,7 +114,7 @@ public class Motors {
 
             liftMaster.setInverted(true);
             liftFollower.setInverted(InvertType.OpposeMaster);
-            // liftFollower.follow(liftMaster);
+            liftFollower.follow(liftMaster);
 
 
         } 
