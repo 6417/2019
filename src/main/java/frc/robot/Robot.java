@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.SCargoGripper;
@@ -47,8 +49,10 @@ public class Robot extends TimedRobot {
   public static SLiftingUnit liftingUnit;
   public static SSwerve swerveDrive;
 
-  Command m_autonomousCommand;
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
+  // Shuffleboard
+  public static ShuffleboardTab shuffleSettings = Shuffleboard.getTab("Settings");
+  public static ShuffleboardTab shuffleSubsystems = Shuffleboard.getTab("Subsystems");
+
   TestSubsystem m_testSubsystem;
   SendableChooser<TestSubsystem> m_testSubsystemChooser = new SendableChooser<>();
 

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.CCargoGripperPull;
 import frc.robot.commands.CCargoGripperPush;
+import frc.robot.commands.CHatchGripperCalibrate;
 import frc.robot.commands.CHatchGripperExtend;
 import frc.robot.commands.CHatchGripperRetract;
 import frc.robot.commands.CNavXReset;
@@ -31,6 +32,7 @@ public class OI {
   public static JoystickButton CargoGripperButtonPull;
   public static JoystickButton HatchGripperButtonExtend;
   public static JoystickButton HatchGripperButtonRetract;
+  public static JoystickButton HatchGripperButtonCalibrate;
   public static JoystickButton SwerveCalibrateButton;
   public static JoystickButton NavXResetButton;
 
@@ -60,12 +62,14 @@ public class OI {
     if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
       HatchGripperButtonExtend = new JoystickButton(JoystickMainDriver, RobotMap.HATCH_GRIPPER_BUTTON_EXTEND_ID);
       HatchGripperButtonRetract = new JoystickButton(JoystickMainDriver, RobotMap.HATCH_GRIPPER_BUTTON_RETRACT_ID);
+      HatchGripperButtonCalibrate = new JoystickButton(JoystickMainDriver, RobotMap.HATCH_GRIPPER_BUTTON_CALIBRATE_ID);
 
       //Call Commands
       //TODO write the code for Command group whitch requires the cartSubsystem
         HatchGripperButtonExtend.toggleWhenPressed(new CHatchGripperExtend());
         HatchGripperButtonRetract.toggleWhenPressed(new CHatchGripperRetract());
-      
+        HatchGripperButtonCalibrate.whenPressed(new CHatchGripperCalibrate());
+        
     }
 
     if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {

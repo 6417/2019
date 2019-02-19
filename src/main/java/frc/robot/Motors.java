@@ -12,12 +12,15 @@ import java.util.ArrayList;
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
-import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import ch.fridolinsrobotik.motorcontrollers.FridolinsDirectionType;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsIdleModeType;
@@ -34,7 +37,7 @@ public class Motors {
     public static IFridolinsMotors cargoGripperMaster;
     public static IFridolinsMotors cargoGripperFollower;
 
-    public static IFridolinsMotors hatchGripperMotor;
+    public static FridolinsTalonSRX hatchGripperMotor;
 
     public static FridolinsTalonSRX cartMotor;
 
@@ -146,10 +149,28 @@ public class Motors {
 
             //Set Mode and Limit Switches
             hatchGripperMotor.setDirection(true);
+            hatchGripperMotor.setSensorDirection(true);
             hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);
             hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);
             hatchGripperMotor.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
             hatchGripperMotor.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
+
+            hatchGripperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
+            hatchGripperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
+            hatchGripperMotor.configNominalOutputForward(0, 30);
+            hatchGripperMotor.configNominalOutputReverse(0, 30);    
+            hatchGripperMotor.configPeakOutputForward(1, 30);
+            hatchGripperMotor.configPeakOutputReverse(-1, 30);
+
+            hatchGripperMotor.selectProfileSlot(0, 0);
+		    hatchGripperMotor.config_kF(0, 0.03196875, 30);
+		    hatchGripperMotor.config_kP(0, 1.6, 30);
+            hatchGripperMotor.config_kI(0, 0.05, 30);
+            hatchGripperMotor.config_kD(0, 32, 30);
+            hatchGripperMotor.config_IntegralZone(0, 500);
+            hatchGripperMotor.configAllowableClosedloopError(0, 30, 30);
+            hatchGripperMotor.configMotionCruiseVelocity(RobotMap.HATCH_GRIPPER_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
+            hatchGripperMotor.configMotionAcceleration(RobotMap.HATCH_GRIPPER_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
         }
 
         if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {

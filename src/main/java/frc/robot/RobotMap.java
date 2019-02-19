@@ -17,7 +17,7 @@ public class RobotMap {
 
   // Subsystems
   public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
-  public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
+  public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = true;
   public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE = false;
   public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE = true;
   public static final boolean CART_SUBYSTEM_IS_IN_USE = true;
@@ -50,15 +50,22 @@ public class RobotMap {
 
   public static final int CART_MOTOR_ID                 = 52;
   public static final int CART_REMOTE_LIMIT_SWITCH_ID   = SWERVE_DRIVE_FRONT_RIGHT_ID;
+
+  //DIO
+  public static final int HATCH_GRIPPER_DIO_TOP = 0;
+  public static final int HATCH_GRIPPER_DIO_RIGHT = 1;
+  public static final int HATCH_GRIPPER_DIO_LEFT = 2;
+
   // Joysticks
   public static final int JOYSTICK_MAIN_DRIVER_ID = 0;
   public static final int JOYSTICK_SUPPORT_DRIVER_ID = 1;
 
   // JoystickButtons
-  public static final int CARGO_GRIPPER_BUTTON_PULL_ID = 1;
-  public static final int CARGO_GRIPPER_BUTTON_PUSH_ID = 2;
+  public static final int CARGO_GRIPPER_BUTTON_PULL_ID = -1;
+  public static final int CARGO_GRIPPER_BUTTON_PUSH_ID = -1;
   public static final int HATCH_GRIPPER_BUTTON_EXTEND_ID = 3;
   public static final int HATCH_GRIPPER_BUTTON_RETRACT_ID = 4;
+  public static final int HATCH_GRIPPER_BUTTON_CALIBRATE_ID = 2;
   public static final int SWERVE_ANGLE_CALIBRATE_BUTTON_ID = 9;
   public static final int FIELD_ANGLE_RESET_BUTTON_ID = 10;
 
@@ -70,7 +77,7 @@ public class RobotMap {
   public static final double STOP_SPEED = 0;
 
   public static final double CARGO_GRIPPER_SPEED = 0.1;
-  public static final double HATCH_GRIPPER_SPEED = 0.5;
+  public static final double HATCH_CALIBRATE_SPEED = -0.4;
   public static final double SWERVE_CALIBRATE_SPEED = 0.4; 
 
   // Deadzone
@@ -81,9 +88,18 @@ public class RobotMap {
 
   // Encoders
   /**
-   * mm per pulse
+   * Hatch motor max velocity in units/100ms
    */
-  public static final int CART_ENCODER_DISTANCE_PER_PULSE = 1;
+  public static final int HATCH_GRIPPER_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS = 33000;
+  /**
+  * Hatch extended length in encoder pulses
+  */
+ public static final int HATCH_DRIVE_EXTENDED = 14000;
+  /**
+  * Hatch retracted length in encoder pulses
+  */
+  public static final int HATCH_DRIVE_RETRACTED = 0;
+
   /**
    * Cart motor max velocity in units/100ms
    */
