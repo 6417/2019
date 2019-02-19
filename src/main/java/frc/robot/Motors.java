@@ -33,8 +33,8 @@ import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
 public class Motors {
 
     // Create Motors
-    public static IFridolinsMotors cargoGripperMaster;
-    public static IFridolinsMotors cargoGripperFollower;
+    public static FridolinsTalonSRX cargoGripperMaster;
+    public static FridolinsTalonSRX cargoGripperFollower;
 
     public static FridolinsTalonSRX hatchGripperMotor;
 
@@ -60,8 +60,8 @@ public class Motors {
 
         if (RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
             // Initialize Motors
-            IFridolinsMotors cargoGripperMotorRight = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_RIGHT_ID);
-            IFridolinsMotors cargoGripperMotorLeft = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_LEFT_ID);
+            FridolinsTalonSRX cargoGripperMotorRight = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_RIGHT_ID);
+            FridolinsTalonSRX cargoGripperMotorLeft = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_LEFT_ID);
 
             cargoGripperMaster = cargoGripperMotorLeft;
             cargoGripperFollower = cargoGripperMotorRight;
@@ -71,16 +71,16 @@ public class Motors {
             cargoGripperFollower.factoryDefault();
 
             // Set Master and Follower
-            cargoGripperFollower.follow(cargoGripperMaster);
+            cargoGripperFollower.follow((WPI_TalonSRX)cargoGripperMaster);
 
             cargoGripperMaster.setDirection(false);
-            cargoGripperFollower.followDirection(FridolinsDirectionType.followMaster);
+            cargoGripperFollower.setInverted(InvertType.FollowMaster);
 
             // Set Mode and Limit Switches
             cargoGripperMaster.setIdleMode(FridolinsIdleModeType.kCoast);
             cargoGripperFollower.setIdleMode(FridolinsIdleModeType.kCoast);
 
-            cargoGripperMaster.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
+            cargoGripperMaster.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyClosed, true);
         }
 
         if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {

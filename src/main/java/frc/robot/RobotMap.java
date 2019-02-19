@@ -16,8 +16,8 @@ package frc.robot;
 public class RobotMap {
 
   // Subsystems
-  public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
-  public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = true;
+  public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE = true;
+  public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
   public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE = true;
   public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE = true;
   public static final boolean CART_SUBYSTEM_IS_IN_USE = true;
@@ -28,8 +28,8 @@ public class RobotMap {
   // TODO change Motor IDs
 
   //Motors
-  public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID  = 1;
-  public static final int CARGO_GRIPPER_MOTOR_LEFT_ID   = 2;
+  public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID  = 49;
+  public static final int CARGO_GRIPPER_MOTOR_LEFT_ID   = 48;
   public static final int HATCH_GRIPPER_MOTOR_ID        = 47;
 
   public static final int LIFTING_UNIT_MOTOR_LEFT_ID    = 50;
@@ -58,7 +58,8 @@ public class RobotMap {
 
   // JoystickButtons
   public static final int CARGO_GRIPPER_BUTTON_PULL_ID = -1;
-  public static final int CARGO_GRIPPER_BUTTON_PUSH_ID = -1;
+  public static final int CARGO_GRIPPER_BUTTON_PULL_ID = 7;
+  public static final int CARGO_GRIPPER_BUTTON_PUSH_ID = 5;
   public static final int HATCH_GRIPPER_BUTTON_EXTEND_ID = 3;
   public static final int HATCH_GRIPPER_BUTTON_RETRACT_ID = 4;
   public static final int HATCH_GRIPPER_BUTTON_CALIBRATE_ID = 2;
@@ -72,7 +73,7 @@ public class RobotMap {
 
   public static final double STOP_SPEED = 0;
 
-  public static final double CARGO_GRIPPER_SPEED = 0.1;
+  public static final double CARGO_GRIPPER_SPEED = 0.3;
   public static final double HATCH_CALIBRATE_SPEED = -0.4;
   public static final double SWERVE_CALIBRATE_SPEED = 0.4; 
 

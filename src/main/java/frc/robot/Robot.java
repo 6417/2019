@@ -43,6 +43,7 @@ public class Robot extends TimedRobot {
   // Create Subsystems
   public static SCargoGripper cargoGripper;
   public static SHatchGripper hatchGripper;
+  public static SCargoGripper cargoGripper;
   public static SCart cart;
   public static TestSCart testCart;
   public static SLiftingUnit liftingUnit;
@@ -183,9 +184,10 @@ public class Robot extends TimedRobot {
       }
       // System.out.println(joystickZrotateSupport);
     }
-    if(RobotMap.CART_SUBYSTEM_IS_IN_USE) {
-      if(OI.JoystickSupportDriver.getRawButton(1)) {
-        cart.setPosition(Algorithms.limit(joystickYsupport * RobotMap.CART_DRIVE_LENGTH_MM,0,RobotMap.CART_DRIVE_LENGTH_MM));
+    if (RobotMap.CART_SUBYSTEM_IS_IN_USE) {
+      if (OI.JoystickSupportDriver.getRawButton(1)) {
+        cart.setPosition(
+            Algorithms.limit(joystickYsupport * RobotMap.CART_DRIVE_LENGTH_MM, 0, RobotMap.CART_DRIVE_LENGTH_MM));
       } else {
         cart.driveManual(joystickYsupport);
       }

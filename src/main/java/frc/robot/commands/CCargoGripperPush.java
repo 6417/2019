@@ -20,12 +20,12 @@ public class CCargoGripperPush extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    SCargoGripper.cargoGripperPush();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    Robot.cargoGripper.push();
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -37,7 +37,7 @@ public class CCargoGripperPush extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    SCargoGripper.cargoGripperStop();
+    Robot.cargoGripper.stop();
   }
 
   // Called when another command which requires one or more of the same

@@ -7,14 +7,27 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.robot.Motors;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 /**
  * Add your docs here.
  */
 public class SCargoGripper extends Subsystem {
+
+  static ShuffleboardLayout cargoList = Robot.shuffleSubsystems.getLayout("Cargo Gripper", BuiltInLayouts.kList).withSize(1, 3).withPosition(4, 0);
+  static NetworkTableEntry pullSpeed = cargoList.add("Pull", -RobotMap.CARGO_GRIPPER_SPEED).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Max", 0)).getEntry();
+  static NetworkTableEntry pushSpeed = cargoList.add("Push", RobotMap.CARGO_GRIPPER_SPEED).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("Min", 0)).getEntry();
 
   public SCargoGripper() {
   }
@@ -23,16 +36,20 @@ public class SCargoGripper extends Subsystem {
   public void initDefaultCommand() {
   }
 
-  public static void cargoGripperPush() {
-    Motors.cargoGripperMaster.setPercent(RobotMap.CARGO_GRIPPER_SPEED);
+  public void push() {
+    Motors.cargoGripperMaster.set(pushSpeed.getDouble(RobotMap.CARGO_GRIPPER_SPEED));
   }
 
-  public static void cargoGripperPull() {
-    Motors.cargoGripperMaster.setPercent(-RobotMap.CARGO_GRIPPER_SPEED);
+  public void pull() {
+    Motors.cargoGripperMaster.set(pullSpeed.getDouble(RobotMap.CARGO_GRIPPER_SPEED));
   }
 
-  public static void cargoGripperStop() {
-    Motors.cargoGripperMaster.setPercent(RobotMap.STOP_SPEED);
+  public void stop() {
+    Motors.cargoGripperMaster.set(RobotMap.STOP_SPEED);
+  }
+
+  public boolean isLimitSwitchPressed() {
+    return !Motors.cargoGripperMaster.isReverseLimitSwitchActive();
   }
 
 }
