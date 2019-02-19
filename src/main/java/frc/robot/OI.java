@@ -16,6 +16,7 @@ import frc.robot.commands.CHatchGripperExtend;
 import frc.robot.commands.CHatchGripperRetract;
 import frc.robot.commands.CNavXReset;
 import frc.robot.commands.CSwerveCalibrate;
+import frc.robot.commands.CSwerveSpeedMultiplier;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -35,6 +36,8 @@ public class OI {
   public static JoystickButton HatchGripperButtonCalibrate;
   public static JoystickButton SwerveCalibrateButton;
   public static JoystickButton NavXResetButton;
+  public static JoystickButton SwerveSpeedBoostButton;
+  public static JoystickButton SwerveSpeedBulletTimeButton;
 
   private static OI INSTANCE;
 
@@ -49,8 +52,8 @@ public class OI {
 
     //Initialize JoystickButtons when Subystem is in use
     if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-      CargoGripperButtonPull = new JoystickButton(JoystickMainDriver, RobotMap.CARGO_GRIPPER_BUTTON_PULL_ID);
-      CargoGripperButtonPush = new JoystickButton(JoystickMainDriver, RobotMap.CARGO_GRIPPER_BUTTON_PUSH_ID);
+      CargoGripperButtonPull = new JoystickButton(JoystickMainDriver, RobotMap.SUPPORT_CARGO_GRIPPER_PULL_AXIS_ID);
+      CargoGripperButtonPush = new JoystickButton(JoystickMainDriver, RobotMap.SUPPORT_CARGO_GRIPPER_PUSH_AXIS_ID);
 
       //Call Commands
       CargoGripperButtonPull.toggleWhenPressed(new CCargoGripperPull());
@@ -60,9 +63,9 @@ public class OI {
 
     //Initialize JoystickButtons when Subystem is in use
     if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-      HatchGripperButtonExtend = new JoystickButton(JoystickMainDriver, RobotMap.HATCH_GRIPPER_BUTTON_EXTEND_ID);
-      HatchGripperButtonRetract = new JoystickButton(JoystickMainDriver, RobotMap.HATCH_GRIPPER_BUTTON_RETRACT_ID);
-      HatchGripperButtonCalibrate = new JoystickButton(JoystickMainDriver, RobotMap.HATCH_GRIPPER_BUTTON_CALIBRATE_ID);
+      HatchGripperButtonExtend = new JoystickButton(JoystickMainDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_EXTEND_ID);
+      HatchGripperButtonRetract = new JoystickButton(JoystickMainDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_RETRACT_ID);
+      HatchGripperButtonCalibrate = new JoystickButton(JoystickMainDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_CALIBRATE_ID);
 
       //Call Commands
       //TODO write the code for Command group whitch requires the cartSubsystem
@@ -73,12 +76,17 @@ public class OI {
     }
 
     if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
-      SwerveCalibrateButton = new JoystickButton(JoystickMainDriver, RobotMap.SWERVE_ANGLE_CALIBRATE_BUTTON_ID);
-      NavXResetButton = new JoystickButton(JoystickMainDriver, RobotMap.FIELD_ANGLE_RESET_BUTTON_ID);
+      SwerveCalibrateButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_SWERVE_ANGLE_CALIBRATE_BUTTON_ID);
+      NavXResetButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_FIELD_ANGLE_RESET_BUTTON_ID);
+      SwerveSpeedBoostButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_SWERVE_BOOST_BUTTON_ID);
+      SwerveSpeedBulletTimeButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_SWERVE_SLOW_MODE_BUTTON_ID);
 
       SwerveCalibrateButton.whenPressed(new CSwerveCalibrate());
       NavXResetButton.whenPressed(new CNavXReset());
+      SwerveSpeedBoostButton.whileActive(new CSwerveSpeedMultiplier(RobotMap.SWERVE_SPEED_BOOST));
+      SwerveSpeedBulletTimeButton.whileActive(new CSwerveSpeedMultiplier(RobotMap.SWERVE_BULLET_TIME));
     }
+
   }
 
 }

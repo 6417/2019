@@ -12,6 +12,10 @@ import com.kauailabs.navx.frc.AHRS;
 import ch.fridolinsrobotik.utilities.Algorithms;
 import ch.fridolinsrobotik.utilities.Deadzone;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.Joystick.ButtonType;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -20,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.CLiftingUnitSetHeight;
 import frc.robot.subsystems.SCargoGripper;
 import frc.robot.subsystems.SCart;
 import frc.robot.subsystems.SHatchGripper;
@@ -43,18 +48,16 @@ public class Robot extends TimedRobot {
   // Create Subsystems
   public static SCargoGripper cargoGripper;
   public static SHatchGripper hatchGripper;
-  public static SCargoGripper cargoGripper;
   public static SCart cart;
   public static TestSCart testCart;
   public static SLiftingUnit liftingUnit;
   public static SSwerve swerveDrive;
+  public static CLiftingUnitSetHeight liftingUnitSetHeight;
 
   // Shuffleboard
   public static ShuffleboardTab shuffleSettings = Shuffleboard.getTab("Settings");
   public static ShuffleboardTab shuffleSubsystems = Shuffleboard.getTab("Subsystems");
-
-  TestSubsystem m_testSubsystem;
-  SendableChooser<TestSubsystem> m_testSubsystemChooser = new SendableChooser<>();
+  public static NetworkTable raspberry = NetworkTableInstance.getDefault().getTable("RaspberryPIControlSystem");
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -76,6 +79,7 @@ public class Robot extends TimedRobot {
     }
     if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
       liftingUnit = new SLiftingUnit();
+      liftingUnitSetHeight = new CLiftingUnitSetHeight();
     }
     if (RobotMap.CART_SUBYSTEM_IS_IN_USE) {
       cart = new SCart();
@@ -90,13 +94,6 @@ public class Robot extends TimedRobot {
     } catch (RuntimeException ex) {
       System.out.println("Error instantiating navX-MXP:  " + ex.getMessage());
     }
-
-    for (TestSubsystem val : TestSubsystem.values()) {
-      m_testSubsystemChooser.addOption(val.name(), val);
-    }
-    m_testSubsystemChooser.setDefaultOption(TestSubsystem.None.name(), TestSubsystem.None);
-    SmartDashboard.putData("Test Subsystem", m_testSubsystemChooser);
-    // Motors.liftMaster.set(-0.1);
   }
 
   /**
@@ -152,6 +149,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+      liftingUnitSetHeight.start();
+    }
   }
 
   /**
@@ -161,22 +161,25 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
 
+    System.out.println(OI.JoystickSupportDriver.getPOV());
+
     double joystickX = OI.JoystickMainDriver.getX();
     double joystickY = -OI.JoystickMainDriver.getY();
-    double joystickZ = -OI.JoystickMainDriver.getZ();
+    double joystickZ = OI.JoystickMainDriver.getZ();
 
     double joystickYsupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getY(Hand.kLeft), RobotMap.DEADZONE_RANGE);
     double joystickXsupport = Deadzone.getAxis(OI.JoystickSupportDriver.getX(Hand.kLeft), RobotMap.DEADZONE_RANGE);
     double joystickZrotateSupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getRawAxis(3), RobotMap.DEADZONE_RANGE);
 
     if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
-
       swerveDrive.manualDrive(joystickX, joystickY, joystickZ, ahrs.getYaw());
     }
+
     if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
-      if(OI.JoystickSupportDriver.getRawButton(1)) {
+      if(OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 0) {
         liftingUnit.setMotionMagicEnabled(true);
-        liftingUnit.setTargetPosition(Algorithms.limit(joystickZrotateSupport, 0, 1) * 5000);
+        // liftingUnit.setTargetPosition(Algorithms.limit(joystickZrotateSupport, 0, 1) * 5000);
+        liftingUnit.setTargetPosition(7500);
         liftingUnit.drive();
       } else {
         liftingUnit.setMotionMagicEnabled(false);
@@ -194,41 +197,4 @@ public class Robot extends TimedRobot {
     }
   }
 
-  @Override
-  public void testInit() {
-    m_testSubsystem = m_testSubsystemChooser.getSelected();
-    if (m_testSubsystem == null) {
-      return;
-    }
-    switch (m_testSubsystem) {
-    case Cart: {
-      testCart = new TestSCart();
-    }
-      break;
-
-    default: {
-
-    }
-    }
-  }
-
-  /**
-   * This function is called periodically during test mode.
-   */
-  @Override
-  public void testPeriodic() {
-    if (m_testSubsystem == null) {
-      return;
-    }
-    switch (m_testSubsystem) {
-    case Cart: {
-      testCart.checkZeroPosition();
-      testCart.drive(-OI.JoystickMainDriver.getY());
-    }
-      break;
-    default: {
-
-    }
-    }
-  }
 }

@@ -15,6 +15,7 @@ import ch.fridolinsrobotik.utilities.Algorithms;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.robot.Motors;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 /**
@@ -46,7 +47,6 @@ public class SCart extends Subsystem {
   public boolean isHomed() {
     return m_isHomed;
   }
-
   /**
    * Returns position of the cart in mm.
    * @return Position in mm
@@ -60,7 +60,11 @@ public class SCart extends Subsystem {
    * @param targetPos Position of the cart in mm measured from the 0 point.
    */
   public void setPosition(double targetPos) {
-    targetPos = encoderConverter.getPulses(Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH_MM));
+    if(Robot.hatchGripper.isExtended()) {
+      targetPos = encoderConverter.getPulses(Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH_HATCH_MM));
+    } else {
+      targetPos = encoderConverter.getPulses(Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH_MM));
+    }
 
     // when the system is not homed, do not drive the cart!
     if(!isHomed()) {
@@ -73,7 +77,12 @@ public class SCart extends Subsystem {
   }
 
   public void driveManual(double speed) {
-    Motors.cartMotor.set(ControlMode.PercentOutput, speed);
+    if(Robot.hatchGripper.isExtended() && speed >= 0 && getPosition() >= RobotMap.CART_DRIVE_LENGTH_HATCH_MM - 100) {
+      speed = 0;
+      Motors.cartMotor.set(ControlMode.PercentOutput, speed);
+    } else {
+      Motors.cartMotor.set(ControlMode.PercentOutput, speed);
+    }
   }
 
   /**

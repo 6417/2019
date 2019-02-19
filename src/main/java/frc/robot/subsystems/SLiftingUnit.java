@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.robot.Motors;
+import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
@@ -64,7 +65,7 @@ public class SLiftingUnit extends Subsystem {
   }
 
   public double getManualHoldOffset() {
-    return manualHoldOffset.getDouble(0.2);
+    return manualHoldOffset.getDouble(0.1);
   }
 
   public void setManualHoldOffset(double manualHold) {
@@ -94,13 +95,18 @@ public class SLiftingUnit extends Subsystem {
   public void drive(double value) {
     if(isMotionMagicEnabled()) {
       System.out.println("Target: " + getTargetPosition());
-      Motors.liftMaster.set(ControlMode.MotionMagic, getTargetPosition(), DemandType.ArbitraryFeedForward, getManualHoldOffset());
+      // Motors.liftMaster.set(ControlMode.MotionMagic, getTargetPosition(), DemandType.ArbitraryFeedForward, getManualHoldOffset());
+      Motors.liftMaster.set(ControlMode.MotionMagic, getTargetPosition());
       // Motors.liftMaster.set(mode, demand0, demand1Type, demand1);
     } else {
       // scale -1..1 to maximum lowering speed and maximum raise speed.
       value *= Math.abs(Algorithms.scale(value, -1, 1, getMaximumLoweringSpeed(), getMaximumRaiseSpeed()-getManualHoldOffset()));
       System.out.println("Scaled input: " + value + " Speed output: " + (value + getManualHoldOffset()));
-      Motors.liftFollower.set(ControlMode.PercentOutput, value + getManualHoldOffset());
+      // Motors.liftMaster.set(ControlMode.PercentOutput, value + getManualHoldOffset());
+      if(OI.JoystickSupportDriver.getRawButton(12)) {
+        Motors.liftFollower.setSelectedSensorPosition(0);
+      }
+      Motors.liftMaster.set(-OI.JoystickSupportDriver.getY());
     }
   }
 

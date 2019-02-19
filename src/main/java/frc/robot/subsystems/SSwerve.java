@@ -39,6 +39,7 @@ public class SSwerve extends Subsystem {
 	private double driveY;
 	private double rotationMagnitude;
 	private double gyro;
+	private double multiplier;
 
 	/**
 	 * 
@@ -84,6 +85,10 @@ public class SSwerve extends Subsystem {
 		this.gyro = gyro;
 	}
 
+	public void setMultiplier(double multiplier) {
+		this.multiplier = multiplier;
+	}
+
 	/**
 	 * 
 	 * @param driveX            power to translate sideways
@@ -115,17 +120,16 @@ public class SSwerve extends Subsystem {
 					}
 					magnitude = Algorithms.scale(magnitude, RobotMap.DEADZONE_RANGE, 1, 0, 1);
 					
-					drive(Motors.swerveAngleMotors.get(i), Motors.swerveDriveMotors.get(i), Math.atan2(movingVector.x, movingVector.y), magnitude, i);
+					drive(Motors.swerveAngleMotors.get(i), Motors.swerveDriveMotors.get(i), Math.atan2(movingVector.x, movingVector.y), magnitude, multiplier, i);
 					// drive(Motors.swerveAngleMotors.get(i), Motors.swerveDriveMotors.get(i), OI.JoystickMainDriver.getDirectionRadians(), movingVector.magnitude(), i);
 			}
 
 	}
 
-	private void drive(IFridolinsMotors iFridolinsMotors, IFridolinsMotors iFridolinsMotors2, double targetRadians, double magnitude, int debugI) {
+	private void drive(IFridolinsMotors iFridolinsMotors, IFridolinsMotors iFridolinsMotors2, double targetRadians, double magnitude, double multiplier, int debugI) {
 			int steeringEncoderPulses = iFridolinsMotors.getEncoderTicks();
 			double currentRadians = remainder(convertEncoderPulsesToRadians(steeringEncoderPulses, RobotMap.SWERVE_STEER_ROTATION_ENCODER_TICK_COUNT), _360DegreesInRad);
 			double deltaRadians = targetRadians - currentRadians + _360DegreesInRad;
-
 			double steer = (deltaRadians + _90DegreesInRad) % _180DegreesInRad - _90DegreesInRad;
 			double drive = -1 * (Math.floor((deltaRadians + _90DegreesInRad) / _180DegreesInRad) % 2 * 2 -1);
 
@@ -139,8 +143,12 @@ public class SSwerve extends Subsystem {
 			SmartDashboard.putNumber("SteeringEncoderGoal" + debugI, steeringEncoderGoal);
 			SmartDashboard.putNumber("drive" + debugI, drive);
 			SmartDashboard.putNumber("Drive Encoder " +debugI, iFridolinsMotors2.getEncoderTicks());
+			SmartDashboard.putNumber("Magnitude " +debugI, magnitude);
+
+			if(magnitude > 0) {
 			iFridolinsMotors.setPosition(steeringEncoderGoal);
-			iFridolinsMotors2.setPercent(drive * magnitude * RobotMap.DRIVE_SPEED_MULITPLIER);
+			}
+			iFridolinsMotors2.setPercent(drive * magnitude * multiplier);
 			
 	}
 

@@ -51,7 +51,6 @@ public class SHatchGripper extends Subsystem {
     Motors.hatchGripperMotor.set(ControlMode.MotionMagic, RobotMap.HATCH_DRIVE_EXTENDED);
     // Motors.hatchGripperMotor.set(-OI.JoystickMainDriver.getY());
   }
-
   public void hatchGripperRetract() {
     // Motors.hatchGripperMotor.set(-RobotMap.HATCH_GRIPPER_SPEED);
     Motors.hatchGripperMotor.set(ControlMode.MotionMagic, RobotMap.HATCH_DRIVE_RETRACTED);
@@ -89,6 +88,10 @@ public class SHatchGripper extends Subsystem {
 
   public boolean isHomed() {
     return isHomed;
+  }
+
+  public boolean isExtended() {
+    return Motors.hatchGripperMotor.getSelectedSensorPosition() >= RobotMap.HATCH_DRIVE_EXTENDED - RobotMap.HATCH_DRIVE_RETRACTED;
   }
 
   public boolean getForwardLimit() {
