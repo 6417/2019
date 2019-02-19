@@ -10,12 +10,12 @@ package frc.robot.subsystems;
 import java.util.ArrayList;
 
 import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
+import ch.fridolinsrobotik.utilities.Algorithms;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Motors;
-import frc.robot.OI;
 import frc.robot.RobotMap;
 import frc.robot.commands.CSwerveDriveManual;
 
@@ -108,8 +108,14 @@ public class SSwerve extends Subsystem {
 					SmartDashboard.putNumber("strive y " + i, striveVector.y);
 					SmartDashboard.putNumber("moving x " + i, movingVector.x);
 					SmartDashboard.putNumber("moving y " + i, movingVector.y);
+
+					double magnitude = movingVector.magnitude();
+					if(magnitude < RobotMap.DEADZONE_RANGE) {
+						magnitude = 0;
+					}
+					magnitude = Algorithms.scale(magnitude, RobotMap.DEADZONE_RANGE, 1, 0, 1);
 					
-					drive(Motors.swerveAngleMotors.get(i), Motors.swerveDriveMotors.get(i), Math.atan2(movingVector.x, movingVector.y), movingVector.magnitude(), i);
+					drive(Motors.swerveAngleMotors.get(i), Motors.swerveDriveMotors.get(i), Math.atan2(movingVector.x, movingVector.y), magnitude, i);
 					// drive(Motors.swerveAngleMotors.get(i), Motors.swerveDriveMotors.get(i), OI.JoystickMainDriver.getDirectionRadians(), movingVector.magnitude(), i);
 			}
 

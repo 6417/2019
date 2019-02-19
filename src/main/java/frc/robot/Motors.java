@@ -228,7 +228,7 @@ public class Motors {
             talonSwerveDriveBackLeft.setDirection(false);
             talonSwerveDriveBackRight.setDirection(true);
             talonSwerveDriveFrontLeft.setDirection(false);
-            talonSwerveDriveFrontRight.setDirection(true);
+            talonSwerveDriveFrontRight.setDirection(false);
 
             swerveDriveFrontRight = talonSwerveDriveFrontRight;
             swerveDriveFrontLeft = talonSwerveDriveFrontLeft;
@@ -259,8 +259,6 @@ public class Motors {
             talonCart.configPeakOutputReverse(-1, 30);
             talonCart.configReverseLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, RobotMap.CART_REMOTE_LIMIT_SWITCH_ID);
             talonCart.configForwardLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, RobotMap.CART_REMOTE_LIMIT_SWITCH_ID);
-            // talonCart.configClearPositionOnLimitR(true, 0);
-            // talonCart.configClearPositionOnLimitF(true, RobotMap.CART_DRIVE_LENGTH);
             talonCart.selectProfileSlot(0, 0);
 		    talonCart.config_kF(0, 1 * 1023.0 / RobotMap.CART_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
 		    talonCart.config_kP(0, 0.8, 30);
