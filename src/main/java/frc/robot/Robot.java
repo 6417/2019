@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -24,9 +23,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.SCargoGripper;
 import frc.robot.subsystems.SCart;
 import frc.robot.subsystems.SHatchGripper;
+import frc.robot.subsystems.SLiftingUnit;
 import frc.robot.subsystems.SSwerve;
 import frc.robot.subsystems.test.TestSCart;
-import frc.robot.subsystems.test.TestSLiftingUnit;
 import frc.robot.subsystems.test.TestSubsystem;
 
 /**
@@ -73,6 +72,9 @@ public class Robot extends TimedRobot {
     }
     if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
       swerveDrive = new SSwerve();
+    }
+    if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+      liftingUnit = new SLiftingUnit();
     }
     if (RobotMap.CART_SUBYSTEM_IS_IN_USE) {
       cart = new SCart();
@@ -181,14 +183,28 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
 
-    if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
+    double joystickX = OI.JoystickMainDriver.getX();
+    double joystickY = -OI.JoystickMainDriver.getY();
+    double joystickZ = -OI.JoystickMainDriver.getZ();
 
-      SmartDashboard.putNumber("Joystick 1 X", -OI.JoystickMainDriver.getX());
-      double joystickX = Deadzone.getAxis(OI.JoystickMainDriver.getX(), RobotMap.DEADZONE_RANGE);
-      double joystickY = Deadzone.getAxis(-OI.JoystickMainDriver.getY(), RobotMap.DEADZONE_RANGE);
-      double joystickZ = Deadzone.getAxis(-OI.JoystickMainDriver.getZ(), RobotMap.DEADZONE_RANGE);
+    double joystickYsupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getY(Hand.kLeft), RobotMap.DEADZONE_RANGE);
+    double joystickXsupport = Deadzone.getAxis(OI.JoystickSupportDriver.getX(Hand.kLeft), RobotMap.DEADZONE_RANGE);
+    double joystickZrotateSupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getRawAxis(3), RobotMap.DEADZONE_RANGE);
+
+    if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
 
       swerveDrive.manualDrive(joystickX, joystickY, joystickZ, ahrs.getYaw());
+    }
+    if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+      if(OI.JoystickSupportDriver.getRawButton(1)) {
+        liftingUnit.setMotionMagicEnabled(true);
+        liftingUnit.setTargetPosition(Algorithms.limit(joystickZrotateSupport, 0, 1) * 5000);
+        liftingUnit.drive();
+      } else {
+        liftingUnit.setMotionMagicEnabled(false);
+        liftingUnit.drive(joystickZrotateSupport);
+      }
+      // System.out.println(joystickZrotateSupport);
     }
     if(RobotMap.CART_SUBYSTEM_IS_IN_USE) {
       if(OI.JoystickSupportDriver.getRawButton(1)) {
@@ -208,10 +224,6 @@ public class Robot extends TimedRobot {
     switch (m_testSubsystem) {
     case Cart: {
       testCart = new TestSCart();
-    }
-      break;
-    case LiftingUnit: {
-      testLiftingUnit = new TestSLiftingUnit();
     }
       break;
 
@@ -235,11 +247,6 @@ public class Robot extends TimedRobot {
       testCart.drive(-OI.JoystickMainDriver.getY());
     }
       break;
-    case LiftingUnit: {
-      testLiftingUnit.checkZeroPosition();
-      testLiftingUnit.drive(-OI.JoystickMainDriver.getY());
-    }
-
     default: {
 
     }

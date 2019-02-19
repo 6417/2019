@@ -9,7 +9,6 @@ package frc.robot;
 
 import java.util.ArrayList;
 
-import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -41,8 +40,8 @@ public class Motors {
 
     public static FridolinsTalonSRX cartMotor;
 
-    public static FridolinsTalonSRX liftMaster;
-    public static FridolinsTalonSRX liftFollower;
+    public static WPI_TalonSRX liftMaster;
+    public static WPI_TalonSRX liftFollower;
 
     public static IFridolinsMotors swerveDriveFrontRight;
     public static IFridolinsMotors swerveDriveFrontLeft;
@@ -85,60 +84,40 @@ public class Motors {
         }
 
         if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
-            FridolinsTalonSRX liftLeft = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_LEFT_ID);
-            FridolinsTalonSRX liftRight = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_RIGHT_ID);
-            liftMaster = liftLeft;
-            liftFollower = liftRight;
+            liftMaster = new WPI_TalonSRX(RobotMap.LIFTING_UNIT_MOTOR_LEFT_ID);
+            liftFollower = new WPI_TalonSRX(RobotMap.LIFTING_UNIT_MOTOR_RIGHT_ID);
+           
+            // FridolinsTalonSRX liftLeft = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_LEFT_ID);
+            // FridolinsTalonSRX liftRight = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_RIGHT_ID);
+            // liftMaster = liftLeft;
+            // liftFollower = liftRight;
 
-            liftLeft.configFactoryDefault();
-            liftLeft.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-            liftLeft.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-                    LimitSwitchNormal.NormallyClosed, 30);
-            liftLeft.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-                    LimitSwitchNormal.NormallyClosed, 30);
-                    liftLeft.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
+            liftMaster.setSafetyEnabled(false);
+            liftMaster.setExpiration(3);
 
-            liftRight.configFactoryDefault();
-            liftRight.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
-            liftRight.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
+            liftMaster.configFactoryDefault();
+            liftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+            liftMaster.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                LimitSwitchNormal.NormallyClosed, 30);
+            liftMaster.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                LimitSwitchNormal.NormallyClosed, 30);
+            liftMaster.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
+
+            liftFollower.configFactoryDefault();
+            liftFollower.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
+            liftFollower.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
             /* Configure the right Talon's selected sensor to a QuadEncoder*/
-            liftRight.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+            liftFollower.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
             /* Configure the Remote Talon's selected sensor as a remote sensor for the left Talon */
-            liftLeft.configRemoteFeedbackFilter(
-                liftRight.getDeviceID(), RemoteSensorSource.TalonSRX_SelectedSensor, 0, 30);
+            liftMaster.configRemoteFeedbackFilter(
+            liftFollower.getDeviceID(), RemoteSensorSource.TalonSRX_SelectedSensor, 0, 30);
 
-            liftMaster.setDirection(true);
-            liftFollower.followDirection(FridolinsDirectionType.invertMaster);
-            liftFollower.follow((WPI_TalonSRX)liftMaster);
+            liftMaster.setInverted(true);
+            liftFollower.setInverted(InvertType.OpposeMaster);
+            // liftFollower.follow(liftMaster);
 
-        } else if (RobotMap.LIFTING_UNIT_TESTSUBSYSTEM_IS_IN_USE) {
-            FridolinsTalonSRX liftLeft = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_LEFT_ID);
-            FridolinsTalonSRX liftRight = new FridolinsTalonSRX(RobotMap.LIFTING_UNIT_MOTOR_RIGHT_ID);
-            liftMaster = liftLeft;
-            liftFollower = liftRight;
 
-            liftLeft.configFactoryDefault();
-            liftLeft.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-            liftLeft.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-                    LimitSwitchNormal.NormallyClosed, 30);
-            liftLeft.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-                    LimitSwitchNormal.NormallyClosed, 30);
-                    liftLeft.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
-
-            liftRight.configFactoryDefault();
-            liftRight.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
-            liftRight.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
-            /* Configure the right Talon's selected sensor to a QuadEncoder*/
-            liftRight.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
-            liftRight.setSensorPhase(true);
-            /* Configure the Remote Talon's selected sensor as a remote sensor for the left Talon */
-            liftLeft.configRemoteFeedbackFilter(
-                liftRight.getDeviceID(), RemoteSensorSource.TalonSRX_SelectedSensor, 0, 30);
-
-            liftMaster.setDirection(true);
-            liftFollower.followDirection(FridolinsDirectionType.invertMaster);
-            liftFollower.follow((WPI_TalonSRX)liftMaster);
-        }
+        } 
 
         if (RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
             // Initialize Motors

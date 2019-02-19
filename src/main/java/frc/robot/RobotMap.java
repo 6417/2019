@@ -18,13 +18,12 @@ public class RobotMap {
   // Subsystems
   public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
   public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = true;
-  public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE = false;
+  public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE = true;
   public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE = true;
   public static final boolean CART_SUBYSTEM_IS_IN_USE = true;
 
   // Test Subsystems
   public static final boolean CART_TESTSUBYSTEM_IS_IN_USE = false;
-  public static final boolean LIFTING_UNIT_TESTSUBSYSTEM_IS_IN_USE = false;
 
   // TODO change Motor IDs
 
@@ -32,12 +31,9 @@ public class RobotMap {
   public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID  = 1;
   public static final int CARGO_GRIPPER_MOTOR_LEFT_ID   = 2;
   public static final int HATCH_GRIPPER_MOTOR_ID        = 47;
-  public static final int CART_MOTOR_ID                 = 52;
-  public static final int CART_REMOTE_LIMIT_SWITCH_ID   = 38;
 
   public static final int LIFTING_UNIT_MOTOR_LEFT_ID    = 50;
   public static final int LIFTING_UNIT_MOTOR_RIGHT_ID   = 51;
-
 
   public static final int SWERVE_DRIVE_FRONT_LEFT_ID    = 32;
   public static final int SWERVE_DRIVE_FRONT_RIGHT_ID   = 38;
@@ -71,7 +67,7 @@ public class RobotMap {
 
 
   public static final double SPEED_MULTIPLIER = 1;
-  public static final double DRIVE_SPEED_MULITPLIER = 0.3;
+  public static final double DRIVE_SPEED_MULITPLIER = 0.6;
   public static final double TURN_SPEED_MULTIPLIER = 1;
 
   public static final double STOP_SPEED = 0;
@@ -81,7 +77,7 @@ public class RobotMap {
   public static final double SWERVE_CALIBRATE_SPEED = 0.4; 
 
   // Deadzone
-  public static final double DEADZONE_RANGE = 0.1;
+  public static final double DEADZONE_RANGE = 0.05;
 
   // Field Oriented Drive
   public static double DEFAULT_FIELD_ANGLE = 0;
@@ -131,7 +127,7 @@ public class RobotMap {
   /**
    * Lifting unit length in mm measured from the zero point.
    */
-  public static final int LIFTING_UNIT_DRIVE_LENGTH = 2000;
+  public static final int LIFTING_UNIT_DRIVE_LENGTH = 10000;
   /**
    * Lifting unit minimum height such that the cargo gripper is not colliding with
    * the cart system
