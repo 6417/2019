@@ -5,14 +5,16 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.gripper.cargo;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Robot;
+import frc.robot.subsystems.SCargoGripper;
 
-public class CLiftingUnitCalibrate extends Command {
-  public CLiftingUnitCalibrate() {
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
+public class CCargoGripperPush extends Command {
+
+  public CCargoGripperPush() {
+    requires(Robot.cargoGripper);
   }
 
   // Called just before this Command runs the first time
@@ -23,6 +25,7 @@ public class CLiftingUnitCalibrate extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    Robot.cargoGripper.push();
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -34,11 +37,13 @@ public class CLiftingUnitCalibrate extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.cargoGripper.stop();
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    this.end();
   }
 }

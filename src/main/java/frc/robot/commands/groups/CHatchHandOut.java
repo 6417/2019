@@ -1,4 +1,3 @@
-
 /*----------------------------------------------------------------------------*/
 /* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
@@ -6,17 +5,19 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.groups;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import frc.robot.RobotMap;
+import frc.robot.commands.cart.CCartSetPosition;
+import frc.robot.commands.gripper.hatch.CHatchGripperRetract;
 
-public class CHatchGripperCalibrate extends CommandGroup {
+public class CHatchHandOut extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public CHatchGripperCalibrate() {
-    setName("Hatch Calibrate");
-    addSequential(new CHatchGripperSeekLimitSwitch());
+  public CHatchHandOut() {
     addSequential(new CHatchGripperRetract());
+    addSequential(new CCartSetPosition(RobotMap.CART_DRIVE_LENGTH_HATCH_MM));
   }
 }

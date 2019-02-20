@@ -7,16 +7,18 @@
 
 package frc.robot;
 
+import ch.fridolinsrobotik.utilities.EPositions;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import frc.robot.commands.CCargoGripperPull;
-import frc.robot.commands.CCargoGripperPush;
-import frc.robot.commands.CHatchGripperCalibrate;
-import frc.robot.commands.CHatchGripperExtend;
-import frc.robot.commands.CHatchGripperRetract;
-import frc.robot.commands.CNavXReset;
-import frc.robot.commands.CSwerveCalibrate;
-import frc.robot.commands.CSwerveSpeedMultiplier;
+import frc.robot.commands.drive.navx.CNavXReset;
+import frc.robot.commands.drive.swerve.CSwerveSpeedMultiplier;
+import frc.robot.commands.gripper.cargo.CCargoGripperPull;
+import frc.robot.commands.gripper.cargo.CCargoGripperPush;
+import frc.robot.commands.gripper.hatch.CHatchGripperExtend;
+import frc.robot.commands.gripper.hatch.CHatchGripperRetract;
+import frc.robot.commands.groups.CHatchGripperCalibrate;
+import frc.robot.commands.groups.CSwerveCalibrate;
+import frc.robot.commands.liftingunit.CLiftingUnitAutonumous;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -38,6 +40,8 @@ public class OI {
   public static JoystickButton NavXResetButton;
   public static JoystickButton SwerveSpeedBoostButton;
   public static JoystickButton SwerveSpeedBulletTimeButton;
+
+  private static CLiftingUnitAutonumous liftingUnitAutonomous;
 
   private static OI INSTANCE;
 
@@ -86,6 +90,19 @@ public class OI {
       SwerveSpeedBoostButton.whileActive(new CSwerveSpeedMultiplier(RobotMap.SWERVE_SPEED_BOOST));
       SwerveSpeedBulletTimeButton.whileActive(new CSwerveSpeedMultiplier(RobotMap.SWERVE_BULLET_TIME));
     }
+
+  }
+
+  public void povCommands() {
+    if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+      if(JoystickSupportDriver.getPOV() == 0) {
+        liftingUnitAutonomous = new CLiftingUnitAutonumous(EPositions.next);
+        liftingUnitAutonomous.start();
+      } else if(JoystickSupportDriver.getPOV() == 180) {
+        liftingUnitAutonomous = new CLiftingUnitAutonumous(EPositions.previous);
+        liftingUnitAutonomous.start();
+      }
+    } 
 
   }
 

@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Motors;
 import frc.robot.RobotMap;
-import frc.robot.commands.CSwerveDriveManual;
+import frc.robot.commands.drive.swerve.CSwerveDriveManual;
 
 /**
  * Add your docs here.

@@ -5,46 +5,44 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
-
-import com.kauailabs.navx.frc.AHRS;
+package frc.robot.commands.gripper.cargo;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class CNavXReset extends Command {
-  public CNavXReset() {
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
+public class CCargoGripperPull extends Command {
+
+  public CCargoGripperPull() {
+    requires(Robot.cargoGripper);
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.ahrs.reset();
-    System.out.println("Ahrs reseted. yaw: " + Robot.ahrs.getYaw());
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-
+    Robot.cargoGripper.pull();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return true;
+    return Robot.cargoGripper.isLimitSwitchPressed();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.cargoGripper.stop();
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    this.end();
   }
 }

@@ -5,45 +5,46 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.liftingunit;
 
+import ch.fridolinsrobotik.utilities.EPositions;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.SCargoGripper;
 
-public class CCargoGripperPush extends Command {
+public class CLiftingUnitAutonumous extends Command {
 
-  public CCargoGripperPush() {
-    requires(Robot.cargoGripper);
+  private EPositions direction;
+
+  public CLiftingUnitAutonumous(EPositions direction) {
+    requires(Robot.liftingUnit);
+    this.direction = direction;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.liftingUnit.driveAutonomous(direction);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.cargoGripper.push();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return true;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.cargoGripper.stop();
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    this.end();
   }
 }

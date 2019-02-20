@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.liftingunit;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Command;
@@ -53,19 +53,19 @@ public class CLiftingUnitSetHeight extends Command {
   protected void execute() {
     if(hatchOben.getBoolean(false) == true) {
       System.out.println("we got it up!!");
-      Robot.liftingUnit.drive(7500);
+      Robot.liftingUnit.setTargetPosition(7500);
     }
     if(hatchMitte.getBoolean(false) == true) {
       System.out.println("we got it mid!!");
-      // Robot.liftingUnit.drive(8000);
+      // Robot.liftingUnit.setTargetPosition(8000);
     }
     if(hatchUnten.getBoolean(false) == true) {
       System.out.println("we got it down!!");
-      // Robot.liftingUnit.drive(2000);
+      // Robot.liftingUnit.setTargetPostition(2000);
     }
     if(hatchStation.getBoolean(false) == true) {
-      System.out.println("we got it down!!");
-      // Robot.liftingUnit.drive(2000);
+      System.out.println("we got it out!!");
+      // Robot.liftingUnit.setTargetPosition(2000);
     }
   }
 

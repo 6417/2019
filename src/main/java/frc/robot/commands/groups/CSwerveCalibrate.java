@@ -5,17 +5,15 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems.test;
+package frc.robot.commands.groups;
 
-/**
- * List of Subsystems available for testing
- */
-public enum TestSubsystem {
-    None,
-    Swerve,
-    Cart,
-    LiftingUnit,
-    HatchGripper,
-    CargoGripper,
-    RobotElevator
+import ch.fridolinsrobotik.drivesystems.swerve.commands.SwerveSteeringPutStraight;
+import ch.fridolinsrobotik.drivesystems.swerve.commands.SwerveSteeringZeroingBySwitch;
+import edu.wpi.first.wpilibj.command.CommandGroup;
+
+public class CSwerveCalibrate extends CommandGroup {
+  public CSwerveCalibrate() {
+    addSequential(new SwerveSteeringZeroingBySwitch());
+    addSequential(new SwerveSteeringPutStraight());
+  }
 }

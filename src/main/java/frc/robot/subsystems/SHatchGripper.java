@@ -8,7 +8,6 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
@@ -20,7 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.robot.Motors;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.robot.commands.CHatchGripperCalibrate;
+import frc.robot.commands.groups.CHatchGripperCalibrate;
 
 /**
  * Add your docs here.

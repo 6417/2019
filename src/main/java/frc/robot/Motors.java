@@ -58,32 +58,18 @@ public class Motors {
 
     public static void initialize() {
 
-        if (RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-            // Initialize Motors
-            FridolinsTalonSRX cargoGripperMotorRight = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_RIGHT_ID);
-            FridolinsTalonSRX cargoGripperMotorLeft = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_LEFT_ID);
+        cargoInit();
 
-            //Rename Master and Follower
-            cargoGripperMaster = cargoGripperMotorLeft;
-            cargoGripperFollower = cargoGripperMotorRight;
+        liftingUnitInit();
+    
+        hatchInit();
 
-            // Factory Default
-            cargoGripperMaster.factoryDefault();
-            cargoGripperFollower.factoryDefault();
+        swerveInit();
+        
+        cartInit();
+    }
 
-            // Set Master and Follower
-            cargoGripperFollower.follow((WPI_TalonSRX)cargoGripperMaster);
-
-            cargoGripperMaster.setDirection(false);
-            cargoGripperFollower.setInverted(InvertType.FollowMaster);
-
-            // Set Mode and Limit Switches
-            cargoGripperMaster.setIdleMode(FridolinsIdleModeType.kCoast);
-            cargoGripperFollower.setIdleMode(FridolinsIdleModeType.kCoast);
-
-            cargoGripperMaster.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyClosed, true);
-        }
-
+    private static void liftingUnitInit() {
         if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
             // Initialize Motors
             liftMaster = new WPI_TalonSRX(RobotMap.LIFTING_UNIT_MOTOR_LEFT_ID);
@@ -138,41 +124,84 @@ public class Motors {
             //Set Follower
             liftFollower.follow(liftMaster);
         } 
+    }
 
-        if (RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-            // Initialize Motors
-            hatchGripperMotor = new FridolinsTalonSRX(RobotMap.HATCH_GRIPPER_MOTOR_ID);
+    private static void cartInit() {
+        if(RobotMap.CART_SUBYSTEM_IS_IN_USE) {
+            //Initialize Motors
+            FridolinsTalonSRX talonCart = new FridolinsTalonSRX(RobotMap.CART_MOTOR_ID);
 
-            // Facory Default
-            hatchGripperMotor.factoryDefault();
-
-            //Set Mode and Limit Switches
-            hatchGripperMotor.setDirection(true);
-            hatchGripperMotor.setSensorDirection(true);
-            hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);
-            hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);
-            hatchGripperMotor.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
-            hatchGripperMotor.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
+            //Factory Default
+            talonCart.configFactoryDefault();
+            //Set Break Mode
+            talonCart.setNeutralMode(NeutralMode.Brake);
+            //Sensors
+            talonCart.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+            talonCart.setSensorPhase(false);
+            //Direction
+            talonCart.setInverted(true);
 
             //PID
-            hatchGripperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
-            hatchGripperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
-            hatchGripperMotor.configNominalOutputForward(0, 30);
-            hatchGripperMotor.configNominalOutputReverse(0, 30);    
-            hatchGripperMotor.configPeakOutputForward(1, 30);
-            hatchGripperMotor.configPeakOutputReverse(-1, 30);
+            talonCart.configOpenloopRamp(1);
+            talonCart.configClosedloopRamp(0);
+            talonCart.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
+            talonCart.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
+            talonCart.configNominalOutputForward(0, 30);
+            talonCart.configNominalOutputReverse(0, 30);    
+            talonCart.configPeakOutputForward(1, 30);
+            talonCart.configPeakOutputReverse(-1, 30);
 
-            hatchGripperMotor.selectProfileSlot(0, 0);
-		    hatchGripperMotor.config_kF(0, 0.03196875, 30);
-		    hatchGripperMotor.config_kP(0, 1.6, 30);
-            hatchGripperMotor.config_kI(0, 0.05, 30);
-            hatchGripperMotor.config_kD(0, 32, 30);
-            hatchGripperMotor.config_IntegralZone(0, 500);
-            hatchGripperMotor.configAllowableClosedloopError(0, 30, 30);
-            hatchGripperMotor.configMotionCruiseVelocity(RobotMap.HATCH_GRIPPER_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
-            hatchGripperMotor.configMotionAcceleration(RobotMap.HATCH_GRIPPER_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
+            talonCart.selectProfileSlot(0, 0);
+		    talonCart.config_kF(0, 1 * 1023.0 / RobotMap.CART_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
+		    talonCart.config_kP(0, 0.8, 30);
+		    talonCart.config_kI(0, 0, 30);
+            talonCart.config_kD(0, 80, 30);
+            talonCart.config_IntegralZone(0, 500);
+            talonCart.configMotionCruiseVelocity(RobotMap.CART_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS / 2, 30);
+            talonCart.configMotionAcceleration(RobotMap.CART_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
+
+            //Limit Switches
+            talonCart.configReverseLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, RobotMap.CART_REMOTE_LIMIT_SWITCH_ID);
+            talonCart.configForwardLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, RobotMap.CART_REMOTE_LIMIT_SWITCH_ID);
+           
+            //Zero Encoder
+            talonCart.setSelectedSensorPosition(0, 0, 30);
+
+            //Rename Motor
+            cartMotor = talonCart;
+
         }
+    }
 
+    private static void cargoInit() {
+        if (RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+            // Initialize Motors
+            FridolinsTalonSRX cargoGripperMotorRight = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_RIGHT_ID);
+            FridolinsTalonSRX cargoGripperMotorLeft = new FridolinsTalonSRX(RobotMap.CARGO_GRIPPER_MOTOR_LEFT_ID);
+
+            //Rename Master and Follower
+            cargoGripperMaster = cargoGripperMotorLeft;
+            cargoGripperFollower = cargoGripperMotorRight;
+
+            // Factory Default
+            cargoGripperMaster.factoryDefault();
+            cargoGripperFollower.factoryDefault();
+
+            // Set Master and Follower
+            cargoGripperFollower.follow((WPI_TalonSRX)cargoGripperMaster);
+
+            cargoGripperMaster.setDirection(false);
+            cargoGripperFollower.setInverted(InvertType.FollowMaster);
+
+            // Set Mode and Limit Switches
+            cargoGripperMaster.setIdleMode(FridolinsIdleModeType.kCoast);
+            cargoGripperFollower.setIdleMode(FridolinsIdleModeType.kCoast);
+
+            cargoGripperMaster.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyClosed, true);
+        }
+    }
+
+    private static void swerveInit() {
         if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
 
             //Initialize Motors
@@ -281,50 +310,41 @@ public class Motors {
             swerveAngleBackLeft = talonSwerveAngleBackLeft;
 
         }
-        
-        if(RobotMap.CART_SUBYSTEM_IS_IN_USE) {
-            //Initialize Motors
-            FridolinsTalonSRX talonCart = new FridolinsTalonSRX(RobotMap.CART_MOTOR_ID);
+    } 
 
-            //Factory Default
-            talonCart.configFactoryDefault();
-            //Set Break Mode
-            talonCart.setNeutralMode(NeutralMode.Brake);
-            //Sensors
-            talonCart.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
-            talonCart.setSensorPhase(false);
-            //Direction
-            talonCart.setInverted(true);
+    private static void hatchInit() {
+        if (RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+            // Initialize Motors
+            hatchGripperMotor = new FridolinsTalonSRX(RobotMap.HATCH_GRIPPER_MOTOR_ID);
+
+            // Facory Default
+            hatchGripperMotor.factoryDefault();
+
+            //Set Mode and Limit Switches
+            hatchGripperMotor.setDirection(true);
+            hatchGripperMotor.setSensorDirection(true);
+            hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);
+            hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);
+            hatchGripperMotor.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
+            hatchGripperMotor.enableReverseLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
 
             //PID
-            talonCart.configOpenloopRamp(1);
-            talonCart.configClosedloopRamp(0);
-            talonCart.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
-            talonCart.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
-            talonCart.configNominalOutputForward(0, 30);
-            talonCart.configNominalOutputReverse(0, 30);    
-            talonCart.configPeakOutputForward(1, 30);
-            talonCart.configPeakOutputReverse(-1, 30);
+            hatchGripperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
+            hatchGripperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
+            hatchGripperMotor.configNominalOutputForward(0, 30);
+            hatchGripperMotor.configNominalOutputReverse(0, 30);    
+            hatchGripperMotor.configPeakOutputForward(1, 30);
+            hatchGripperMotor.configPeakOutputReverse(-1, 30);
 
-            talonCart.selectProfileSlot(0, 0);
-		    talonCart.config_kF(0, 1 * 1023.0 / RobotMap.CART_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
-		    talonCart.config_kP(0, 0.8, 30);
-		    talonCart.config_kI(0, 0, 30);
-            talonCart.config_kD(0, 80, 30);
-            talonCart.config_IntegralZone(0, 500);
-            talonCart.configMotionCruiseVelocity(RobotMap.CART_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS / 2, 30);
-            talonCart.configMotionAcceleration(RobotMap.CART_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
-
-            //Limit Switches
-            talonCart.configReverseLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, RobotMap.CART_REMOTE_LIMIT_SWITCH_ID);
-            talonCart.configForwardLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX, LimitSwitchNormal.NormallyClosed, RobotMap.CART_REMOTE_LIMIT_SWITCH_ID);
-           
-            //Zero Encoder
-            talonCart.setSelectedSensorPosition(0, 0, 30);
-
-            //Rename Motor
-            cartMotor = talonCart;
-
+            hatchGripperMotor.selectProfileSlot(0, 0);
+		    hatchGripperMotor.config_kF(0, 0.03196875, 30);
+		    hatchGripperMotor.config_kP(0, 1.6, 30);
+            hatchGripperMotor.config_kI(0, 0.05, 30);
+            hatchGripperMotor.config_kD(0, 32, 30);
+            hatchGripperMotor.config_IntegralZone(0, 500);
+            hatchGripperMotor.configAllowableClosedloopError(0, 30, 30);
+            hatchGripperMotor.configMotionCruiseVelocity(RobotMap.HATCH_GRIPPER_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
+            hatchGripperMotor.configMotionAcceleration(RobotMap.HATCH_GRIPPER_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
         }
     }
 }

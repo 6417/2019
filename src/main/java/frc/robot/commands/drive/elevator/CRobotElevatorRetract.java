@@ -5,12 +5,12 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.drive.elevator;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-public class CSwerveMove extends Command {
-  public CSwerveMove() {
+public class CRobotElevatorRetract extends Command {
+  public CRobotElevatorRetract() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
   }

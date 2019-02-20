@@ -11,27 +11,21 @@ import com.kauailabs.navx.frc.AHRS;
 
 import ch.fridolinsrobotik.utilities.Algorithms;
 import ch.fridolinsrobotik.utilities.Deadzone;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.Joystick.ButtonType;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.CLiftingUnitSetHeight;
+import frc.robot.commands.liftingunit.CLiftingUnitSetHeight;
 import frc.robot.subsystems.SCargoGripper;
 import frc.robot.subsystems.SCart;
 import frc.robot.subsystems.SHatchGripper;
 import frc.robot.subsystems.SLiftingUnit;
 import frc.robot.subsystems.SSwerve;
-import frc.robot.subsystems.test.TestSCart;
-import frc.robot.subsystems.test.TestSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -49,7 +43,6 @@ public class Robot extends TimedRobot {
   public static SCargoGripper cargoGripper;
   public static SHatchGripper hatchGripper;
   public static SCart cart;
-  public static TestSCart testCart;
   public static SLiftingUnit liftingUnit;
   public static SSwerve swerveDrive;
   public static CLiftingUnitSetHeight liftingUnitSetHeight;
