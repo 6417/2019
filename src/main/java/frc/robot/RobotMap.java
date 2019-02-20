@@ -19,7 +19,7 @@ public class RobotMap {
   public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE     = false;
   public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE     = false;
   public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE      = false;
-  public static final boolean CART_SUBYSTEM_IS_IN_USE               = false;
+  public static final boolean CART_SUBSYSTEM_IS_IN_USE               = false;
   public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE      = false;
 
   // Motors
@@ -135,6 +135,10 @@ public class RobotMap {
       public static final int CART_DRIVE_LENGTH = 15450;
       /** Cart length in mm measured from the zero point. */
       public static final double CART_DRIVE_LENGTH_HATCH_MM = 70;
+      /** Cart middle position in mm */
+      public static final double CART_DRIVE_LENGTH_MID_MM = 200;
+      /** Cart back position in mm */
+      public static final double CART_DRIVE_LENGTH_BACK_MM = 0;
       /** Window in mm in which the cart should drive slowlier. */
       public static final int CART_WINDOW_LENGTH = 50;
       /** mm per pulse */
