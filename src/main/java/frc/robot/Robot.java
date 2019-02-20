@@ -74,7 +74,7 @@ public class Robot extends TimedRobot {
       liftingUnit = new SLiftingUnit();
       liftingUnitSetHeight = new CLiftingUnitSetHeight();
     }
-    if (RobotMap.CART_SUBYSTEM_IS_IN_USE) {
+    if (RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
       cart = new SCart();
     }
 
@@ -184,8 +184,10 @@ public class Robot extends TimedRobot {
       if (OI.JoystickSupportDriver.getRawButton(1)) {
         cart.setPosition(
             Algorithms.limit(joystickYsupport * RobotMap.CART_DRIVE_LENGTH_MM, 0, RobotMap.CART_DRIVE_LENGTH_MM));
+            cart.enableAutonomous(true);
             cart.drive();
       } else {
+        cart.enableAutonomous(false);
         cart.drive(joystickYsupport);
       }
     }
