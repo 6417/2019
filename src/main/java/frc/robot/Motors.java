@@ -108,14 +108,14 @@ public class Motors {
             liftMaster.configPeakOutputReverse(-1, 30);
 
             liftMaster.selectProfileSlot(0, 0);
-		    liftMaster.config_kF(0, 0.6, 30);
-		    liftMaster.config_kP(0, 0.2, 30);
+		    liftMaster.config_kF(0, 0.8525, 30);
+		    liftMaster.config_kP(0, 0.5, 30);
             liftMaster.config_kI(0, 0.0, 30);
-            liftMaster.config_kD(0, 2.0, 30);
+            liftMaster.config_kD(0, 0.0, 30);
             liftMaster.config_IntegralZone(0, 500);
             liftMaster.configAllowableClosedloopError(0, 30, 30);
-            liftMaster.configMotionCruiseVelocity(RobotMap.LIFTING_UNIT_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
-            liftMaster.configMotionAcceleration(RobotMap.LIFTING_UNIT_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS / 2, 30);
+            liftMaster.configMotionCruiseVelocity(RobotMap.LIFTING_UNIT_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS * 4 / 3, 30);
+            liftMaster.configMotionAcceleration(RobotMap.LIFTING_UNIT_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
 
             //Set Directions of Motors
             liftMaster.setInverted(true);

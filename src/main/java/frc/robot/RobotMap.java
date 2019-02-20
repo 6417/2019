@@ -89,7 +89,7 @@ public class RobotMap {
   // Lifting Unit
   
       /** Lifting Unit motor max velocity in units/100ms */
-      public static final int LIFTING_UNIT_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS = 5000;
+      public static final int LIFTING_UNIT_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS = 1200;
       /** mm per pulse */
       public static final int LIFTING_UNIT_DISTANCE_PER_PULSE = 1;
       /** Lifting unit motor velocity in units/100ms */

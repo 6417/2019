@@ -178,7 +178,7 @@ public class Robot extends TimedRobot {
         liftingUnit.drive(joystickZrotateSupport);
       }
       if(OI.JoystickSupportDriver.getRawButton(3)) {
-        Motors.liftMaster.setSelectedSensorPosition(0);
+        Motors.liftFollower.setSelectedSensorPosition(0);
       }
       // System.out.println(joystickZrotateSupport);
     }
