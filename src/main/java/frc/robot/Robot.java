@@ -180,12 +180,13 @@ public class Robot extends TimedRobot {
       }
       // System.out.println(joystickZrotateSupport);
     }
-    if (RobotMap.CART_SUBYSTEM_IS_IN_USE) {
+    if (RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
       if (OI.JoystickSupportDriver.getRawButton(1)) {
         cart.setPosition(
             Algorithms.limit(joystickYsupport * RobotMap.CART_DRIVE_LENGTH_MM, 0, RobotMap.CART_DRIVE_LENGTH_MM));
+            cart.drive();
       } else {
-        cart.driveManual(joystickYsupport);
+        cart.drive(joystickYsupport);
       }
     }
   }
