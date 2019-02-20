@@ -23,7 +23,9 @@ public class CLiftingUnitAutonumous extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.liftingUnit.driveAutonomous(direction);
+    Robot.liftingUnit.enableAutonomous(true);
+    Robot.liftingUnit.setTargetPosition(direction);
+    Robot.liftingUnit.drive();
   }
 
   // Called repeatedly when this Command is scheduled to run

@@ -54,6 +54,8 @@ public class CLiftingUnitSetHeight extends Command {
     if(hatchOben.getBoolean(false) == true) {
       System.out.println("we got it up!!");
       Robot.liftingUnit.setTargetPosition(7500);
+      Robot.liftingUnit.enableAutonomous(true);
+      Robot.liftingUnit.drive();
     }
     if(hatchMitte.getBoolean(false) == true) {
       System.out.println("we got it mid!!");

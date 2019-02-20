@@ -154,29 +154,31 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
 
-    System.out.println(OI.JoystickSupportDriver.getPOV());
-
     double joystickX = OI.JoystickMainDriver.getX();
     double joystickY = -OI.JoystickMainDriver.getY();
     double joystickZ = OI.JoystickMainDriver.getZ();
 
     double joystickYsupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getY(Hand.kLeft), RobotMap.DEADZONE_RANGE);
     double joystickXsupport = Deadzone.getAxis(OI.JoystickSupportDriver.getX(Hand.kLeft), RobotMap.DEADZONE_RANGE);
-    double joystickZrotateSupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getRawAxis(3), RobotMap.DEADZONE_RANGE);
+    double joystickZrotateSupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getRawAxis(5), RobotMap.DEADZONE_RANGE);
 
     if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
       swerveDrive.manualDrive(joystickX, joystickY, joystickZ, ahrs.getYaw());
+      swerveDrive.driveCartesian();
     }
 
     if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
       if(OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 0) {
-        liftingUnit.setMotionMagicEnabled(true);
+        liftingUnit.enableAutonomous(true);
         // liftingUnit.setTargetPosition(Algorithms.limit(joystickZrotateSupport, 0, 1) * 5000);
         liftingUnit.setTargetPosition(7500);
         liftingUnit.drive();
       } else {
-        liftingUnit.setMotionMagicEnabled(false);
+        liftingUnit.enableAutonomous(false);
         liftingUnit.drive(joystickZrotateSupport);
+      }
+      if(OI.JoystickSupportDriver.getRawButton(3)) {
+        Motors.liftMaster.setSelectedSensorPosition(0);
       }
       // System.out.println(joystickZrotateSupport);
     }
@@ -191,6 +193,16 @@ public class Robot extends TimedRobot {
         cart.drive(joystickYsupport);
       }
     }
+
+    // if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+    //   if(OI.JoystickSupportDriver.getRawAxis(2) > 0.5) {
+    //     cargoGripper.push(OI.JoystickSupportDriver.getRawAxis(2));
+    //   } else if(OI.JoystickSupportDriver.getRawAxis(3) >0.5) {
+    //     cargoGripper.pull(OI.JoystickSupportDriver.getRawAxis(3));
+    //   } else {
+    //     cargoGripper.stop();
+    //   }
+    // }
   }
 
 }

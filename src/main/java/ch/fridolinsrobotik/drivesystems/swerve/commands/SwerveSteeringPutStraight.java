@@ -11,6 +11,7 @@ import ch.fridolinsrobotik.motorcontrollers.FridolinsIdleModeType;
 import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Motors;
 import frc.robot.Robot;
 
@@ -44,9 +45,13 @@ public class SwerveSteeringPutStraight extends Command {
   @Override
   protected boolean isFinished() {
     boolean allWheelAngleCorrect = true;
-    for(IFridolinsMotors motor : Motors.swerveAngleMotors) {
-      allWheelAngleCorrect &= (motor.getClosedLoopError() < maximumError); 
+    for(int i = 0; i < Motors.swerveAngleMotors.size(); i++) {
+      SmartDashboard.putBoolean("Motor " + i, Motors.swerveAngleMotors.get(i).isForwardLimitSwitchActive()); 
+      allWheelAngleCorrect &= (Motors.swerveAngleMotors.get(i).getClosedLoopError() < maximumError); 
     }
+    // for(IFridolinsMotors motor : Motors.swerveAngleMotors) {
+    //   allWheelAngleCorrect &= (motor.getClosedLoopError() < maximumError); 
+    //   }
     return allWheelAngleCorrect;
   }
 

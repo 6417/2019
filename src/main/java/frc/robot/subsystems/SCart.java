@@ -125,7 +125,7 @@ public class SCart extends Subsystem {
   }
 
   private void driveManual(double speed) {
-    if (Robot.hatchGripper.isExtended() && speed >= 0 && getPosition() >= RobotMap.CART_DRIVE_LENGTH_HATCH_MM - 100) {
+    if (Robot.hatchGripper.isExtended() && speed >= 0 && getPosition() >= RobotMap.CART_DRIVE_LENGTH_HATCH_MM - 20) {
       speed = 0;
     }
     Motors.cartMotor.set(ControlMode.PercentOutput, speed);

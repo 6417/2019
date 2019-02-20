@@ -7,18 +7,19 @@
 
 package frc.robot.subsystems;
 
+import java.util.TreeSet;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 
 import ch.fridolinsrobotik.sensors.utils.EncoderConverter;
 import ch.fridolinsrobotik.utilities.Algorithms;
+import ch.fridolinsrobotik.utilities.EPositions;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.robot.Motors;
-import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
@@ -30,11 +31,16 @@ public class SLiftingUnit extends Subsystem {
   private EncoderConverter encoderConverter = new EncoderConverter(RobotMap.CART_ENCODER_DISTANCE_PER_PULSE);
   
   private boolean zeroed = false, motionMagicEnabled = false;
-  
+
+  private boolean m_autonomous = false;
+
+  private static Integer[] m_liftingUnitPositions;
+  private int m_liftingUnitPosition = 0;
+
   ShuffleboardLayout liftingunitSettings = Robot.shuffleSettings.getLayout("Lifting Unit", BuiltInLayouts.kList).withPosition(0, 0).withSize(2,2);
   NetworkTableEntry maximumRaiseSpeed = liftingunitSettings.add("Lift Maximum Raise Speed", 0.5).getEntry();
   NetworkTableEntry maximumLoweringSpeed = liftingunitSettings.add("Lift Maximum Lowering Speed", -0.1).getEntry();
-  NetworkTableEntry manualHoldOffset = liftingunitSettings.add("Lift Manual Hold Offset", 0.2).getEntry();
+  NetworkTableEntry manualHoldOffset = liftingunitSettings.add("Lift Manual Hold Offset", 0.1).getEntry();
 
   /**
    * position in mm
@@ -45,7 +51,18 @@ public class SLiftingUnit extends Subsystem {
     super();
     addChild(Motors.liftMaster);
     addChild(Motors.liftFollower);
-    
+
+    TreeSet<Integer> m_liftingUnitTreeSet = new TreeSet<Integer>();
+
+    m_liftingUnitTreeSet.add(RobotMap.LIFTING_UNIT_HEIGHT_START);
+    m_liftingUnitTreeSet.add(RobotMap.LIFTING_UNIT_HEIGHT_START);
+    m_liftingUnitTreeSet.add(RobotMap.LIFTING_UNIT_HEIGHT_START);
+    m_liftingUnitTreeSet.add(RobotMap.LIFTING_UNIT_HEIGHT_START);
+    m_liftingUnitTreeSet.add(RobotMap.LIFTING_UNIT_HEIGHT_START);
+    m_liftingUnitTreeSet.add(RobotMap.LIFTING_UNIT_HEIGHT_START);
+    m_liftingUnitTreeSet.add(RobotMap.LIFTING_UNIT_HEIGHT_START);
+    m_liftingUnitTreeSet.add(RobotMap.LIFTING_UNIT_HEIGHT_START);
+    // m_liftingUnitPositions = (Integer[])m_liftingUnitTreeSet.toArray();
   }
 
   public double getMaximumRaiseSpeed() {
@@ -88,40 +105,57 @@ public class SLiftingUnit extends Subsystem {
     targetPosition = Algorithms.limit(position, 0, RobotMap.LIFTING_UNIT_DRIVE_LENGTH);
   }
 
+  public void setTargetPosition(EPositions direction) {
+    switch(direction) {
+      case next: {
+        if(m_liftingUnitPosition + 1 < m_liftingUnitPositions.length) {
+          setTargetPosition(m_liftingUnitPositions[++m_liftingUnitPosition]);
+        }
+      } break;
+
+      case hold: {
+        setTargetPosition(m_liftingUnitPosition);
+      } break;
+
+      case previous: {
+        if(m_liftingUnitPosition > 0) {
+          setTargetPosition(m_liftingUnitPositions[--m_liftingUnitPosition]);
+        }
+      }
+    }
+  }
+
   public double getTargetPosition() {
     return targetPosition;
   }
 
   public void drive(double value) {
-    if(isMotionMagicEnabled()) {
-      System.out.println("Target: " + getTargetPosition());
-      // Motors.liftMaster.set(ControlMode.MotionMagic, getTargetPosition(), DemandType.ArbitraryFeedForward, getManualHoldOffset());
-      Motors.liftMaster.set(ControlMode.MotionMagic, getTargetPosition());
-      // Motors.liftMaster.set(mode, demand0, demand1Type, demand1);
-    } else {
-      // scale -1..1 to maximum lowering speed and maximum raise speed.
-      value *= Math.abs(Algorithms.scale(value, -1, 1, getMaximumLoweringSpeed(), getMaximumRaiseSpeed()-getManualHoldOffset()));
-      System.out.println("Scaled input: " + value + " Speed output: " + (value + getManualHoldOffset()));
-      // Motors.liftMaster.set(ControlMode.PercentOutput, value + getManualHoldOffset());
-      if(OI.JoystickSupportDriver.getRawButton(12)) {
-        Motors.liftFollower.setSelectedSensorPosition(0);
+      if(m_autonomous) {
+        driveAutonomous();
+      } else {
+        driveManual(value);
       }
-      Motors.liftMaster.set(-OI.JoystickSupportDriver.getY());
-    }
   }
 
   public void drive() {
     drive(0);
   }
-
-  public void setMotionMagicEnabled(boolean enabled) {
-    // if (isZeroed()) {
-      motionMagicEnabled = enabled;
-    // }
+ 
+  public void driveAutonomous() {
+    Motors.liftMaster.set(ControlMode.MotionMagic, getTargetPosition());
   }
 
-  public boolean isMotionMagicEnabled() {
-    return motionMagicEnabled;
+  public void driveManual(double value) {
+    value *= Math.abs(Algorithms.scale(value, -1, 1, getMaximumLoweringSpeed(), getMaximumRaiseSpeed()-getManualHoldOffset()));
+    Motors.liftMaster.set(ControlMode.PercentOutput, value + getManualHoldOffset());
+  }
+
+  public void enableAutonomous(boolean enable) {
+    m_autonomous = enable;
+  }
+
+  public boolean isAutonomousEnabled() {
+    return m_autonomous;
   }
 
   /**
@@ -139,6 +173,7 @@ public class SLiftingUnit extends Subsystem {
     if (!Motors.liftMaster.getSensorCollection().isRevLimitSwitchClosed()) {
       zeroed = true;
       Motors.liftMaster.setSelectedSensorPosition(0);
+      m_liftingUnitPosition = 0;
     }
   }
 
@@ -156,16 +191,16 @@ public class SLiftingUnit extends Subsystem {
     super.initSendable(builder);
     // builder.setActuator(true);
     // builder.setSafeState(this::stopMotor);
-    // builder.addDoubleProperty("Motor Speed", Motors.liftMaster::getSelectedSensorVelocity, Motors.liftMaster::set);
-    // builder.addBooleanProperty("Reverse Limit", Motors.liftMaster.getSensorCollection()::isRevLimitSwitchClosed, null);
-    // builder.addBooleanProperty("Forward limit", Motors.liftMaster.getSensorCollection()::isFwdLimitSwitchClosed, null);
-    // builder.addBooleanProperty("Zeroed", this::isZeroed, null);
-    // builder.addDoubleProperty("Position (mm)", this::getPosition, null);
+    builder.addDoubleProperty("Motor Speed", Motors.liftMaster::getMotorOutputPercent, Motors.liftMaster::set);
+    builder.addBooleanProperty("Reverse Limit", Motors.liftMaster.getSensorCollection()::isRevLimitSwitchClosed, null);
+    builder.addBooleanProperty("Forward limit", Motors.liftMaster.getSensorCollection()::isFwdLimitSwitchClosed, null);
+    builder.addBooleanProperty("Zeroed", this::isZeroed, null);
+    builder.addDoubleProperty("Position (mm)", this::getPosition, null);
     builder.addDoubleProperty("Position raw (pulses)", Motors.liftMaster::getSelectedSensorPosition, null);
-    // builder.addDoubleProperty("Target position (mm)", this::getTargetPosition, this::setTargetPosition);
-    // builder.addDoubleProperty("Distance per Pulse", encoderConverter::getDistancePerPulse,
-    //     encoderConverter::setDistancePerPulse);
-    // builder.addBooleanProperty("Enable Motion Magic", this::isMotionMagicEnabled, this::setMotionMagicEnabled);
+    builder.addDoubleProperty("Target position (mm)", this::getTargetPosition, this::setTargetPosition);
+    builder.addDoubleProperty("Distance per Pulse", encoderConverter::getDistancePerPulse,
+        encoderConverter::setDistancePerPulse);
+    builder.addBooleanProperty("Enable Motion Magic", this::isAutonomousEnabled, this::enableAutonomous);
    }
   @Override
   public void initDefaultCommand() {

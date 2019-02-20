@@ -56,8 +56,8 @@ public class OI {
 
     //Initialize JoystickButtons when Subystem is in use
     if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-      CargoGripperButtonPull = new JoystickButton(JoystickMainDriver, RobotMap.SUPPORT_CARGO_GRIPPER_PULL_AXIS_ID);
-      CargoGripperButtonPush = new JoystickButton(JoystickMainDriver, RobotMap.SUPPORT_CARGO_GRIPPER_PUSH_AXIS_ID);
+      CargoGripperButtonPull = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_CARGO_GRIPPER_PULL_AXIS_ID);
+      CargoGripperButtonPush = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_CARGO_GRIPPER_PUSH_AXIS_ID);
 
       //Call Commands
       CargoGripperButtonPull.toggleWhenPressed(new CCargoGripperPull());
@@ -67,9 +67,9 @@ public class OI {
 
     //Initialize JoystickButtons when Subystem is in use
     if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-      HatchGripperButtonExtend = new JoystickButton(JoystickMainDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_EXTEND_ID);
-      HatchGripperButtonRetract = new JoystickButton(JoystickMainDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_RETRACT_ID);
-      HatchGripperButtonCalibrate = new JoystickButton(JoystickMainDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_CALIBRATE_ID);
+      HatchGripperButtonExtend = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_EXTEND_ID);
+      HatchGripperButtonRetract = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_RETRACT_ID);
+      HatchGripperButtonCalibrate = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_CALIBRATE_ID);
 
       //Call Commands
       //TODO write the code for Command group whitch requires the cartSubsystem

@@ -127,7 +127,7 @@ public class Motors {
     }
 
     private static void cartInit() {
-        if(RobotMap.CART_SUBYSTEM_IS_IN_USE) {
+        if(RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
             //Initialize Motors
             FridolinsTalonSRX talonCart = new FridolinsTalonSRX(RobotMap.CART_MOTOR_ID);
 
@@ -269,13 +269,13 @@ public class Motors {
                 motor.config_kD(0,4);
                 motor.configClosedLoopPeakOutput(0, 0.5);
 
-                motor.selectProfileSlot(1, 0);
-                motor.config_IntegralZone(0, 100);
-                motor.config_kF(0, 0);
-                motor.config_kP(0, 0.0);
-                motor.config_kI(0, 0.0);
-                motor.config_kD(0, 0);
-                motor.configClosedLoopPeakOutput(0, 1);
+                
+                // motor.config_IntegralZone(1, 100);
+                // motor.config_kF(1, 0);
+                // motor.config_kP(1, 0.0);
+                // motor.config_kI(1, 0.0);
+                // motor.config_kD(1, 0);
+                // motor.configClosedLoopPeakOutput(1, 1);
 
                 //Set Directions
                 motor.setSensorPhase(false);
