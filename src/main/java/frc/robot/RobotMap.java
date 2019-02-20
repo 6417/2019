@@ -16,32 +16,32 @@ package frc.robot;
 public class RobotMap {
 
   // Subsystems
-  public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
-  public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE = false;
-  public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE = false;
-  public static final boolean CART_SUBYSTEM_IS_IN_USE = false;
-  public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE = false;
+  public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE     = false;
+  public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE     = false;
+  public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE      = false;
+  public static final boolean CART_SUBYSTEM_IS_IN_USE               = false;
+  public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE      = false;
 
   // Motors
-  public static final int SWERVE_DRIVE_FRONT_LEFT_ID = 32;
-  public static final int SWERVE_ANGLE_FRONT_LEFT_ID = 33;
-  public static final int SWERVE_DRIVE_BACK_LEFT_ID = 34;
-  public static final int SWERVE_ANGLE_BACK_LEFT_ID = 35;
-  public static final int SWERVE_DRIVE_BACK_RIGHT_ID = 36;
-  public static final int SWERVE_ANGLE_BACK_RIGHT_ID = 37;
-  public static final int SWERVE_DRIVE_FRONT_RIGHT_ID = 38;
-  public static final int SWERVE_ANGLE_FRONT_RIGHT_ID = 39;
+  public static final int SWERVE_DRIVE_FRONT_LEFT_ID    = 32;
+  public static final int SWERVE_ANGLE_FRONT_LEFT_ID    = 33;
+  public static final int SWERVE_DRIVE_BACK_LEFT_ID     = 34;
+  public static final int SWERVE_ANGLE_BACK_LEFT_ID     = 35;
+  public static final int SWERVE_DRIVE_BACK_RIGHT_ID    = 36;
+  public static final int SWERVE_ANGLE_BACK_RIGHT_ID    = 37;
+  public static final int SWERVE_DRIVE_FRONT_RIGHT_ID   = 38;
+  public static final int SWERVE_ANGLE_FRONT_RIGHT_ID   = 39;
 
-  public static final int HATCH_GRIPPER_MOTOR_ID = 47;
+  public static final int HATCH_GRIPPER_MOTOR_ID        = 47;
 
-  public static final int CARGO_GRIPPER_MOTOR_LEFT_ID = 48;
-  public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID = 49;
+  public static final int CARGO_GRIPPER_MOTOR_LEFT_ID   = 48;
+  public static final int CARGO_GRIPPER_MOTOR_RIGHT_ID  = 49;
 
-  public static final int LIFTING_UNIT_MOTOR_LEFT_ID = 50;
-  public static final int LIFTING_UNIT_MOTOR_RIGHT_ID = 51;
+  public static final int LIFTING_UNIT_MOTOR_LEFT_ID    = 50;
+  public static final int LIFTING_UNIT_MOTOR_RIGHT_ID   = 51;
 
-  public static final int CART_MOTOR_ID = 52;
-  public static final int CART_REMOTE_LIMIT_SWITCH_ID = SWERVE_DRIVE_FRONT_RIGHT_ID;
+  public static final int CART_MOTOR_ID                 = 52;
+  public static final int CART_REMOTE_LIMIT_SWITCH_ID   = SWERVE_DRIVE_FRONT_RIGHT_ID;
 
   // DIO
   public static final int HATCH_GRIPPER_DIO_TOP = 0;
@@ -98,7 +98,24 @@ public class RobotMap {
       public static final int LIFTING_UNIT_DRIVE_LENGTH = 15000;
       /** Lifting unit minimum height such that the cargo gripper is not colliding with the cart system */
       public static final int LIFTING_UNIT_MINIMUM_HEIGHT = 100;
-  
+      /** Lifting unit positions for driving and starting... */
+      public static final int LIFTING_UNIT_HEIGHT_START = 0;
+      /** Lifting unit positions for hatch Station, the ship and the first rocket level  */
+      public static final int LIFTING_UNIT_HEIGHT_HATCH_STATION = 1000;
+      /** Lifting unit other hatch positions for rocket */
+      public static final int LIFTING_UNIT_HEIGHT_HATCH_MID = 2000;
+      public static final int LIFTING_UNIT_HEIGHT_HATCH_TOP = 3000;
+      /** Lifting unit cargo station on field and driverstation */
+      public static final int LIFTING_UNIT_HEIGHT_CARGO_STATION = 1500;
+      public static final int LIFTING_UNIT_HEIGHT_CARGO_DEPOT = 300;
+      /** Lifting unit cargo rocket stations */
+      public static final int LIFTING_UNIT_HEIGHT_CARGO_BOTTOM = 2500;
+      public static final int LIFTING_UNIT_HEIGHT_CARGO_MID = 3500;
+      public static final int LIFTING_UNIT_HEIGHT_CARGO_TOP = 4000;
+      /** Lifting unit cargo cargo ship height */
+      public static final int LIFTING_UNIT_HEIGHT_CARGO_SHIP = 2000;
+    
+
   // Hatch
 
       /** Hatch motor max velocity in units/100ms */
