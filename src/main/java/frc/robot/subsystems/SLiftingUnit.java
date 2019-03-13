@@ -28,6 +28,8 @@ import frc.robot.RobotMap;
  */
 public class SLiftingUnit extends Subsystem {
 
+  public static boolean lifting_unit_drive_permitted = false;
+
   private EncoderConverter encoderConverter = new EncoderConverter(RobotMap.CART_ENCODER_DISTANCE_PER_PULSE);
   
   private boolean zeroed = false, motionMagicEnabled = false;
@@ -45,7 +47,9 @@ public class SLiftingUnit extends Subsystem {
   /**
    * position in mm
    */
-  private double targetPosition = 0;
+  private double m_practicalTargetPosition = 0;
+
+  private double m_theoreticalTargetPosition = 0;
 
   public SLiftingUnit() {
     super();
@@ -95,18 +99,20 @@ public class SLiftingUnit extends Subsystem {
    * @return Position in mm
    */
   public double getPosition() {
-    return encoderConverter.getDistance(Motors.liftMaster.getSelectedSensorPosition());
+    return Motors.liftMaster.getSelectedSensorPosition();
+    // return encoderConverter.getDistance(Motors.liftMaster.getSelectedSensorPosition());
   }
 
   /**
    * Sets the target position in mm
    */
   public void setTargetPosition(double position) {
-    targetPosition = Algorithms.limit(position, 0, RobotMap.LIFTING_UNIT_DRIVE_LENGTH);
+    m_practicalTargetPosition = Algorithms.limit(position, 0, RobotMap.LIFTING_UNIT_DRIVE_LENGTH);
   }
 
   public void setTargetPosition(EPositions direction) {
     switch(direction) {
+
       case next: {
         if(m_liftingUnitPosition + 1 < m_liftingUnitPositions.length) {
           setTargetPosition(m_liftingUnitPositions[++m_liftingUnitPosition]);
@@ -126,7 +132,7 @@ public class SLiftingUnit extends Subsystem {
   }
 
   public double getTargetPosition() {
-    return targetPosition;
+    return m_practicalTargetPosition;
   }
 
   public void drive(double value) {
@@ -142,6 +148,10 @@ public class SLiftingUnit extends Subsystem {
   }
  
   public void driveAutonomous() {
+    if(!zeroed) {
+      stopMotor();
+      return;
+    }
     Motors.liftMaster.set(ControlMode.MotionMagic, getTargetPosition());
   }
 
@@ -158,6 +168,46 @@ public class SLiftingUnit extends Subsystem {
     return m_autonomous;
   }
 
+  public boolean isDrivePermitted(double targetPosition, double cartTargetPosition) {
+    this.m_theoreticalTargetPosition = targetPosition;
+    if(getPosition() > RobotMap.LIFTING_UNIT_MINIMUM_HEIGHT && !Robot.cart.isTargetPositionReached()) {
+      m_practicalTargetPosition = RobotMap.LIFTING_UNIT_MINIMUM_HEIGHT - RobotMap.LIFTING_UNIT_SAFETY_ZONE / 2;
+      return true;
+    }
+
+    if(targetPosition >= RobotMap.LIFTING_UNIT_MINIMUM_HEIGHT - RobotMap.LIFTING_UNIT_SAFETY_ZONE) {
+      if(targetPosition <= RobotMap.LIFTING_UNIT_MINIMUM_HEIGHT) {
+        m_practicalTargetPosition = m_theoreticalTargetPosition;
+        lifting_unit_drive_permitted = true;
+      } else if(Robot.cart.isTargetPositionReached()) {
+        m_practicalTargetPosition = m_theoreticalTargetPosition;
+        lifting_unit_drive_permitted = true;
+      } else {
+        lifting_unit_drive_permitted = false;
+      }
+    } else {
+      if(Robot.cart.getPosition() >= RobotMap.CART_FORWARD_SAFETY_LENGHT && cartTargetPosition >= RobotMap.CART_FORWARD_SAFETY_LENGHT) {
+        m_practicalTargetPosition = m_theoreticalTargetPosition;
+        lifting_unit_drive_permitted = true;
+      } else if(Robot.cart.getPosition() <= RobotMap.CART_REVERSE_SAFETY_LENGHT && cartTargetPosition <= RobotMap.CART_REVERSE_SAFETY_LENGHT) {
+        m_practicalTargetPosition = m_theoreticalTargetPosition;
+        lifting_unit_drive_permitted = true;
+      } else if(Robot.cart.getPosition() >= RobotMap.CART_FORWARD_SAFETY_LENGHT && cartTargetPosition <= RobotMap.CART_FORWARD_SAFETY_LENGHT) {
+        m_practicalTargetPosition = RobotMap.LIFTING_UNIT_MINIMUM_HEIGHT - RobotMap.LIFTING_UNIT_SAFETY_ZONE / 2;
+        lifting_unit_drive_permitted = true;
+      } else if(Robot.cart.getPosition() <= RobotMap.CART_FORWARD_SAFETY_LENGHT && cartTargetPosition >= RobotMap.CART_FORWARD_SAFETY_LENGHT) {
+        m_practicalTargetPosition = RobotMap.LIFTING_UNIT_MINIMUM_HEIGHT - RobotMap.LIFTING_UNIT_SAFETY_ZONE / 2;
+        lifting_unit_drive_permitted = true;
+      } else if(Robot.cart.isTargetPositionReached()) {
+        m_practicalTargetPosition = m_theoreticalTargetPosition;
+        lifting_unit_drive_permitted = true;
+      } else {
+        System.out.println("Lifting Unit System Failed");
+      }
+    }
+    return lifting_unit_drive_permitted;
+  }
+
   /**
    * Stops the motor for the cart.
    */
@@ -172,7 +222,7 @@ public class SLiftingUnit extends Subsystem {
   public void checkZeroPosition() {
     if (!Motors.liftMaster.getSensorCollection().isRevLimitSwitchClosed()) {
       zeroed = true;
-      Motors.liftMaster.setSelectedSensorPosition(0);
+      Motors.liftFollower.setSelectedSensorPosition(0);
       m_liftingUnitPosition = 0;
     }
   }

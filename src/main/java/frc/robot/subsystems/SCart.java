@@ -26,10 +26,13 @@ public class SCart extends Subsystem {
 
   EncoderConverter encoderConverter = new EncoderConverter(RobotMap.CART_ENCODER_DISTANCE_PER_PULSE);
   boolean m_isHomed = false, m_autonomous = false;
-  double m_targetPosition = 0;
+  double m_practicalTargetPosition = 0;
+  double m_theoreticalTargetPosition = 0;
   static final double[] m_cartPositions = new double[] { RobotMap.CART_DRIVE_LENGTH_BACK_MM, RobotMap.CART_DRIVE_LENGTH_HATCH_MM,
       RobotMap.CART_DRIVE_LENGTH_MID_MM, RobotMap.CART_DRIVE_LENGTH_MM };
   int m_cartPosition = 0;
+
+  public static boolean cart_drive_permitted = false;
 
   /**
    * Limit switches of the cart are connected to a remote Talon SRX
@@ -44,12 +47,57 @@ public class SCart extends Subsystem {
 
   private void resetSubsystem() {
     m_isHomed = false;
-    m_targetPosition = 0;
+    m_practicalTargetPosition = 0;
     m_autonomous = false;
   }
 
   public boolean isHomed() {
     return m_isHomed;
+  }
+
+  public boolean isPositionReached() {
+    if(m_practicalTargetPosition >= getPosition() - RobotMap.CART_POSITION_ZONE && m_practicalTargetPosition <= getPosition() + RobotMap.CART_POSITION_ZONE) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean isTargetPositionReached() {
+    if(m_theoreticalTargetPosition >= getPosition() - RobotMap.CART_POSITION_ZONE && m_theoreticalTargetPosition <= getPosition() + RobotMap.CART_POSITION_ZONE) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean isDrivePermitted(double targetposition, double liftingUnitTargetPositon) {
+    this.m_theoreticalTargetPosition = targetposition;
+    if(Robot.liftingUnit.getPosition() <= RobotMap.LIFTING_UNIT_SAFETY_HEIGHT) {
+      if(Robot.liftingUnit.getPosition() >= RobotMap.LIFTING_UNIT_SAFETY_HEIGHT - RobotMap.LIFTING_UNIT_SAFETY_ZONE) {
+        m_practicalTargetPosition = m_theoreticalTargetPosition;
+        cart_drive_permitted = true;
+      } else {
+        if(getPosition() >= RobotMap.CART_FORWARD_SAFETY_LENGHT && m_theoreticalTargetPosition >= RobotMap.CART_FORWARD_SAFETY_LENGHT) {
+          m_practicalTargetPosition = m_theoreticalTargetPosition;
+          cart_drive_permitted = true;
+        } else if(getPosition() <= RobotMap.CART_REVERSE_SAFETY_LENGHT && m_theoreticalTargetPosition <= RobotMap.CART_REVERSE_SAFETY_LENGHT) {
+          m_practicalTargetPosition = m_theoreticalTargetPosition;
+          cart_drive_permitted = true;
+        } else if(getPosition() >= RobotMap.CART_FORWARD_SAFETY_LENGHT && m_theoreticalTargetPosition <= RobotMap.CART_FORWARD_SAFETY_LENGHT) {
+          m_practicalTargetPosition = RobotMap.CART_FORWARD_SAFETY_LENGHT;
+          cart_drive_permitted = true;
+        } else if(getPosition() <= RobotMap.CART_REVERSE_SAFETY_LENGHT && m_theoreticalTargetPosition >= RobotMap.CART_REVERSE_SAFETY_LENGHT) {
+          m_practicalTargetPosition = RobotMap.CART_REVERSE_SAFETY_LENGHT;
+          cart_drive_permitted = true;
+        } else {
+          System.out.println("Cart System Failed");
+        }
+      }
+    } else {
+      cart_drive_permitted = false;
+    }
+    return cart_drive_permitted;
   }
 
   public void enableAutonomous(boolean enable) {
@@ -62,7 +110,8 @@ public class SCart extends Subsystem {
    * @return Position in mm
    */
   public double getPosition() {
-    return encoderConverter.getDistance(Motors.cartMotor.getSelectedSensorPosition());
+    // return encoderConverter.getDistance(Motors.cartMotor.getSelectedSensorPosition());
+    return Motors.cartMotor.getSelectedSensorPosition();
   }
 
   /**
@@ -71,13 +120,13 @@ public class SCart extends Subsystem {
    * @param targetPos Position of the cart in mm measured from the 0 point.
    */
   public void setPosition(double targetPos) {
-    if (Robot.hatchGripper.isExtended()) {
-      targetPos = encoderConverter.getPulses(Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH_HATCH_MM));
-    } else {
+    // if (Robot.hatchGripper.isExtended()) {
+    //   targetPos = encoderConverter.getPulses(Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH_HATCH_MM));
+    // } else {
       targetPos = encoderConverter.getPulses(Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH_MM));
-    }
+    // }
 
-    m_targetPosition = targetPos;
+    m_practicalTargetPosition = targetPos;
   }
 
   public void setPosition(EPositions direction) {
@@ -121,7 +170,7 @@ public class SCart extends Subsystem {
 
     // TODO check if position is allowed in regard of height of the lifting unit
 
-    Motors.cartMotor.set(ControlMode.MotionMagic, m_targetPosition);
+    Motors.cartMotor.set(ControlMode.MotionMagic, m_practicalTargetPosition);
   }
 
   private void driveManual(double speed) {

@@ -9,7 +9,6 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import ch.fridolinsrobotik.utilities.Algorithms;
 import ch.fridolinsrobotik.utilities.Deadzone;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -20,7 +19,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.robot.commands.liftingunit.CLiftingUnitSetHeight;
+import frc.robot.commands.groups.CHatchGrab;
+import frc.robot.commands.groups.CHatchHandOut;
+import frc.robot.commands.liftingunit.CLiftingUnitOrderdHeight;
 import frc.robot.subsystems.SCargoGripper;
 import frc.robot.subsystems.SCart;
 import frc.robot.subsystems.SHatchGripper;
@@ -45,8 +46,7 @@ public class Robot extends TimedRobot {
   public static SCart cart;
   public static SLiftingUnit liftingUnit;
   public static SSwerve swerveDrive;
-  public static CLiftingUnitSetHeight liftingUnitSetHeight;
-
+  public static CLiftingUnitOrderdHeight liftingUnitOrderHeight;
   // Shuffleboard
   public static ShuffleboardTab shuffleSettings = Shuffleboard.getTab("Settings");
   public static ShuffleboardTab shuffleSubsystems = Shuffleboard.getTab("Subsystems");
@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
     }
     if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
       liftingUnit = new SLiftingUnit();
-      liftingUnitSetHeight = new CLiftingUnitSetHeight();
+      liftingUnitOrderHeight = new CLiftingUnitOrderdHeight();
     }
     if (RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
       cart = new SCart();
@@ -100,6 +100,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+      liftingUnit.checkZeroPosition();
+    }
+    if(RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
+      cart.checkLimitSwitches();
+    }
+
   }
 
   /**
@@ -143,8 +150,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
-      liftingUnitSetHeight.start();
+      liftingUnitOrderHeight.start();
     }
+    
   }
 
   /**
@@ -168,14 +176,28 @@ public class Robot extends TimedRobot {
     }
 
     if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+      // if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+      //   if(OI.HatchGripperButtonExtend.get()) {
+      //     OI.HatchGripperButtonExtend.toggleWhenPressed(new CHatchGrab());
+      //   } else if(OI.HatchGripperButtonRetract.get()) {
+      //     OI.HatchGripperButtonRetract.toggleWhenPressed(new CHatchHandOut());
+      //   } else if(cart.isTargetPositionReached()) {
+      //     liftingUnitOrderHeight.start();
+      //   } else {
+      //     System.out.println("Couldnt start the OrderHeiht Command");
+      //   }
+      // } else {
+      //   liftingUnitOrderHeight.start();
+      // }
+
       if(OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 0) {
-        liftingUnit.enableAutonomous(true);
-        // liftingUnit.setTargetPosition(Algorithms.limit(joystickZrotateSupport, 0, 1) * 5000);
-        liftingUnit.setTargetPosition(7500);
-        liftingUnit.drive();
+        // liftingUnit.enableAutonomous(false);
+        // liftingUnit.drive(joystickZrotateSupport);
       } else {
-        liftingUnit.enableAutonomous(false);
-        liftingUnit.drive(joystickZrotateSupport);
+        // liftingUnit.enableAutonomous(true);
+        // // liftingUnit.setTargetPosition(Algorithms.limit(joystickZrotateSupport, 0, 1) * 5000);
+        // liftingUnit.setTargetPosition(7500);
+        // liftingUnit.drive();
       }
       if(OI.JoystickSupportDriver.getRawButton(3)) {
         Motors.liftFollower.setSelectedSensorPosition(0);
@@ -184,13 +206,13 @@ public class Robot extends TimedRobot {
     }
     if (RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
       if (OI.JoystickSupportDriver.getRawButton(1)) {
-        cart.setPosition(
-            Algorithms.limit(joystickYsupport * RobotMap.CART_DRIVE_LENGTH_MM, 0, RobotMap.CART_DRIVE_LENGTH_MM));
-            cart.enableAutonomous(true);
-            cart.drive();
-      } else {
         cart.enableAutonomous(false);
         cart.drive(joystickYsupport);
+      } else {
+        // cart.setPosition(
+        // Algorithms.limit(joystickYsupport * RobotMap.CART_DRIVE_LENGTH_MM, 0, RobotMap.CART_DRIVE_LENGTH_MM));
+        // cart.enableAutonomous(true);
+        // cart.drive();
       }
     }
 

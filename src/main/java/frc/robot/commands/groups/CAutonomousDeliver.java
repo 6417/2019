@@ -8,18 +8,15 @@
 package frc.robot.commands.groups;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import frc.robot.Robot;
-import frc.robot.RobotMap;
 import frc.robot.commands.cart.CCartSetPosition;
-import frc.robot.commands.gripper.hatch.CHatchGripperRetract;
+import frc.robot.commands.liftingunit.CLiftingUnitSetHeight;
 
-public class CHatchHandOut extends CommandGroup {
+public class CAutonomousDeliver extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public CHatchHandOut() {
-    // addSequential(new CCartSetPosition(0));
-    // addSequential(new CHatchGripperRetract());
-    // addSequential(new CCartSetPosition(RobotMap.CART_REVERSE_SAFETY_LENGHT));
+  public CAutonomousDeliver(int liftingUnitPosition, int cartPosition) {
+    addParallel(new CCartSetPosition(cartPosition, liftingUnitPosition));
+    addParallel(new CLiftingUnitSetHeight(liftingUnitPosition, liftingUnitPosition));
   }
 }

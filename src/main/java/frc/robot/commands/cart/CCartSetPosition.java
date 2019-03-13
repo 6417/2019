@@ -11,10 +11,20 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class CCartSetPosition extends Command {
-  public CCartSetPosition(double position) {
+
+  // public CCartSetPosition(double position) {
+  //   requires(Robot.cart);
+  //   Robot.cart.setPosition(position);
+  //   Robot.cart.drive();
+  // }
+
+  public CCartSetPosition(double position, double liftingUnitPosition) {
     requires(Robot.cart);
-    Robot.cart.setPosition(position);
+    if(Robot.cart.isDrivePermitted(position, liftingUnitPosition)) {
+      Robot.cart.drive();
+    }
   }
+ 
 
   // Called just before this Command runs the first time
   @Override
