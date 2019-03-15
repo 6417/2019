@@ -7,6 +7,7 @@
 
 package ch.fridolinsrobotik.utilities;
 
+import edu.wpi.first.wpilibj.drive.Vector2d;
 /**
  * Collection of mathematic algortihms
  */
@@ -29,8 +30,24 @@ public class Algorithms {
     }
 
     /**
+     * Scales a vector based on its magnitude.
+     * 
+     * @param v      vector to be scaled linear
+     * @param inMin  original minimum magnitude
+     * @param inMax  original maximum magnitude
+     * @param outMin output minimum magnitude
+     * @param outMax output maximum magnitude
+     * @return scaled vector
+     */
+    public static Vector2d scale(Vector2d v, double inMin, double inMax, double outMin, double outMax) {
+        double factor = Algorithms.scale(v.magnitude(), inMin, inMax, outMin, outMax) / v.magnitude();
+        return new Vector2d(v.x * factor, v.y * factor);
+    }
+
+    /**
      * Ease In and Out function used for calculation a factor. We calculate a factor
      * for the speed with a function as follow: x^a ------------- x^a + (1-x)^a
+     * 
      * @see <a href=
      *      "https://www.wolframalpha.com/input/?i=plot+x%5Ea%2F(x%5Ea%2B(1%E2%88%92x)%5Ea)+where+a+%3D+1.5+from+x%3D0+to+x%3D1">function
      *      as a plot with a=1.5 in Wolframalpha.com</a>
@@ -49,9 +66,10 @@ public class Algorithms {
 
     /**
      * Limits the input value between the given boundary
+     * 
      * @param number input value
-     * @param min minimum of the boundary
-     * @param max maximum of the boundary
+     * @param min    minimum of the boundary
+     * @param max    maximum of the boundary
      */
     public static double limit(double number, double min, double max) {
         return Math.min(Math.max(number, min), max);
@@ -59,9 +77,10 @@ public class Algorithms {
 
     /**
      * Limits the input value between the given boundary
+     * 
      * @param number input value
-     * @param min minimum of the boundary
-     * @param max maximum of the boundary
+     * @param min    minimum of the boundary
+     * @param max    maximum of the boundary
      */
     public static int limit(int number, int min, int max) {
         return Math.min(Math.max(number, min), max);

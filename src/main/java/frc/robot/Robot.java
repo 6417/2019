@@ -9,15 +9,21 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import ch.fridolinsrobotik.drivesystems.swerve.SwerveDrive;
+import ch.fridolinsrobotik.drivesystems.swerve.SwerveModule;
+import ch.fridolinsrobotik.drivesystems.swerve.SwerveModuleFridolinsMotor;
 import ch.fridolinsrobotik.utilities.Algorithms;
 import ch.fridolinsrobotik.utilities.Deadzone;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.commands.liftingunit.CLiftingUnitSetHeight;
@@ -46,11 +52,16 @@ public class Robot extends TimedRobot {
   public static SLiftingUnit liftingUnit;
   public static SSwerve swerveDrive;
   public static CLiftingUnitSetHeight liftingUnitSetHeight;
-
+  public static SwerveDrive swerve = new SwerveDrive();
   // Shuffleboard
   public static ShuffleboardTab shuffleSettings = Shuffleboard.getTab("Settings");
   public static ShuffleboardTab shuffleSubsystems = Shuffleboard.getTab("Subsystems");
   public static NetworkTable raspberry = NetworkTableInstance.getDefault().getTable("RaspberryPIControlSystem");
+
+  public static SwerveModule frontLeft;
+  public static SwerveModule frontRight;
+  public static SwerveModule backLeft;
+  public static SwerveModule backRight;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -142,7 +153,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+    if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
       liftingUnitSetHeight.start();
     }
   }
@@ -153,7 +164,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-
+    // double t1 = Timer.getFPGATimestamp();
+    // DriverStation.reportWarning(Double.valueOf(Timer.getFPGATimestamp() - t1).toString(), false);
     double joystickX = OI.JoystickMainDriver.getX();
     double joystickY = -OI.JoystickMainDriver.getY();
     double joystickZ = OI.JoystickMainDriver.getZ();
@@ -163,21 +175,22 @@ public class Robot extends TimedRobot {
     double joystickZrotateSupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getRawAxis(5), RobotMap.DEADZONE_RANGE);
 
     if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
-      swerveDrive.manualDrive(joystickX, joystickY, joystickZ, ahrs.getYaw());
-      swerveDrive.driveCartesian();
+      swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, ahrs.getYaw());
+      // swerveDrive.driveCartesian();
     }
 
     if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
-      if(OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 0) {
+      if (OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 0) {
         liftingUnit.enableAutonomous(true);
-        // liftingUnit.setTargetPosition(Algorithms.limit(joystickZrotateSupport, 0, 1) * 5000);
+        // liftingUnit.setTargetPosition(Algorithms.limit(joystickZrotateSupport, 0, 1)
+        // * 5000);
         liftingUnit.setTargetPosition(7500);
         liftingUnit.drive();
       } else {
         liftingUnit.enableAutonomous(false);
         liftingUnit.drive(joystickZrotateSupport);
       }
-      if(OI.JoystickSupportDriver.getRawButton(3)) {
+      if (OI.JoystickSupportDriver.getRawButton(3)) {
         Motors.liftFollower.setSelectedSensorPosition(0);
       }
       // System.out.println(joystickZrotateSupport);
@@ -186,8 +199,8 @@ public class Robot extends TimedRobot {
       if (OI.JoystickSupportDriver.getRawButton(1)) {
         cart.setPosition(
             Algorithms.limit(joystickYsupport * RobotMap.CART_DRIVE_LENGTH_MM, 0, RobotMap.CART_DRIVE_LENGTH_MM));
-            cart.enableAutonomous(true);
-            cart.drive();
+        cart.enableAutonomous(true);
+        cart.drive();
       } else {
         cart.enableAutonomous(false);
         cart.drive(joystickYsupport);
@@ -195,13 +208,13 @@ public class Robot extends TimedRobot {
     }
 
     // if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-    //   if(OI.JoystickSupportDriver.getRawAxis(2) > 0.5) {
-    //     cargoGripper.push(OI.JoystickSupportDriver.getRawAxis(2));
-    //   } else if(OI.JoystickSupportDriver.getRawAxis(3) >0.5) {
-    //     cargoGripper.pull(OI.JoystickSupportDriver.getRawAxis(3));
-    //   } else {
-    //     cargoGripper.stop();
-    //   }
+    // if(OI.JoystickSupportDriver.getRawAxis(2) > 0.5) {
+    // cargoGripper.push(OI.JoystickSupportDriver.getRawAxis(2));
+    // } else if(OI.JoystickSupportDriver.getRawAxis(3) >0.5) {
+    // cargoGripper.pull(OI.JoystickSupportDriver.getRawAxis(3));
+    // } else {
+    // cargoGripper.stop();
+    // }
     // }
   }
 
