@@ -10,8 +10,8 @@ package frc.robot.commands.drive.swerve;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class CSwerveDriveManual extends Command {
-  public CSwerveDriveManual() {
+public class CSwerveDriveVision extends Command {
+  public CSwerveDriveVision() {
     requires(Robot.swerveDrive);
   }
 

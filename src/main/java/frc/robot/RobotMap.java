@@ -23,11 +23,14 @@ public class RobotMap {
   public static final int LIFTING_UNIT_SAFETY_HEIGHT = 1000;
   public static final int LIFTING_UNIT_SAFETY_ZONE = 200;
 
+  //Systems
+  public static final boolean HATCH_GRIPPER_REPLACED = true;
+
   // Subsystems
-  public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE     = true;
+  public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE     = false;
   public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE     = true;
-  public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE      = true;
-  public static final boolean CART_SUBSYSTEM_IS_IN_USE              = true;
+  public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE      = false;
+  public static final boolean CART_SUBSYSTEM_IS_IN_USE              = false;
   public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE      = true;
 
   // Motors
@@ -83,7 +86,7 @@ public class RobotMap {
   public static final double TURN_SPEED_MULTIPLIER = 1;
   public static final double SWERVE_SPEED_BOOST = 1;
   public static final double SWERVE_BULLET_TIME = 0.3;
-  public static final double SWERVE_CALIBRATE_SPEED = 0.4;
+  public static final double SWERVE_CALIBRATE_SPEED = 0.2;
 
   // Gripper Speed Variables
   public static final double CARGO_GRIPPER_SPEED = 0.3;

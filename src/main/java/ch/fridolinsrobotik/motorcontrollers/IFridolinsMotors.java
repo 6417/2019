@@ -8,13 +8,12 @@
 package ch.fridolinsrobotik.motorcontrollers;
 
 import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.motorcontrol.IMotorController;
 
 /**
  * Interface to merge the MotorController classes given by the manufacturers.
  */
 public interface IFridolinsMotors {
-     
+
     public void setVelocity(double velocity);
 
     public void setPercent(double percent);
