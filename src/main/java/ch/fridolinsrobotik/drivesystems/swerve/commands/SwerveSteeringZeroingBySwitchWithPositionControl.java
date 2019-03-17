@@ -7,51 +7,61 @@
 
 package ch.fridolinsrobotik.drivesystems.swerve.commands;
 
-import ch.fridolinsrobotik.motorcontrollers.FridolinsIdleModeType;
+import ch.fridolinsrobotik.motorcontrollers.FridolinsLimitSwitchPolarity;
 import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Motors;
 import frc.robot.Robot;
 
-public class SwerveSteeringPutStraight extends Command {
-  private static final int targetEncoderTicks = (int)(196608.0/360.0*105);
-  private static final int maximumError = 500;
-
-  public SwerveSteeringPutStraight() {
+public class SwerveSteeringZeroingBySwitchWithPositionControl extends Command {
+  int encoderIncrement;
+  int nextEncoderIncrement;
+  int executeCounter;
+  public SwerveSteeringZeroingBySwitchWithPositionControl(int encoderIncrement) {
     requires(Robot.swerveDrive);
+    this.encoderIncrement = encoderIncrement;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    for(IFridolinsMotors motor : Motors.swerveAngleMotors) {
-      motor.setIdleMode(FridolinsIdleModeType.kBrake);
-      motor.setPosition(targetEncoderTicks);
+    
+    this.nextEncoderIncrement = this.encoderIncrement;
+    executeCounter = 0;
+    for (IFridolinsMotors steering : Motors.swerveAngleMotors) {
+      steering.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
+      steering.setPercent(0);
+      steering.setSelectedSensorPosition(0);
     }
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    for (IFridolinsMotors steering : Motors.swerveAngleMotors) {
+      steering.setPosition(nextEncoderIncrement);
+    }
+    nextEncoderIncrement += encoderIncrement;
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    boolean allWheelAngleCorrect = true;
-    for(IFridolinsMotors motor : Motors.swerveAngleMotors) {
-      allWheelAngleCorrect &= (motor.getClosedLoopError() < maximumError); 
-      }
-    return allWheelAngleCorrect;
+    boolean allLimitSwitchesHit = true;
+    for (IFridolinsMotors steering : Motors.swerveAngleMotors) {
+      allLimitSwitchesHit &= steering.isForwardLimitSwitchActive();
+    }
+    return allLimitSwitchesHit;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    for(IFridolinsMotors motor : Motors.swerveAngleMotors) {
-      motor.setSelectedSensorPosition(0);
-      motor.setPercent(0);
-      motor.setIdleMode(FridolinsIdleModeType.kCoast);
+    for (IFridolinsMotors steering : Motors.swerveAngleMotors) {
+      steering.setPercent(0);
+      steering.setSensorPosition(0);
+      steering.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kDisabled, false);
     }
   }
 

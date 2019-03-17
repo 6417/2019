@@ -8,12 +8,12 @@
 package frc.robot.commands.groups;
 
 import ch.fridolinsrobotik.drivesystems.swerve.commands.SwerveSteeringPutStraight;
-import ch.fridolinsrobotik.drivesystems.swerve.commands.SwerveSteeringZeroingBySwitch;
+import ch.fridolinsrobotik.drivesystems.swerve.commands.SwerveSteeringZeroingBySwitchWithPositionControl;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
 public class CSwerveCalibrate extends CommandGroup {
   public CSwerveCalibrate() {
-    addSequential(new SwerveSteeringZeroingBySwitch());
+    addSequential(new SwerveSteeringZeroingBySwitchWithPositionControl(500));
     addSequential(new SwerveSteeringPutStraight());
   }
 }
