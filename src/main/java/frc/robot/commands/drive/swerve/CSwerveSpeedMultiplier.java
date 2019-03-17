@@ -12,13 +12,15 @@ import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class CSwerveSpeedMultiplier extends Command {
+  double m_multiplier;
   public CSwerveSpeedMultiplier(double multiplier) {
-    Robot.swerveDrive.setMultiplier(multiplier);
+    m_multiplier = multiplier;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.swerveDrive.setMultiplier(m_multiplier);
   }
 
   // Called repeatedly when this Command is scheduled to run
