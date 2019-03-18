@@ -11,27 +11,29 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class CLiftingUnitSetHeight extends Command {
-  public CLiftingUnitSetHeight(double position, double cartPosition) {
+  int m_position;
+
+  public CLiftingUnitSetHeight(int position) {
     requires(Robot.liftingUnit);
-    if(Robot.liftingUnit.isDrivePermitted(position, cartPosition)) {
-      Robot.liftingUnit.drive();
-    }
+    m_position = position;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.liftingUnit.setTargetPosition(m_position);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    Robot.liftingUnit.drive();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return true;
+    return Robot.liftingUnit.isInRange(m_position);
   }
 
   // Called once after isFinished returns true

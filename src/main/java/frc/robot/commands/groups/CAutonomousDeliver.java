@@ -16,7 +16,7 @@ public class CAutonomousDeliver extends CommandGroup {
    * Add your docs here.
    */
   public CAutonomousDeliver(int liftingUnitPosition, int cartPosition) {
-    addParallel(new CCartSetPosition(cartPosition, liftingUnitPosition));
-    addParallel(new CLiftingUnitSetHeight(liftingUnitPosition, liftingUnitPosition));
+    addParallel(new CCartSetPosition(cartPosition));
+    addParallel(new CLiftingUnitSetHeight(liftingUnitPosition));
   }
 }

@@ -26,11 +26,13 @@ import frc.robot.commands.groups.CHatchGripperCalibrate;
  */
 public class SHatchGripper extends Subsystem {
 
-  static ShuffleboardLayout hatchList = Robot.shuffleSubsystems.getLayout("Hatch Gripper", BuiltInLayouts.kList).withSize(1, 3).withPosition(4, 0);
+  static ShuffleboardLayout hatchList = Robot.shuffleSubsystems.getLayout("Hatch Gripper", BuiltInLayouts.kList)
+      .withSize(1, 3).withPosition(4, 0);
   static NetworkTableEntry hatchMode = hatchList.add("Mode", "").getEntry();
   static NetworkTableEntry hatchTopSwitch = hatchList.add("Top Switch", false).getEntry();
   static NetworkTableEntry hatchLeftSwitch = hatchList.add("Left Switch", false).getEntry();
   static NetworkTableEntry hatchRightSwitch = hatchList.add("Right Switch", false).getEntry();
+  static NetworkTableEntry hatchGripperHomed = hatchList.add("Homed", false).getEntry();
   static DigitalInput topSwitch = new DigitalInput(RobotMap.HATCH_GRIPPER_DIO_TOP);
   static DigitalInput rightSwitch = new DigitalInput(RobotMap.HATCH_GRIPPER_DIO_RIGHT);
   static DigitalInput leftSwitch = new DigitalInput(RobotMap.HATCH_GRIPPER_DIO_LEFT);
@@ -38,22 +40,27 @@ public class SHatchGripper extends Subsystem {
   boolean isHomed = false;
 
   public SHatchGripper() {
+    hatchList.add("Hatch Calibrate", new CHatchGripperCalibrate());
   }
 
   @Override
   public void initDefaultCommand() {
-    hatchList.add("Hatch Calibrate", new CHatchGripperCalibrate());
   }
 
   public void hatchGripperExtend() {
-    // Motors.hatchGripperMotor.set(RobotMap.HATCH_GRIPPER_SPEED);
-    Motors.hatchGripperMotor.set(ControlMode.MotionMagic, RobotMap.HATCH_DRIVE_EXTENDED);
-    // Motors.hatchGripperMotor.set(-OI.JoystickMainDriver.getY());
+    if (isHomed) {
+      Motors.hatchGripperMotor.set(ControlMode.MotionMagic, RobotMap.HATCH_DRIVE_EXTENDED);
+    } else {
+      hatchGripperStop();
+    }
   }
+
   public void hatchGripperRetract() {
-    // Motors.hatchGripperMotor.set(-RobotMap.HATCH_GRIPPER_SPEED);
-    Motors.hatchGripperMotor.set(ControlMode.MotionMagic, RobotMap.HATCH_DRIVE_RETRACTED);
-    // Motors.hatchGripperMotor.set(-OI.JoystickMainDriver.getY());
+    if (isHomed) {
+      Motors.hatchGripperMotor.set(ControlMode.MotionMagic, RobotMap.HATCH_DRIVE_RETRACTED);
+    } else {
+      hatchGripperStop();
+    }
   }
 
   public void hatchGripperStop() {
@@ -68,21 +75,20 @@ public class SHatchGripper extends Subsystem {
     if (getReverseLimit()) {
       Motors.hatchGripperMotor.setSelectedSensorPosition(RobotMap.HATCH_DRIVE_RETRACTED);
       isHomed = true;
-      // hatchGripperStop();
     } else if (getForwardLimit()) {
       Motors.hatchGripperMotor.setSelectedSensorPosition(RobotMap.HATCH_DRIVE_EXTENDED);
       isHomed = true;
-      // hatchGripperStop();
     }
   }
 
-
   @Override
   public void periodic() {
+    automaticResetHatchEncoder();
     hatchMode.setString(getForwardLimit() ? "Extended" : "Retracted");
     hatchTopSwitch.setBoolean(getTopSwitch());
     hatchLeftSwitch.setBoolean(getLeftSwitch());
     hatchRightSwitch.setBoolean(getRightSwitch());
+    hatchGripperHomed.setBoolean(isHomed());
   }
 
   public boolean isHomed() {
@@ -90,7 +96,8 @@ public class SHatchGripper extends Subsystem {
   }
 
   public boolean isExtended() {
-    return Motors.hatchGripperMotor.getSelectedSensorPosition() >= RobotMap.HATCH_DRIVE_EXTENDED - RobotMap.HATCH_DRIVE_RETRACTED;
+    return Motors.hatchGripperMotor.getSelectedSensorPosition() >= RobotMap.HATCH_DRIVE_EXTENDED
+        - RobotMap.HATCH_DRIVE_RETRACTED;
   }
 
   public boolean getForwardLimit() {
@@ -120,8 +127,8 @@ public class SHatchGripper extends Subsystem {
     buttons.add(getRightSwitch());
 
     int buttonsPressed = 0;
-    for(Boolean button : buttons) {
-      if(button.booleanValue()) {
+    for (Boolean button : buttons) {
+      if (button.booleanValue()) {
         buttonsPressed++;
       }
     }

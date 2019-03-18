@@ -7,18 +7,18 @@
 
 package frc.robot;
 
-import ch.fridolinsrobotik.utilities.EPositions;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.drive.navx.CNavXReset;
 import frc.robot.commands.drive.swerve.CSwerveSpeedMultiplier;
 import frc.robot.commands.gripper.cargo.CCargoGripperPull;
 import frc.robot.commands.gripper.cargo.CCargoGripperPush;
-import frc.robot.commands.gripper.hatch.CHatchGripperExtend;
-import frc.robot.commands.gripper.hatch.CHatchGripperRetract;
+import frc.robot.commands.gripper.hatch.ConditionalHatchCommand;
+import frc.robot.commands.groups.CHatchGrab;
 import frc.robot.commands.groups.CHatchGripperCalibrate;
+import frc.robot.commands.groups.CHatchHandOut;
+import frc.robot.commands.groups.CHatchPress;
 import frc.robot.commands.groups.CSwerveCalibrate;
-import frc.robot.commands.liftingunit.CLiftingUnitAutonumous;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -35,13 +35,13 @@ public class OI {
   public static JoystickButton CargoGripperButtonPull;
   public static JoystickButton HatchGripperButtonExtend;
   public static JoystickButton HatchGripperButtonRetract;
+  public static JoystickButton HatchGripperButtonPress;
   public static JoystickButton HatchGripperButtonCalibrate;
+  public static JoystickButton CartButtonPressHatch;
   public static JoystickButton SwerveCalibrateButton;
   public static JoystickButton NavXResetButton;
   public static JoystickButton SwerveSpeedBoostButton;
   public static JoystickButton SwerveSpeedBulletTimeButton;
-
-  private static CLiftingUnitAutonumous liftingUnitAutonomous;
 
   private static OI INSTANCE;
 
@@ -69,14 +69,15 @@ public class OI {
     if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
       HatchGripperButtonExtend = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_EXTEND_ID);
       HatchGripperButtonRetract = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_RETRACT_ID);
+      HatchGripperButtonPress = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_PRESS_HATCH);
       HatchGripperButtonCalibrate = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_CALIBRATE_ID);
+      
 
       //Call Commands
-      //TODO write the code for Command group whitch requires the cartSubsystem
-        HatchGripperButtonExtend.toggleWhenPressed(new CHatchGripperExtend());
-        HatchGripperButtonRetract.toggleWhenPressed(new CHatchGripperRetract());
-        HatchGripperButtonCalibrate.whenPressed(new CHatchGripperCalibrate());
-        
+      HatchGripperButtonExtend.whenPressed(new ConditionalHatchCommand(new CHatchGrab()));
+      HatchGripperButtonRetract.whenPressed(new ConditionalHatchCommand(new CHatchHandOut()));
+      HatchGripperButtonPress.whenPressed(new ConditionalHatchCommand(new CHatchPress()));
+      HatchGripperButtonCalibrate.whenPressed(new ConditionalHatchCommand(new CHatchGripperCalibrate()));
     }
 
     if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
@@ -87,23 +88,14 @@ public class OI {
 
       SwerveCalibrateButton.whenPressed(new CSwerveCalibrate());
       NavXResetButton.whenPressed(new CNavXReset());
-      SwerveSpeedBoostButton.whileActive(new CSwerveSpeedMultiplier(RobotMap.SWERVE_SPEED_BOOST));
-      SwerveSpeedBulletTimeButton.whileActive(new CSwerveSpeedMultiplier(RobotMap.SWERVE_BULLET_TIME));
+      SwerveSpeedBoostButton.whileHeld(new CSwerveSpeedMultiplier(RobotMap.SWERVE_SPEED_BOOST));
+      SwerveSpeedBulletTimeButton.whileHeld(new CSwerveSpeedMultiplier(RobotMap.SWERVE_BULLET_TIME));
+    }
+
+    if(RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
+      CartButtonPressHatch = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_PRESS_HATCH);
+      CartButtonPressHatch.whenPressed(new CHatchPress());
     }
 
   }
-
-  public void povCommands() {
-    if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
-      if(JoystickSupportDriver.getPOV() == 0) {
-        liftingUnitAutonomous = new CLiftingUnitAutonumous(EPositions.next);
-        liftingUnitAutonomous.start();
-      } else if(JoystickSupportDriver.getPOV() == 180) {
-        liftingUnitAutonomous = new CLiftingUnitAutonumous(EPositions.previous);
-        liftingUnitAutonomous.start();
-      }
-    } 
-
-  }
-
 }

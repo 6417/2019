@@ -7,12 +7,15 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import ch.fridolinsrobotik.motorcontrollers.FridolinsTalonSRX;
 import ch.fridolinsrobotik.sensors.utils.EncoderConverter;
 import ch.fridolinsrobotik.utilities.Algorithms;
-import ch.fridolinsrobotik.utilities.EPositions;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.robot.Motors;
@@ -26,13 +29,8 @@ public class SCart extends Subsystem {
 
   EncoderConverter encoderConverter = new EncoderConverter(RobotMap.CART_ENCODER_DISTANCE_PER_PULSE);
   boolean m_isHomed = false, m_autonomous = false;
-  double m_practicalTargetPosition = 0;
-  double m_theoreticalTargetPosition = 0;
-  static final double[] m_cartPositions = new double[] { RobotMap.CART_DRIVE_LENGTH_BACK_MM, RobotMap.CART_DRIVE_LENGTH_HATCH_MM,
-      RobotMap.CART_DRIVE_LENGTH_MID_MM, RobotMap.CART_DRIVE_LENGTH_MM };
-  int m_cartPosition = 0;
-
-  public static boolean cart_drive_permitted = false;
+  int m_targetPosition = 0;
+  TreeMap<Integer, Integer> cartLiftProfile = new TreeMap<Integer, Integer>();
 
   /**
    * Limit switches of the cart are connected to a remote Talon SRX
@@ -43,62 +41,79 @@ public class SCart extends Subsystem {
     setSubsystem("Cart");
     addChild(Motors.cartMotor);
     resetSubsystem();
+    initializeCartLiftProfile();
   }
 
   private void resetSubsystem() {
     m_isHomed = false;
-    m_practicalTargetPosition = 0;
+    m_targetPosition = 0;
     m_autonomous = false;
+  }
+
+  private void initializeCartLiftProfile() {
+    cartLiftProfile.put(0, RobotMap.LIFTING_UNIT_MINIMUM_HEIGHT);
+    cartLiftProfile.put(RobotMap.CART_REVERSE_SAFETY_LENGTH, RobotMap.LIFTING_UNIT_SAFETY_HEIGHT);
+    cartLiftProfile.put(RobotMap.CART_FORWARD_SAFETY_LENGTH, RobotMap.LIFTING_UNIT_MINIMUM_HEIGHT);
+    cartLiftProfile.put(RobotMap.CART_DRIVE_LENGTH, 0);
   }
 
   public boolean isHomed() {
     return m_isHomed;
   }
 
-  public boolean isPositionReached() {
-    if(m_practicalTargetPosition >= getPosition() - RobotMap.CART_POSITION_ZONE && m_practicalTargetPosition <= getPosition() + RobotMap.CART_POSITION_ZONE) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  private int calculateNextPosition(int targetPosition) {
+    int driveToPosition = targetPosition;
+    Integer currentProfileSegment = cartLiftProfile.floorKey((int)getPosition());
+    Integer targetProfileSegment = cartLiftProfile.floorKey(targetPosition);
 
-  public boolean isTargetPositionReached() {
-    if(m_theoreticalTargetPosition >= getPosition() - RobotMap.CART_POSITION_ZONE && m_theoreticalTargetPosition <= getPosition() + RobotMap.CART_POSITION_ZONE) {
-      return true;
-    } else {
-      return false;
+    if(currentProfileSegment == null || targetProfileSegment == null) {
+      System.out.println("SCart: Segments not found");
+      return (int)getPosition();
     }
-  }
 
-  public boolean isDrivePermitted(double targetposition, double liftingUnitTargetPositon) {
-    this.m_theoreticalTargetPosition = targetposition;
-    if(Robot.liftingUnit.getPosition() <= RobotMap.LIFTING_UNIT_SAFETY_HEIGHT) {
-      if(Robot.liftingUnit.getPosition() >= RobotMap.LIFTING_UNIT_SAFETY_HEIGHT - RobotMap.LIFTING_UNIT_SAFETY_ZONE) {
-        m_practicalTargetPosition = m_theoreticalTargetPosition;
-        cart_drive_permitted = true;
-      } else {
-        if(getPosition() >= RobotMap.CART_FORWARD_SAFETY_LENGHT && m_theoreticalTargetPosition >= RobotMap.CART_FORWARD_SAFETY_LENGHT) {
-          m_practicalTargetPosition = m_theoreticalTargetPosition;
-          cart_drive_permitted = true;
-        } else if(getPosition() <= RobotMap.CART_REVERSE_SAFETY_LENGHT && m_theoreticalTargetPosition <= RobotMap.CART_REVERSE_SAFETY_LENGHT) {
-          m_practicalTargetPosition = m_theoreticalTargetPosition;
-          cart_drive_permitted = true;
-        } else if(getPosition() >= RobotMap.CART_FORWARD_SAFETY_LENGHT && m_theoreticalTargetPosition <= RobotMap.CART_FORWARD_SAFETY_LENGHT) {
-          m_practicalTargetPosition = RobotMap.CART_FORWARD_SAFETY_LENGHT;
-          cart_drive_permitted = true;
-        } else if(getPosition() <= RobotMap.CART_REVERSE_SAFETY_LENGHT && m_theoreticalTargetPosition >= RobotMap.CART_REVERSE_SAFETY_LENGHT) {
-          m_practicalTargetPosition = RobotMap.CART_REVERSE_SAFETY_LENGHT;
-          cart_drive_permitted = true;
-        } else {
-          System.out.println("Cart System Failed");
+    // contains all points in the profile which has to be driven
+    NavigableMap<Integer, Integer> motionProfile;
+    if(targetProfileSegment > currentProfileSegment) {
+      motionProfile = cartLiftProfile.subMap(currentProfileSegment, true, targetProfileSegment, true);
+    } else {
+      motionProfile = cartLiftProfile.subMap(targetProfileSegment, true, currentProfileSegment, true);
+    }
+
+    // calculating the minimum height in the overall profile. It could be changed to only check the current and next segment's height.
+    int minimumLiftHeight = 0;
+    for(Map.Entry<Integer, Integer> segment : motionProfile.entrySet()) {
+      minimumLiftHeight = Math.max(segment.getValue(), minimumLiftHeight);
+    }
+    Robot.liftingUnit.setMinimumHeight(minimumLiftHeight);
+
+    // if(Math.abs(targetPosition - getPosition()) > RobotMap.CART_DRIVE_LENGTH / 2) {
+    //   Robot.liftingUnit.setMaximumHeight(RobotMap.LIFTING_UNIT_SAFETY_HEIGHT);
+    // }
+    
+    // if(Robot.liftingUnit.getPosition() > RobotMap.LIFTING_UNIT_SAFETY_HEIGHT + RobotMap.LIFTING_UNIT_SAFETY_ZONE) {
+    //   System.out.println("SCart: Not below maximum height. It's now " + Robot.liftingUnit.getPosition() + " and should be " + (RobotMap.LIFTING_UNIT_SAFETY_HEIGHT + RobotMap.LIFTING_UNIT_SAFETY_ZONE));
+    //   return (int)getPosition();
+    // }
+    
+    // if current lift position is below the required height, only drive up to the
+    // next segment's point.
+    // if current lift position is above the required height, one can drive up to
+    // the target position.
+    if (Robot.liftingUnit.getPosition() < minimumLiftHeight - RobotMap.LIFTING_UNIT_SAFETY_ZONE) {
+      // check if target is in front or behind current position
+      if (targetPosition > getPosition()) {
+        // get next segment in the profile that is higher than the current position
+        Integer nextPoint = motionProfile.higherKey((int) getPosition());
+        if (nextPoint != null) {
+          driveToPosition = nextPoint;
         }
+      } else {
+        driveToPosition = currentProfileSegment;
       }
-    } else {
-      cart_drive_permitted = false;
     }
-    return cart_drive_permitted;
-  }
+
+    return driveToPosition;
+  } 
 
   public void enableAutonomous(boolean enable) {
     m_autonomous = enable;
@@ -115,38 +130,11 @@ public class SCart extends Subsystem {
   }
 
   /**
-   * Moves the cart to the desired position.
-   * 
-   * @param targetPos Position of the cart in mm measured from the 0 point.
+   * Moves the cart to the desired encoder position.
+   * @param targetPos Position of the cart in encoder ticks
    */
-  public void setPosition(double targetPos) {
-    // if (Robot.hatchGripper.isExtended()) {
-    //   targetPos = encoderConverter.getPulses(Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH_HATCH_MM));
-    // } else {
-      targetPos = encoderConverter.getPulses(Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH_MM));
-    // }
-
-    m_practicalTargetPosition = targetPos;
-  }
-
-  public void setPosition(EPositions direction) {
-    switch(direction) {
-      case next: {
-        if(m_cartPosition + 1 < m_cartPositions.length) {
-          setPosition(m_cartPositions[++m_cartPosition]);
-        }
-      } break;
-
-      case hold: {
-        setPosition(m_cartPosition);
-      } break;
-
-      case previous: {
-        if(m_cartPosition > 0) {
-          setPosition(m_cartPositions[--m_cartPosition]);
-        }
-      }
-    }
+  public void setPosition(int targetPos) {
+    m_targetPosition = Algorithms.limit(targetPos, 0, RobotMap.CART_DRIVE_LENGTH);
   }
 
   public void drive(double value) {
@@ -168,9 +156,9 @@ public class SCart extends Subsystem {
       return;
     }
 
-    // TODO check if position is allowed in regard of height of the lifting unit
+    int targetPosition = calculateNextPosition(m_targetPosition);
 
-    Motors.cartMotor.set(ControlMode.MotionMagic, m_practicalTargetPosition);
+    Motors.cartMotor.set(ControlMode.MotionMagic, targetPosition);
   }
 
   private void driveManual(double speed) {
@@ -194,11 +182,9 @@ public class SCart extends Subsystem {
     if (!remoteTalon.getSensorCollection().isRevLimitSwitchClosed()) {
       Motors.cartMotor.setSelectedSensorPosition(0);
       m_isHomed = true;
-      m_cartPosition = 0;
     } else if (!remoteTalon.getSensorCollection().isFwdLimitSwitchClosed()) {
       Motors.cartMotor.setSelectedSensorPosition(RobotMap.CART_DRIVE_LENGTH);
       m_isHomed = true;
-      m_cartPosition = m_cartPositions.length - 1;
     }
   }
 
@@ -218,6 +204,16 @@ public class SCart extends Subsystem {
 
   public boolean isInBackWindow() {
     return (getPosition() <= RobotMap.CART_WINDOW_LENGTH);
+  }
+
+   /**
+   * Checks if cart's position is in the desired range
+   * 
+   * @param position position to reach
+   * @return true, when current position is in the range, false when not in range
+   */
+  public boolean isInRange(int position) {
+    return (Math.abs(getPosition() - position) < RobotMap.CART_POSITION_ZONE);
   }
 
   @Override
@@ -240,7 +236,7 @@ public class SCart extends Subsystem {
 
   @Override
   protected void initDefaultCommand() {
-
+    // setDefaultCommand(new CLiftingUnitOrderdHeight());
   }
 
 }

@@ -360,11 +360,8 @@ public class Motors {
             hatchGripperMotor.factoryDefault();
 
             // Set Mode and Limit Switches
-            if (RobotMap.HATCH_GRIPPER_REPLACED) {
-                hatchGripperMotor.setSensorDirection(false);
-            } else {
-                hatchGripperMotor.setSensorDirection(true);
-            }
+            hatchGripperMotor.setSensorDirection(true);
+
             hatchGripperMotor.setDirection(true);
             hatchGripperMotor.setDirection(true);
             hatchGripperMotor.setIdleMode(FridolinsIdleModeType.kBrake);

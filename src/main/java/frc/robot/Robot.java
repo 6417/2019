@@ -10,27 +10,21 @@ package frc.robot;
 import com.kauailabs.navx.frc.AHRS;
 
 import ch.fridolinsrobotik.drivesystems.swerve.SwerveDrive;
-import ch.fridolinsrobotik.utilities.Algorithms;
 import ch.fridolinsrobotik.utilities.Deadzone;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.robot.commands.groups.CHatchGrab;
-import frc.robot.commands.groups.CHatchHandOut;
-import frc.robot.commands.liftingunit.CLiftingUnitOrderdHeight;
 import frc.robot.subsystems.SCargoGripper;
 import frc.robot.subsystems.SCart;
 import frc.robot.subsystems.SHatchGripper;
 import frc.robot.subsystems.SLiftingUnit;
+import frc.robot.subsystems.SRemoteControl;
 import frc.robot.subsystems.SSwerve;
 
 /**
@@ -50,18 +44,16 @@ public class Robot extends TimedRobot {
   public static SHatchGripper hatchGripper;
   public static SCart cart;
   public static SLiftingUnit liftingUnit;
+  public static SRemoteControl remoteControl;
   public static SSwerve swerveDrive;
   public static SwerveDrive swerve = new SwerveDrive();
-  public static CLiftingUnitOrderdHeight liftingUnitOrderHeight;
+  
   // Shuffleboard
   public static ShuffleboardTab shuffleSettings = Shuffleboard.getTab("Settings");
   public static ShuffleboardTab shuffleSubsystems = Shuffleboard.getTab("Subsystems");
   public static NetworkTable raspberry = NetworkTableInstance.getDefault().getTable("RaspberryPIControlSystem");
+  public static NetworkTable vision = NetworkTableInstance.getDefault().getTable("Vsion/Vision1");
 
-  public static SwerveModule frontLeft;
-  public static SwerveModule frontRight;
-  public static SwerveModule backLeft;
-  public static SwerveModule backRight;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -81,13 +73,14 @@ public class Robot extends TimedRobot {
     if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
       swerveDrive = new SSwerve();
     }
-    if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
-      liftingUnit = new SLiftingUnit();
-      liftingUnitOrderHeight = new CLiftingUnitOrderdHeight();
-    }
     if (RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
       cart = new SCart();
     }
+    if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+      liftingUnit = new SLiftingUnit();
+    }
+
+    remoteControl = new SRemoteControl();
 
     oi = OI.getInstance();
 
@@ -148,6 +141,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    raspberry.getEntry("timeStart").setBoolean(true);
   }
 
   /**
@@ -161,9 +155,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
-      liftingUnitOrderHeight.start();
+      liftingUnit.enableAutonomous(true);
+      cart.enableAutonomous(true);
     }
-    
   }
 
   /**
@@ -184,7 +178,6 @@ public class Robot extends TimedRobot {
 
     if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
       swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, ahrs.getYaw());
-      // swerveDrive.driveCartesian();
     }
 
     if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
@@ -212,7 +205,7 @@ public class Robot extends TimedRobot {
         // liftingUnit.drive();
       }
       if (OI.JoystickSupportDriver.getRawButton(3)) {
-        Motors.liftFollower.setSelectedSensorPosition(0);
+        // Motors.liftFollower.setSelectedSensorPosition(0);
       }
       // System.out.println(joystickZrotateSupport);
     }
@@ -227,6 +220,16 @@ public class Robot extends TimedRobot {
         // cart.drive();
       }
     }
+
+    // if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
+    //   if(OI.HatchGripperButtonExtend.get()) {
+    //     new CHatchGrab().start();
+    //   } else if(OI.HatchGripperButtonRetract.get()) {
+    //     new CHatchHandOut().start();
+    //   } else if(OI.CartButtonPressHatch.get()) {
+    //     new CHatchPress().start();
+    //   }
+    // }
 
     // if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
     // if(OI.JoystickSupportDriver.getRawAxis(2) > 0.5) {

@@ -16,21 +16,18 @@ package frc.robot;
 public class RobotMap {
 
   //Not sorted Variables
-  public static final int CART_REVERSE_SAFETY_LENGHT = 2000;
-  public static final int CART_FORWARD_SAFETY_LENGHT = 9000;
+  public static final int CART_REVERSE_SAFETY_LENGTH = 2000;
+  public static final int CART_FORWARD_SAFETY_LENGTH = 9000;
   public static final int CART_POSITION_ZONE = 200;
   public static final int CART_CENTER_POINT = 2000;
   public static final int LIFTING_UNIT_SAFETY_HEIGHT = 1000;
   public static final int LIFTING_UNIT_SAFETY_ZONE = 200;
 
-  //Systems
-  public static final boolean HATCH_GRIPPER_REPLACED = true;
-
   // Subsystems
-  public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE     = false;
+  public static final boolean CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE     = true;
   public static final boolean HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE     = true;
-  public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE      = false;
-  public static final boolean CART_SUBSYSTEM_IS_IN_USE              = false;
+  public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE      = true;
+  public static final boolean CART_SUBSYSTEM_IS_IN_USE              = true;
   public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE      = true;
 
   // Motors
@@ -67,6 +64,7 @@ public class RobotMap {
   // JoystickButtons
   public static final int SUPPORT_CARGO_GRIPPER_PULL_AXIS_ID = 3;
   public static final int SUPPORT_CARGO_GRIPPER_PUSH_AXIS_ID = 2;
+  public static final int SUPPORT_HATCH_GRIPPER_BUTTON_PRESS_HATCH = 4;
   public static final int SUPPORT_HATCH_GRIPPER_BUTTON_EXTEND_ID = 6;
   public static final int SUPPORT_HATCH_GRIPPER_BUTTON_RETRACT_ID = 5;
   public static final int SUPPORT_HATCH_GRIPPER_BUTTON_CALIBRATE_ID = 7;
@@ -82,15 +80,15 @@ public class RobotMap {
   public static final double STOP_SPEED = 0;
 
   // Swerve Speed Variables
-  public static final double DRIVE_SPEED_MULITPLIER = 0.5;
-  public static final double TURN_SPEED_MULTIPLIER = 1;
+  public static final double DRIVE_SPEED_MULITPLIER = 0.35;
+  public static final double TURN_SPEED_MULTIPLIER = 0.5;
   public static final double SWERVE_SPEED_BOOST = 1;
-  public static final double SWERVE_BULLET_TIME = 0.3;
+  public static final double SWERVE_BULLET_TIME = 0.2;
   public static final double SWERVE_CALIBRATE_SPEED = 0.2;
 
   // Gripper Speed Variables
   public static final double CARGO_GRIPPER_SPEED = 0.3;
-  public static final double HATCH_CALIBRATE_SPEED = -0.4;
+  public static final double HATCH_CALIBRATE_SPEED = -0.2;
 
   // Deadzone
   public static final double DEADZONE_RANGE = 0.05;
@@ -105,7 +103,7 @@ public class RobotMap {
       public static final int LIFTING_UNIT_DISTANCE_PER_PULSE = 1;
       /** Lifting unit motor velocity in units/100ms */
       public static final int LIFTING_UNIT_ENCODER_UNITS_PER_100_MS = 38000;
-      /** Lifting unit length in mm measured from the zero point. */
+      /** Lifting unit length in encoder pulses */
       public static final int LIFTING_UNIT_DRIVE_LENGTH = 32500;
       /** Lifting unit minimum height such that the cargo gripper is not colliding with the cart system */
       public static final int LIFTING_UNIT_MINIMUM_HEIGHT = 1000;
