@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
   public static ShuffleboardTab shuffleSettings = Shuffleboard.getTab("Settings");
   public static ShuffleboardTab shuffleSubsystems = Shuffleboard.getTab("Subsystems");
   public static NetworkTable raspberry = NetworkTableInstance.getDefault().getTable("RaspberryPIControlSystem");
-  public static NetworkTable vision = NetworkTableInstance.getDefault().getTable("Vsion/Vision1");
+  public static NetworkTable vision = NetworkTableInstance.getDefault().getTable("vision");
 
 
   /**
@@ -104,13 +104,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
-      liftingUnit.checkZeroPosition();
-    }
-    if(RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
-      cart.checkLimitSwitches();
-    }
-
+    Scheduler.getInstance().run();
   }
 
   /**
@@ -124,7 +118,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    Scheduler.getInstance().run();
+    // Scheduler.getInstance().run();
   }
 
   /**
@@ -149,7 +143,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    Scheduler.getInstance().run();
+    // Scheduler.getInstance().run();
   }
 
   @Override
@@ -165,7 +159,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    Scheduler.getInstance().run();
+    // Scheduler.getInstance().run();
     // double t1 = Timer.getFPGATimestamp();
     // DriverStation.reportWarning(Double.valueOf(Timer.getFPGATimestamp() - t1).toString(), false);
     double joystickX = OI.JoystickMainDriver.getX();
@@ -177,7 +171,18 @@ public class Robot extends TimedRobot {
     double joystickZrotateSupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getRawAxis(5), RobotMap.DEADZONE_RANGE);
 
     if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
-      swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, ahrs.getYaw());
+      if (OI.JoystickMainDriver.getRawButton(1)) {
+        if (vision.getEntry("targetDetected").getBoolean(false)) {
+          double visionInput = vision.getEntry("targetDistance").getDouble(0);
+          visionInput = Math.tanh(visionInput / 320 * 1.5) / 2;
+          System.out.println(visionInput);
+          swerveDrive.manualDrive(joystickX, joystickY, visionInput, 0);
+        } else {
+          swerveDrive.manualDrive(joystickX, joystickY, 0, 0);
+        }
+      } else {
+        swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, ahrs.getYaw());
+      }
     }
 
     if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {

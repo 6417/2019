@@ -12,6 +12,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import ch.fridolinsrobotik.sensors.utils.EncoderConverter;
 import ch.fridolinsrobotik.utilities.Algorithms;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -46,7 +49,26 @@ public class SLiftingUnit extends Subsystem {
     super();
     addChild(Motors.liftMaster);
     addChild(Motors.liftFollower);
-  }
+    InstantCommand setForwardEncoder = new InstantCommand(new Runnable() {
+      @Override
+      public void run() {
+        zeroed = true;
+        Motors.liftFollower.setSelectedSensorPosition(-RobotMap.LIFTING_UNIT_DRIVE_LENGTH);
+      }
+    });
+    setForwardEncoder.setRunWhenDisabled(true);
+    forwardLimit.whenPressed(setForwardEncoder);
+
+    InstantCommand setReverseEncoder = new InstantCommand(new Runnable() {
+      @Override
+      public void run() {
+        zeroed = true;
+        Motors.liftFollower.setSelectedSensorPosition(-RobotMap.LIFTING_UNIT_ZERO_POSITION);
+      }
+    });
+    setReverseEncoder.setRunWhenDisabled(true);
+    reverseLimit.whenPressed(setReverseEncoder);
+  };
 
   public double getMaximumRaiseSpeed() {
     return maximumRaiseSpeed.getDouble(0.5);
@@ -165,16 +187,22 @@ public class SLiftingUnit extends Subsystem {
    * Checking if the zero position is hit once. This method should be called often
    * in order to have a functioning Cart system.
    */
-  public void checkZeroPosition() {
-    if (!Motors.liftMaster.getSensorCollection().isRevLimitSwitchClosed()) {
-      zeroed = true;
-      Motors.liftFollower.setSelectedSensorPosition(0);
+
+  static Button forwardLimit = new Button() {
+
+    @Override
+    public boolean get() {
+      return !Motors.liftMaster.getSensorCollection().isFwdLimitSwitchClosed();
     }
-    if(!Motors.liftMaster.getSensorCollection().isFwdLimitSwitchClosed()) {
-      zeroed = true;
-      Motors.liftFollower.setSelectedSensorPosition(RobotMap.LIFTING_UNIT_DRIVE_LENGTH);
+  };
+
+  static Button reverseLimit = new Button() {
+
+    @Override
+    public boolean get() {
+      return !Motors.liftMaster.getSensorCollection().isRevLimitSwitchClosed();
     }
-  }
+  };
 
   /**
    * Returns if the Subsystem has been zeroed at least once.
@@ -183,6 +211,10 @@ public class SLiftingUnit extends Subsystem {
    */
   public boolean isZeroed() {
     return zeroed;
+  }
+
+  public void setZeroed(boolean zeroed) {
+    this.zeroed = zeroed;
   }
 
   @Override

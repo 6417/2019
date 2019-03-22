@@ -116,6 +116,19 @@ public class Motors {
             liftMaster.configPeakOutputForward(1, 30);
             liftMaster.configPeakOutputReverse(-1, 30);
 
+            //PID for second Robot
+        //     liftMaster.selectProfileSlot(0, 0);
+        //     liftMaster.config_kF(0, 0.7, 30);
+        //     liftMaster.config_kP(0, 0.5, 30);
+        //     liftMaster.config_kI(0, 0.000015, 30);
+        //     liftMaster.config_kD(0, 5, 30);
+        //     liftMaster.config_IntegralZone(0, 500);
+        //     liftMaster.configAllowableClosedloopError(0, 30, 30);
+        //     liftMaster.configMotionCruiseVelocity(RobotMap.LIFTING_UNIT_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS * 4 / 3,
+        //             30);
+        //     liftMaster.configMotionAcceleration(RobotMap.LIFTING_UNIT_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS, 30);
+
+            //PID for primary robot
             liftMaster.selectProfileSlot(0, 0);
             liftMaster.config_kF(0, 0.8525, 30);
             liftMaster.config_kP(0, 0.5, 30);
@@ -378,16 +391,28 @@ public class Motors {
             hatchGripperMotor.configPeakOutputReverse(-1, 30);
 
             hatchGripperMotor.selectProfileSlot(0, 0);
-            hatchGripperMotor.config_kF(0, 0.03196875, 30);
-            hatchGripperMotor.config_kP(0, 1.6, 30);
-            hatchGripperMotor.config_kI(0, 0.05, 30);
-            hatchGripperMotor.config_kD(0, 32, 30);
+            hatchGripperMotor.config_kF(0, 0.05, 30);
+            hatchGripperMotor.config_kP(0, 1.0, 30);
+            hatchGripperMotor.config_kI(0, 0.0, 30);
+            hatchGripperMotor.config_kD(0, 10, 30);
             hatchGripperMotor.config_IntegralZone(0, 500);
             hatchGripperMotor.configAllowableClosedloopError(0, 30, 30);
             hatchGripperMotor.configMotionCruiseVelocity(RobotMap.HATCH_GRIPPER_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS,
                     30);
             hatchGripperMotor.configMotionAcceleration(RobotMap.HATCH_GRIPPER_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS,
                     30);
+
+        //     hatchGripperMotor.selectProfileSlot(0, 0);
+        //     hatchGripperMotor.config_kF(0, 0.03196875, 30);
+        //     hatchGripperMotor.config_kP(0, 1.6, 30);
+        //     hatchGripperMotor.config_kI(0, 0.05, 30);
+        //     hatchGripperMotor.config_kD(0, 32, 30);
+        //     hatchGripperMotor.config_IntegralZone(0, 500);
+        //     hatchGripperMotor.configAllowableClosedloopError(0, 30, 30);
+        //     hatchGripperMotor.configMotionCruiseVelocity(RobotMap.HATCH_GRIPPER_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS,
+        //             30);
+        //     hatchGripperMotor.configMotionAcceleration(RobotMap.HATCH_GRIPPER_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS,
+        //             30);
         }
     }
 }

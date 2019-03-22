@@ -117,15 +117,16 @@ public class SRemoteControl extends Subsystem {
   public SRemoteControl() {
     hatchOben.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_TOP, RobotMap.CART_REVERSE_SAFETY_LENGTH));
     hatchMitte.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_MID, RobotMap.CART_REVERSE_SAFETY_LENGTH));
-    hatchUnten.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_STATION, RobotMap.CART_REVERSE_SAFETY_LENGTH));
+    hatchUnten.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_BOTTOM, RobotMap.CART_REVERSE_SAFETY_LENGTH));
     hatchStation.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_STATION, RobotMap.CART_REVERSE_SAFETY_LENGTH));
-    hatchCargoship.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_STATION, RobotMap.CART_REVERSE_SAFETY_LENGTH));
+    hatchCargoship.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_BOTTOM, RobotMap.CART_REVERSE_SAFETY_LENGTH));
     ballOben.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_TOP, RobotMap.CART_DRIVE_LENGTH));
     ballMitte.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_MID, RobotMap.CART_DRIVE_LENGTH));
     ballUnten.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_BOTTOM, RobotMap.CART_DRIVE_LENGTH));
-    ballCargoship.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_SHIP, RobotMap.CART_DRIVE_LENGTH));
+    ballCargoship.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_SHIP, RobotMap.CART_FORWARD_SAFETY_LENGTH));
     ballDepot.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_DEPOT, RobotMap.CART_DRIVE_LENGTH));
-    startPosition.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_DEPOT, RobotMap.CART_CENTER_POINT));
+    ballStation.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_STATION, RobotMap.CART_REVERSE_SAFETY_LENGTH));
+    startPosition.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_START, RobotMap.CART_CENTER_POINT));
   }
 
   @Override

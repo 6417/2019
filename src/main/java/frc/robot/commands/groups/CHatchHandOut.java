@@ -15,7 +15,7 @@ import frc.robot.commands.gripper.hatch.CHatchGripperRetract;
 public class CHatchHandOut extends CommandGroup {
   public CHatchHandOut() {
     addSequential(new CCartSetPosition(0), 2);
-    addSequential(new CHatchGripperRetract(), 2);
+    addSequential(new CHatchGripperRetract(), 0.5);
     addSequential(new CCartSetPosition(RobotMap.CART_REVERSE_SAFETY_LENGTH), 2);
   }
 }

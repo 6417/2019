@@ -13,6 +13,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -40,11 +42,30 @@ public class SHatchGripper extends Subsystem {
   boolean isHomed = false;
 
   public SHatchGripper() {
-    hatchList.add("Hatch Calibrate", new CHatchGripperCalibrate());
+    InstantCommand setExtended = new InstantCommand(new Runnable() {
+      @Override
+      public void run() {
+        isHomed = true;
+        Motors.hatchGripperMotor.setSelectedSensorPosition(RobotMap.HATCH_DRIVE_EXTENDED);
+      }
+    });
+    setExtended.setRunWhenDisabled(true);
+    extended.whenPressed(setExtended);
+
+    InstantCommand setRetracted = new InstantCommand(new Runnable() {
+      @Override
+      public void run() {
+        isHomed = true;
+        Motors.hatchGripperMotor.setSelectedSensorPosition(RobotMap.HATCH_DRIVE_RETRACTED);
+      }
+    });
+    setRetracted.setRunWhenDisabled(true);
+    retracted.whenPressed(setRetracted);
   }
 
   @Override
   public void initDefaultCommand() {
+    hatchList.add("Hatch Calibrate", new CHatchGripperCalibrate());
   }
 
   public void hatchGripperExtend() {
@@ -72,13 +93,14 @@ public class SHatchGripper extends Subsystem {
   }
 
   public void automaticResetHatchEncoder() {
-    if (getReverseLimit()) {
-      Motors.hatchGripperMotor.setSelectedSensorPosition(RobotMap.HATCH_DRIVE_RETRACTED);
-      isHomed = true;
-    } else if (getForwardLimit()) {
-      Motors.hatchGripperMotor.setSelectedSensorPosition(RobotMap.HATCH_DRIVE_EXTENDED);
-      isHomed = true;
-    }
+    // if (getReverseLimit()) {
+    //   Motors.hatchGripperMotor.setSelectedSensorPosition(RobotMap.HATCH_DRIVE_RETRACTED);
+    //   isHomed = true;
+    // } else if (getForwardLimit()) {
+    //   Motors.hatchGripperMotor.setSelectedSensorPosition(RobotMap.HATCH_DRIVE_EXTENDED);
+    //   isHomed = true;
+    // }
+    
   }
 
   @Override
@@ -134,5 +156,21 @@ public class SHatchGripper extends Subsystem {
     }
     return buttonsPressed;
   }
+
+  static Button extended = new Button() {
+
+    @Override
+    public boolean get() {
+      return Motors.hatchGripperMotor.getSensorCollection().isFwdLimitSwitchClosed();
+    }
+  };
+
+  static Button retracted = new Button() {
+
+    @Override
+    public boolean get() {
+      return Motors.hatchGripperMotor.getSensorCollection().isRevLimitSwitchClosed();
+    }
+  };
 
 }
