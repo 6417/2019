@@ -274,6 +274,8 @@ public class Motors {
                 motor.configNominalOutputReverse(0, 20);
                 motor.configPeakOutputForward(1, 20);
                 motor.configPeakOutputReverse(-1, 20);
+                motor.configPeakCurrentLimit(0);
+                motor.configContinuousCurrentLimit(40);
 
                 /* Zero the sensor */
                 motor.setSelectedSensorPosition(0, 0, 20);
@@ -293,13 +295,9 @@ public class Motors {
                 motor.config_kI(0, 0.16);
                 motor.config_kD(0, 4);
                 motor.configClosedLoopPeakOutput(0, 0.5);
-
-                // motor.config_IntegralZone(1, 100);
-                // motor.config_kF(1, 0);
-                // motor.config_kP(1, 0.0);
-                // motor.config_kI(1, 0.0);
-                // motor.config_kD(1, 0);
-                // motor.configClosedLoopPeakOutput(1, 1);
+                
+                motor.configPeakCurrentLimit(0);
+                motor.configContinuousCurrentLimit(30);
 
                 // Set Directions
                 motor.setSensorPhase(false);
@@ -323,11 +321,12 @@ public class Motors {
             talonSwerveDriveBackLeft.setDirection(false);
             talonSwerveDriveBackRight.setDirection(false);
             talonSwerveDriveFrontLeft.setDirection(false);
-            talonSwerveDriveFrontRight
-                    .setDirection(false); /*
-                                           * TODO change the mecanical invert on the Robot and search the problem in the
-                                           * Software for changine it whit setInverted()
-                                           */
+            talonSwerveDriveFrontRight.setDirection(false);
+
+            /*
+            * TODO change the mecanical invert on the Robot and search the problem in the
+            * Software for changine it whit setInverted()
+            */
 
             // Rename Swerve Motors
             swerveDriveFrontRight = talonSwerveDriveFrontRight;
