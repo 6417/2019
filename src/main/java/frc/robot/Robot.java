@@ -71,6 +71,7 @@ public class Robot extends TimedRobot {
       hatchGripper = new SHatchGripper();
     }
     if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
+      swerve.setSpeedFactor(RobotMap.DRIVE_SPEED_MULITPLIER);
       swerveDrive = new SSwerve();
     }
     if (RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
@@ -143,7 +144,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    // Scheduler.getInstance().run();
+    double joystickX = OI.JoystickMainDriver.getX();
+    double joystickY = -OI.JoystickMainDriver.getY();
+    double joystickZ = OI.JoystickMainDriver.getZ();
+    
+    swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, ahrs.getYaw());
   }
 
   @Override
