@@ -10,7 +10,6 @@ package ch.fridolinsrobotik.drivesystems.swerve.commands;
 import ch.fridolinsrobotik.motorcontrollers.FridolinsLimitSwitchPolarity;
 import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Motors;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -23,7 +22,6 @@ public class SwerveSteeringZeroingBySwitch extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    System.out.println(this.getClass().getName() + " has started");
     for(IFridolinsMotors steering : Motors.swerveAngleMotors) {
       steering.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kNormallyOpen, true);
     }
@@ -50,12 +48,10 @@ public class SwerveSteeringZeroingBySwitch extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    System.out.println(this.getClass().getName() + " has ended");
     for(IFridolinsMotors steering : Motors.swerveAngleMotors) {
       steering.setPercent(0);
       steering.enableForwardLimitSwitch(FridolinsLimitSwitchPolarity.kDisabled, false);
       steering.setSensorPosition(0);
-      System.out.println(steering.getEncoderTicks());
     }
   }
 

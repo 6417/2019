@@ -111,8 +111,6 @@ public abstract class SwerveModule implements Sendable, AutoCloseable {
         // normalize the magnitude to 1
         naturalRotateVector.x /= mountingPoint.magnitude();
         naturalRotateVector.y /= mountingPoint.magnitude();
-
-        System.out.println("rotate vector: "+naturalRotateVector.x+"/"+naturalRotateVector.y+"->"+naturalRotateVector.magnitude());
     }
 
     /**

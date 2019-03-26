@@ -9,7 +9,6 @@ package ch.fridolinsrobotik.drivesystems.swerve.commands;
 
 import ch.fridolinsrobotik.motorcontrollers.FridolinsLimitSwitchPolarity;
 import ch.fridolinsrobotik.motorcontrollers.IFridolinsMotors;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Motors;
 import frc.robot.Robot;
