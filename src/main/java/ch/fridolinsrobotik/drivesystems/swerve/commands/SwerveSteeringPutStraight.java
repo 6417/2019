@@ -53,6 +53,7 @@ public class SwerveSteeringPutStraight extends Command {
       motor.setPercent(0);
       motor.setIdleMode(FridolinsIdleModeType.kCoast);
     }
+    Robot.swerveDrive.homed(true);
   }
 
   // Called when another command which requires one or more of the same

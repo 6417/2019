@@ -7,7 +7,10 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.robot.Motors;
 import frc.robot.Robot;
@@ -23,6 +26,12 @@ public class SSwerve extends Subsystem {
 	private double rotationMagnitude;
 	private double gyro;
 
+	ShuffleboardLayout swerveSettings = Robot.shuffleSettings.getLayout("Swerve", BuiltInLayouts.kList).withPosition(2, 0).withSize(2,2);
+	NetworkTableEntry homed = swerveSettings.add("Homed", false).getEntry();
+
+	public SSwerve() {
+		super();
+	}
 
 	@Override
 	protected void initDefaultCommand() {
@@ -42,6 +51,14 @@ public class SSwerve extends Subsystem {
 
 	public void driveCartesian() {
 		Robot.swerve.driveCartesian(driveX, driveY, rotationMagnitude, gyro);
+	}
+
+	public boolean isHomed() {
+		return homed.getBoolean(false);
+	}
+
+	public void homed(boolean successful) {
+		homed.setBoolean(successful);
 	}
 
 	@Override

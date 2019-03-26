@@ -10,9 +10,18 @@ package frc.robot.commands.groups;
 import ch.fridolinsrobotik.drivesystems.swerve.commands.SwerveSteeringPutStraight;
 import ch.fridolinsrobotik.drivesystems.swerve.commands.SwerveSteeringZeroingBySwitchWithPositionControl;
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.InstantCommand;
+import frc.robot.Robot;
 
 public class CSwerveCalibrate extends CommandGroup {
   public CSwerveCalibrate() {
+    addSequential(new InstantCommand(new Runnable(){
+    
+      @Override
+      public void run() {
+        Robot.swerveDrive.homed(false);
+      }
+    }));
     addSequential(new SwerveSteeringZeroingBySwitchWithPositionControl(500));
     addSequential(new SwerveSteeringPutStraight());
   }
