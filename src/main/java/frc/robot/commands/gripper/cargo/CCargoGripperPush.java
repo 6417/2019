@@ -9,7 +9,6 @@ package frc.robot.commands.gripper.cargo;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.SCargoGripper;
 
 public class CCargoGripperPush extends Command {
 

@@ -7,10 +7,16 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.kauailabs.navx.frc.AHRS;
 
 import ch.fridolinsrobotik.drivesystems.swerve.SwerveDrive;
+import ch.fridolinsrobotik.utilities.Algorithms;
 import ch.fridolinsrobotik.utilities.Deadzone;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -20,6 +26,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.SCargoGripper;
 import frc.robot.subsystems.SCart;
 import frc.robot.subsystems.SHatchGripper;
@@ -38,6 +45,10 @@ public class Robot extends TimedRobot {
   public static OI oi;
   public static AHRS ahrs;
   public static PowerDistributionPanel PDP;
+
+  //Variables
+  private int lastPos;
+  private double liftingBreak = 0;
 
   // Create Subsystems
   public static SCargoGripper cargoGripper;
@@ -80,8 +91,9 @@ public class Robot extends TimedRobot {
     if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
       liftingUnit = new SLiftingUnit();
     }
-
-    remoteControl = new SRemoteControl();
+    if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE && RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
+      remoteControl = new SRemoteControl();
+    }
 
     oi = OI.getInstance();
 
@@ -92,6 +104,8 @@ public class Robot extends TimedRobot {
     } catch (RuntimeException ex) {
       System.out.println("Error instantiating navX-MXP:  " + ex.getMessage());
     }
+
+    CameraServer.getInstance().addAxisCamera("Hatch", "10.64.17.6");
   }
 
   /**
@@ -173,7 +187,7 @@ public class Robot extends TimedRobot {
 
     double joystickYsupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getY(Hand.kLeft), RobotMap.DEADZONE_RANGE);
     double joystickXsupport = Deadzone.getAxis(OI.JoystickSupportDriver.getX(Hand.kLeft), RobotMap.DEADZONE_RANGE);
-    double joystickZrotateSupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getRawAxis(5), RobotMap.DEADZONE_RANGE);
+    double joystickZrotateSupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getRawAxis(3), RobotMap.DEADZONE_RANGE);
 
     if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
       if (OI.JoystickMainDriver.getRawButton(1)) {
@@ -190,66 +204,140 @@ public class Robot extends TimedRobot {
       }
     }
 
+    if (RobotMap.ROBOT_ELEVATOR_SUBSYSTEM_IN_USE && RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+
+      double liftMasterOutput = 0;
+      double elevatorRightOutput = 0;
+      double elevatorLeftOutput = 0;
+
+      if(!Motors.robotElevatorLeft.getSensorCollection().isRevLimitSwitchClosed()) {
+        Motors.robotElevatorLeft.getSensorCollection().setQuadraturePosition(0,0);
+      }
+      if(!Motors.robotElevatorRight.getSensorCollection().isRevLimitSwitchClosed()) {
+        Motors.robotElevatorRight.getSensorCollection().setQuadraturePosition(0,0);
+      }
+      // double tanh = Math.tanh(diffrenceLiftingElevator / 2000);
+      final double liftingUnitElevatorRatio = 100.0;
+      double dLM = Math.tanh(
+          (
+              (Motors.robotElevatorRight.getSelectedSensorPosition(0) / liftingUnitElevatorRatio)
+              - (8300 - liftingUnit.getPosition())
+          ) / 500.0) * 0.5;
+      double levelingElevator = Math.tanh(
+        (Motors.robotElevatorRight.getSelectedSensorPosition(0) - Motors.robotElevatorLeft.getSelectedSensorPosition(0))
+         / liftingUnitElevatorRatio / 500.0) * 0.5;
+      SmartDashboard.putNumber("levelingElevator ", levelingElevator);
+      SmartDashboard.putNumber(" dLM ", dLM);
+      SmartDashboard.putNumber(" Elevator dif: ", (Motors.robotElevatorRight.getSelectedSensorPosition(0) - Motors.robotElevatorLeft.getSelectedSensorPosition(0)) / liftingUnitElevatorRatio / 2000.0);
+      // Motors.liftMaster.set(ControlMode.PercentOutput, joystickZrotateSupport - tanh + tanh2);
+      if(OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 270) {
+        Motors.liftMaster.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
+        if(liftingUnit.getPosition() <= 1000) {
+          // liftMasterOutput = - joystickZrotateSupport + liftingBreak;
+          // elevatorRightOutput =  joystickZrotateSupport - liftingBreak;
+          // elevatorLeftOutput = joystickZrotateSupport - liftingBreak;
+          // double normalizeFactor = 1;
+          // Double[] outputs = {liftMasterOutput, elevatorRightOutput, elevatorLeftOutput};
+          // for(Double output : outputs) {
+          //   normalizeFactor = Math.max(Math.abs(output), normalizeFactor);
+          // }
+          Motors.liftMaster.set(ControlMode.Position, 0, DemandType.ArbitraryFeedForward, -0.6);
+          Motors.robotElevatorRight.set(ControlMode.PercentOutput, joystickZrotateSupport);
+          Motors.robotElevatorLeft.set(ControlMode.PercentOutput, joystickZrotateSupport);
+        } else {
+          liftMasterOutput = - joystickZrotateSupport - dLM + levelingElevator;
+          elevatorRightOutput =  joystickZrotateSupport - dLM - levelingElevator;
+          elevatorLeftOutput = joystickZrotateSupport - dLM + levelingElevator;
+
+          double normalizeFactor = 1;
+          Double[] outputs = {liftMasterOutput, elevatorRightOutput, elevatorLeftOutput};
+          for(Double output : outputs) {
+            normalizeFactor = Math.max(Math.abs(output), normalizeFactor);
+          }
+          SmartDashboard.putNumber("Normalize Factor", normalizeFactor);
+          SmartDashboard.putNumber("LU Output", liftMasterOutput / normalizeFactor);
+          SmartDashboard.putNumber("ELR Output", elevatorRightOutput / normalizeFactor);
+          SmartDashboard.putNumber("ELL Output", elevatorLeftOutput /normalizeFactor);
+          SmartDashboard.putNumber("Break", liftingBreak);
+          Motors.liftMaster.set(ControlMode.PercentOutput, liftMasterOutput / normalizeFactor);
+          Motors.robotElevatorRight.set(ControlMode.PercentOutput, elevatorRightOutput / normalizeFactor);
+          Motors.robotElevatorLeft.set(ControlMode.PercentOutput, elevatorLeftOutput / normalizeFactor);
+        }
+       
+      } else if(OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 180) {
+        Motors.robotElevatorRight.set(ControlMode.PercentOutput, joystickZrotateSupport);
+        Motors.robotElevatorLeft.set(ControlMode.PercentOutput, joystickYsupport);
+      } else {
+
+      }
+
+      // Motors.robotElevatorLeft.set(ControlMode.PercentOutput, joystickYsupport);
+      
+      // Motors.robotElevatorRight.set(ControlMode.Position, Algorithms.limit(joystickZrotateSupport * 450000, 0, 450000), DemandType.AuxPID, 0);
+      // Motors.robotElevatorLeft.follow(Motors.robotElevatorRight, FollowerType.AuxOutput1);
+
+      if(liftingUnit.getPosition() <= 1000) {
+        if(liftingUnit.getPosition() >= 500) {
+          if(liftMasterOutput > 0) {
+            liftingBreak = liftingBreak - (Math.abs(lastPos) - Math.abs(liftingUnit.getPosition())) * 0.2;  
+          } else {
+          liftingBreak = liftingBreak + (Math.abs(lastPos) - Math.abs(liftingUnit.getPosition())) * 0.2;
+          }
+          liftingBreak = Algorithms.limit(liftingBreak, -1, 1);
+        } else {
+          liftingBreak = 1;
+        }
+      } else {
+        liftingBreak = 0;
+      }
+      System.out.print(" Lifting Break: " + liftingBreak);
+      System.out.println(" Lifting Unit Position: " + liftingUnit.getPosition());
+      lastPos = liftingUnit.getPosition();
+
+    }
+
     if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
-      // if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-      //   if(OI.HatchGripperButtonExtend.get()) {
-      //     OI.HatchGripperButtonExtend.toggleWhenPressed(new CHatchGrab());
-      //   } else if(OI.HatchGripperButtonRetract.get()) {
-      //     OI.HatchGripperButtonRetract.toggleWhenPressed(new CHatchHandOut());
-      //   } else if(cart.isTargetPositionReached()) {
-      //     liftingUnitOrderHeight.start();
-      //   } else {
-      //     System.out.println("Couldnt start the OrderHeiht Command");
-      //   }
-      // } else {
-      //   liftingUnitOrderHeight.start();
-      // }
 
       if(OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 0) {
-        // liftingUnit.enableAutonomous(false);
-        // liftingUnit.drive(joystickZrotateSupport);
+        if(liftingUnit.drive_autonomous == true) {
+          liftingUnit.drive_autonomous = false;
+          liftingUnit.stopMotor();
+        }
+        liftingUnit.enableAutonomous(false);
+        liftingUnit.setMaximumLoweringSpeed(-0.3);
+        liftingUnit.setMaximumRaiseSpeed(0.4);
+        liftingUnit.drive(joystickZrotateSupport);
       } else {
-        // liftingUnit.enableAutonomous(true);
+        liftingUnit.enableAutonomous(true);
+        if(liftingUnit.drive_manual == true) {
+          liftingUnit.drive_manual = false;
+          liftingUnit.setTargetPosition(liftingUnit.getPosition());
+          liftingUnit.drive();
+        }
         // // liftingUnit.setTargetPosition(Algorithms.limit(joystickZrotateSupport, 0, 1) * 5000);
         // liftingUnit.setTargetPosition(7500);
         // liftingUnit.drive();
       }
-      if (OI.JoystickSupportDriver.getRawButton(3)) {
-        // Motors.liftFollower.setSelectedSensorPosition(0);
-      }
-      // System.out.println(joystickZrotateSupport);
     }
+
     if (RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
-      if (OI.JoystickSupportDriver.getRawButton(1)) {
+      if (OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 90) {
+        if(cart.drive_autonomous == true) {
+          cart.drive_autonomous = false;
+          cart.stop();
+        }
         cart.enableAutonomous(false);
-        cart.drive(joystickYsupport);
+        cart.drive(joystickZrotateSupport / 4);
       } else {
-        // cart.setPosition(
-        // Algorithms.limit(joystickYsupport * RobotMap.CART_DRIVE_LENGTH_MM, 0, RobotMap.CART_DRIVE_LENGTH_MM));
-        // cart.enableAutonomous(true);
-        // cart.drive();
+        cart.enableAutonomous(true);
+        if(cart.drive_manual == true) {
+          cart.drive_manual = false;
+          cart.setPosition((int)cart.getPosition());
+          cart.drive();
+        }
       }
     }
 
-    // if(RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-    //   if(OI.HatchGripperButtonExtend.get()) {
-    //     new CHatchGrab().start();
-    //   } else if(OI.HatchGripperButtonRetract.get()) {
-    //     new CHatchHandOut().start();
-    //   } else if(OI.CartButtonPressHatch.get()) {
-    //     new CHatchPress().start();
-    //   }
-    // }
-
-    // if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-    // if(OI.JoystickSupportDriver.getRawAxis(2) > 0.5) {
-    // cargoGripper.push(OI.JoystickSupportDriver.getRawAxis(2));
-    // } else if(OI.JoystickSupportDriver.getRawAxis(3) >0.5) {
-    // cargoGripper.pull(OI.JoystickSupportDriver.getRawAxis(3));
-    // } else {
-    // cargoGripper.stop();
-    // }
-    // }
   }
 
 }

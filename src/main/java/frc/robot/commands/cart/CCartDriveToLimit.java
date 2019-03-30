@@ -8,32 +8,43 @@
 package frc.robot.commands.cart;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Motors;
+import frc.robot.Robot;
 
-public class CCartCalibrate extends Command {
-  public CCartCalibrate() {
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
+public class CCartDriveToLimit extends Command {
+
+  private double value;
+
+  public CCartDriveToLimit(double value) {
+    requires(Robot.cart);
+    this.value = value;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.cart.enableAutonomous(false);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    if(!isFinished()) {
+      Robot.cart.drive(value);
+    }
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return !Motors.cartMotor.getSensorCollection().isFwdLimitSwitchClosed() || !Motors.cartMotor.getSensorCollection().isRevLimitSwitchClosed();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.liftingUnit.setTargetPosition(Robot.liftingUnit.getPosition());
+    Robot.cart.enableAutonomous(true);
   }
 
   // Called when another command which requires one or more of the same

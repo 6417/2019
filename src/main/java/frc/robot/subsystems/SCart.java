@@ -29,6 +29,8 @@ public class SCart extends Subsystem {
 
   EncoderConverter encoderConverter = new EncoderConverter(RobotMap.CART_ENCODER_DISTANCE_PER_PULSE);
   boolean m_isHomed = false, m_autonomous = false;
+  public boolean drive_manual = false;
+  public boolean drive_autonomous = false; 
   int m_targetPosition = 0;
   TreeMap<Integer, Integer> cartLiftProfile = new TreeMap<Integer, Integer>();
 
@@ -156,6 +158,8 @@ public class SCart extends Subsystem {
       return;
     }
 
+    drive_autonomous = true;
+
     int targetPosition = calculateNextPosition(m_targetPosition);
 
     Motors.cartMotor.set(ControlMode.MotionMagic, targetPosition);
@@ -166,6 +170,7 @@ public class SCart extends Subsystem {
       speed = 0;
     }
     Motors.cartMotor.set(ControlMode.PercentOutput, speed);
+    drive_manual = true;
   }
 
   /**

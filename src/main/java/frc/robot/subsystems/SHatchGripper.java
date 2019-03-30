@@ -52,6 +52,10 @@ public class SHatchGripper extends Subsystem {
     setExtended.setRunWhenDisabled(true);
     extended.whenPressed(setExtended);
 
+    if(getForwardLimit()) {
+      setExtended.start();
+    }
+
     InstantCommand setRetracted = new InstantCommand(new Runnable() {
       @Override
       public void run() {
@@ -61,6 +65,10 @@ public class SHatchGripper extends Subsystem {
     });
     setRetracted.setRunWhenDisabled(true);
     retracted.whenPressed(setRetracted);
+
+    if(getReverseLimit()) {
+      setRetracted.start();
+    }
   }
 
   @Override

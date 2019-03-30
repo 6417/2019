@@ -36,6 +36,9 @@ public class SLiftingUnit extends Subsystem {
 
   private boolean m_autonomous = false;
 
+  public boolean drive_manual = false;
+  public boolean drive_autonomous = false;
+
   private int m_minimumHeight = 0, m_maximumHeight = RobotMap.LIFTING_UNIT_DRIVE_LENGTH;
 
   ShuffleboardLayout liftingunitSettings = Robot.shuffleSettings.getLayout("Lifting Unit", BuiltInLayouts.kList).withPosition(0, 0).withSize(2,2);
@@ -115,7 +118,7 @@ public class SLiftingUnit extends Subsystem {
    * 
    * @return Position in mm
    */
-  public double getPosition() {
+  public int getPosition() {
     return Motors.liftMaster.getSelectedSensorPosition();
     // return encoderConverter.getDistance(Motors.liftMaster.getSelectedSensorPosition());
   }
@@ -158,14 +161,17 @@ public class SLiftingUnit extends Subsystem {
       return;
     }
 
+    drive_autonomous = true;
+
     int targetPosition = Math.min(Math.max(getTargetPosition(), getMinimumHeight()), getMaximumHeight());
 
     Motors.liftMaster.set(ControlMode.MotionMagic, targetPosition);
   }
 
   public void driveManual(double value) {
-    value *= Math.abs(Algorithms.scale(value, -1, 1, getMaximumLoweringSpeed(), getMaximumRaiseSpeed()-getManualHoldOffset()));
-    Motors.liftMaster.set(ControlMode.PercentOutput, value + getManualHoldOffset());
+      value *= Math.abs(Algorithms.scale(value, -1, 1, getMaximumLoweringSpeed(), getMaximumRaiseSpeed()-getManualHoldOffset()));
+      Motors.liftMaster.set(ControlMode.PercentOutput, value + getManualHoldOffset());
+      drive_manual = true;
   }
 
   public void enableAutonomous(boolean enable) {

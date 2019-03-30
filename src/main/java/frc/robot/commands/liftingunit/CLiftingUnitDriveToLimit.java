@@ -8,32 +8,53 @@
 package frc.robot.commands.liftingunit;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Motors;
+import frc.robot.Robot;
+import frc.robot.RobotMap;
 
-public class CLiftingUnitCalibrate extends Command {
-  public CLiftingUnitCalibrate() {
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
+public class CLiftingUnitDriveToLimit extends Command {
+
+  private double value;
+  private boolean revLimitSwitchWasPressed;
+
+  public CLiftingUnitDriveToLimit(double value) {
+    requires(Robot.liftingUnit);
+    this.value = value;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.liftingUnit.enableAutonomous(false);
+    revLimitSwitchWasPressed =!Motors.liftMaster.getSensorCollection().isRevLimitSwitchClosed();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    if(revLimitSwitchWasPressed) {  
+      if(!Motors.liftMaster.getSensorCollection().isRevLimitSwitchClosed()) {
+        Robot.liftingUnit.drive(value); 
+      } else {
+        Robot.liftingUnit.drive((-value) / 4);
+      } 
+    } else {
+      Robot.liftingUnit.drive(value);
+    }
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return Robot.liftingUnit.isZeroed();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.liftingUnit.stopMotor();
+    Robot.liftingUnit.setTargetPosition(Robot.liftingUnit.getPosition());
+    Robot.liftingUnit.enableAutonomous(true);
   }
 
   // Called when another command which requires one or more of the same

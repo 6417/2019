@@ -41,7 +41,7 @@ public class CCartSetPosition extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.liftingUnit.setMaximumHeight(RobotMap.LIFTING_UNIT_DRIVE_LENGTH);
+    // Robot.liftingUnit.setMaximumHeight(RobotMap.LIFTING_UNIT_DRIVE_LENGTH);
   }
 
   // Called when another command which requires one or more of the same

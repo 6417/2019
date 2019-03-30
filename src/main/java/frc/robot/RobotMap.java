@@ -29,6 +29,7 @@ public class RobotMap {
   public static final boolean LIFTING_UNIT_SUBSYSTEM_IS_IN_USE      = true;
   public static final boolean CART_SUBSYSTEM_IS_IN_USE              = true;
   public static final boolean SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE      = true;
+  public static final boolean ROBOT_ELEVATOR_SUBSYSTEM_IN_USE       = true;
 
   // Motors
   public static final int SWERVE_DRIVE_FRONT_LEFT_ID    = 32;
@@ -49,8 +50,10 @@ public class RobotMap {
   public static final int LIFTING_UNIT_MOTOR_RIGHT_ID   = 51;
 
   public static final int CART_MOTOR_ID                 = 52;
-
   public static final int CART_REMOTE_LIMIT_SWITCH_ID   = SWERVE_DRIVE_FRONT_RIGHT_ID;
+
+  public static final int ROBOT_ELEVATOR_MOTOR_LEFT_ID  = 53;
+  public static final int ROBOT_ELEVATOR_MOTOR_RIGHT_ID = 54;
 
   // DIO
   public static final int HATCH_GRIPPER_DIO_TOP = 0;
@@ -62,16 +65,31 @@ public class RobotMap {
   public static final int JOYSTICK_SUPPORT_DRIVER_ID = 1;
 
   // JoystickButtons
-  public static final int SUPPORT_CARGO_GRIPPER_PULL_AXIS_ID = 3;
-  public static final int SUPPORT_CARGO_GRIPPER_PUSH_AXIS_ID = 2;
-  public static final int SUPPORT_HATCH_GRIPPER_BUTTON_PRESS_HATCH = 4;
-  public static final int SUPPORT_HATCH_GRIPPER_BUTTON_EXTEND_ID = 6;
-  public static final int SUPPORT_HATCH_GRIPPER_BUTTON_RETRACT_ID = 5;
-  public static final int SUPPORT_HATCH_GRIPPER_BUTTON_CALIBRATE_ID = 7;
-  public static final int SUPPORT_POV_CHANNEL_ID = 0;
+    //Triggers
+    public static final int SUPPORT_CARGO_GRIPPER_BUTTON_PULL_ID = 8;
+    public static final int SUPPORT_CARGO_GRIPPER_BUTTON_PUSH_ID = 7;
+
+    public static final int SUPPORT_HATCH_GRIPPER_BUTTON_EXTEND_ID = 6;
+    public static final int SUPPORT_HATCH_GRIPPER_BUTTON_RETRACT_ID = 5;
+
+    //Color Buttons
+    public static final int SUPPORT_HATCH_GRIPPER_BUTTON_PRESS_HATCH = 4;
+    public static final int SUPPORT_HATCH_PICK_UP_BUTTON = 1;
+    public static final int SUPPORT_START_POS_BUTTON = 3;
+    public static final int SUPPORT_CARGO_GROUND_BUTTON = 2;
+
+    //Calibrate Buttons
+    public static final int SUPPORT_HATCH_GRIPPER_BUTTON_CALIBRATE_ID = 9;
+    public static final int SUPPORT_LIFTING_UNIT_BUTTON_CALIBRATE_ID = 10;
+
+    //POV Channel
+    public static final int SUPPORT_POV_CHANNEL_ID = 0;
 
   public static final int MAIN_SWERVE_ANGLE_CALIBRATE_BUTTON_ID = 9;
   public static final int MAIN_FIELD_ANGLE_RESET_BUTTON_ID = 10;
+  public static final int MAIN_FIELD_ANGLE_ENABLE_BUTTON_ID = 2;
+  public static final int MAIN_FIELD_ANGLE_DISABLE_BUTTON_ID = 3;
+
   public static final int MAIN_SWERVE_BOOST_BUTTON_ID = 7;
   public static final int MAIN_SWERVE_SLOW_MODE_BUTTON_ID = 8;
 
@@ -88,7 +106,7 @@ public class RobotMap {
 
   // Gripper Speed Variables
   public static final double CARGO_GRIPPER_SPEED = 0.3;
-  public static final double HATCH_CALIBRATE_SPEED = -0.2;
+  public static final double HATCH_CALIBRATE_SPEED = -0.1;
 
   // Deadzone
   public static final double DEADZONE_RANGE = 0.05;

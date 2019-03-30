@@ -14,10 +14,12 @@ import frc.robot.commands.drive.swerve.CSwerveSpeedMultiplier;
 import frc.robot.commands.gripper.cargo.CCargoGripperPull;
 import frc.robot.commands.gripper.cargo.CCargoGripperPush;
 import frc.robot.commands.gripper.hatch.ConditionalHatchCommand;
+import frc.robot.commands.groups.CAutonomousDeliver;
 import frc.robot.commands.groups.CHatchGrab;
 import frc.robot.commands.groups.CHatchGripperCalibrate;
 import frc.robot.commands.groups.CHatchHandOut;
 import frc.robot.commands.groups.CHatchPress;
+import frc.robot.commands.groups.CLiftingUnitCalibrate;
 import frc.robot.commands.groups.CSwerveCalibrate;
 
 /**
@@ -42,6 +44,11 @@ public class OI {
   public static JoystickButton NavXResetButton;
   public static JoystickButton SwerveSpeedBoostButton;
   public static JoystickButton SwerveSpeedBulletTimeButton;
+  public static JoystickButton LiftingUnitButtonCalibrate;
+
+  public static JoystickButton StartPositionButton;
+  public static JoystickButton HatchPickUpButton;
+  public static JoystickButton CargoGroundButton;
 
   private static OI INSTANCE;
 
@@ -56,13 +63,11 @@ public class OI {
 
     //Initialize JoystickButtons when Subystem is in use
     if(RobotMap.CARGO_GRIPPER_SUBSYSTEM_IS_IN_USE) {
-      CargoGripperButtonPull = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_CARGO_GRIPPER_PULL_AXIS_ID);
-      CargoGripperButtonPush = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_CARGO_GRIPPER_PUSH_AXIS_ID);
-
+      CargoGripperButtonPull = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_CARGO_GRIPPER_BUTTON_PULL_ID);
+      CargoGripperButtonPush = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_CARGO_GRIPPER_BUTTON_PUSH_ID);
       //Call Commands
       CargoGripperButtonPull.toggleWhenPressed(new CCargoGripperPull());
-      CargoGripperButtonPush.toggleWhenPressed(new CCargoGripperPush());
-
+      CargoGripperButtonPush.whileHeld(new CCargoGripperPush());
     }
 
     //Initialize JoystickButtons when Subystem is in use
@@ -77,7 +82,7 @@ public class OI {
       HatchGripperButtonExtend.whenPressed(new ConditionalHatchCommand(new CHatchGrab()));
       HatchGripperButtonRetract.whenPressed(new ConditionalHatchCommand(new CHatchHandOut()));
       HatchGripperButtonPress.whenPressed(new ConditionalHatchCommand(new CHatchPress()));
-      HatchGripperButtonCalibrate.whenPressed(new ConditionalHatchCommand(new CHatchGripperCalibrate()));
+      HatchGripperButtonCalibrate.whenPressed(new CHatchGripperCalibrate());
     }
 
     if(RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
@@ -95,6 +100,18 @@ public class OI {
     if(RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
       CartButtonPressHatch = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_PRESS_HATCH);
       CartButtonPressHatch.whenPressed(new CHatchPress());
+    }
+
+    if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE && RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
+      StartPositionButton = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_START_POS_BUTTON);
+      CargoGroundButton = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_CARGO_GROUND_BUTTON);
+      HatchPickUpButton = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_HATCH_PICK_UP_BUTTON);
+      LiftingUnitButtonCalibrate = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_LIFTING_UNIT_BUTTON_CALIBRATE_ID);
+      
+      StartPositionButton.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_START, RobotMap.CART_CENTER_POINT));
+      CargoGroundButton.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_DEPOT, RobotMap.CART_DRIVE_LENGTH));
+      HatchPickUpButton.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_STATION, RobotMap.CART_REVERSE_SAFETY_LENGTH));
+      LiftingUnitButtonCalibrate.whenPressed(new CLiftingUnitCalibrate());
     }
 
   }

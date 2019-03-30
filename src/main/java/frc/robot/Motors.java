@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
@@ -18,6 +19,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.SensorTerm;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -44,6 +46,9 @@ public class Motors {
 
     public static WPI_TalonSRX liftMaster;
     public static WPI_TalonSRX liftFollower;
+    
+    public static WPI_TalonSRX robotElevatorLeft;
+    public static WPI_TalonSRX robotElevatorRight;
 
     public static IFridolinsMotors swerveDriveFrontRight;
     public static IFridolinsMotors swerveDriveFrontLeft;
@@ -69,6 +74,8 @@ public class Motors {
         swerveInit();
 
         cartInit();
+
+        swerveLiftInit();
     }
 
     private static void liftingUnitInit() {
@@ -362,6 +369,61 @@ public class Motors {
             Robot.swerve.setSafetyEnabled(false);
         }
     }
+
+    private static void swerveLiftInit() {
+    if (RobotMap.ROBOT_ELEVATOR_SUBSYSTEM_IN_USE) {
+      robotElevatorLeft = new FridolinsTalonSRX(RobotMap.ROBOT_ELEVATOR_MOTOR_LEFT_ID);
+      robotElevatorRight = new FridolinsTalonSRX(RobotMap.ROBOT_ELEVATOR_MOTOR_RIGHT_ID);
+
+      WPI_TalonSRX[] motors = {robotElevatorLeft, robotElevatorRight};
+
+      for (WPI_TalonSRX motor : motors) {
+        motor.configFactoryDefault();
+        motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+        motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+        motor.setSensorPhase(false);
+        motor.setInverted(true);
+        motor.setSafetyEnabled(true);
+        motor.configOpenloopRamp(0.3);
+        motor.configClosedloopRamp(0.5);
+        motor.configPeakOutputForward(0.7);
+        motor.configPeakOutputReverse(-0.7);
+        
+        motor.config_kP(0, 0.00227333349, 30);
+        // motor.config_kP(1, 0.00227333349, 30);
+        // motor.config_kI(0, 0.0, 30);
+        // motor.config_kD(0, 10, 30);
+        // motor.config_IntegralZone(0, 500);
+        // motor.configAllowableClosedloopError(0, 30, 30);
+      }
+      robotElevatorRight.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0 , 30);
+      robotElevatorLeft.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 30);
+      robotElevatorRight.configRemoteFeedbackFilter(robotElevatorLeft.getDeviceID(), RemoteSensorSource.TalonSRX_SelectedSensor, 0, 30);
+      /* Setup difference signal to be used for elevator leveling */
+      robotElevatorRight.configSensorTerm(SensorTerm.Diff1, FeedbackDevice.RemoteSensor0, 30);	// Feedback Device of Remote Talon
+      robotElevatorRight.configSensorTerm(SensorTerm.Diff0, FeedbackDevice.QuadEncoder, 30);		// Quadrature Encoder of current Talon
+      /* Difference term calculated by right Talon configured to be selected sensor of elevator leveling PID */
+      robotElevatorRight.configSelectedFeedbackSensor(FeedbackDevice.SensorDifference, 1, 0);
+      robotElevatorRight.configSelectedFeedbackCoefficient(78, 1, 30);
+      /* configAuxPIDPolarity(boolean invert, int timeoutMs)
+      * false means talon's local output is PID0 + PID1, and other side Talon is PID0 - PID1
+      * true means talon's local output is PID0 - PID1, and other side Talon is PID0 + PID1
+      */
+      robotElevatorRight.configAuxPIDPolarity(true, 30);
+
+      // rechts - links 
+
+      // l       r
+      // 5000    40000
+
+      // dif: 35000
+
+
+
+      robotElevatorRight.selectProfileSlot(0, 0);
+      robotElevatorRight.selectProfileSlot(1, 1);
+    }
+  }
 
     private static void hatchInit() {
         if (RobotMap.HATCH_GRIPPER_SUBSYSTEM_IS_IN_USE) {
