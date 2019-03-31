@@ -309,34 +309,19 @@ public class Robot extends TimedRobot {
         liftingUnit.setMaximumRaiseSpeed(0.4);
         liftingUnit.drive(joystickZrotateSupport);
       } else {
-        liftingUnit.enableAutonomous(true);
-        if(liftingUnit.drive_manual == true) {
-          liftingUnit.drive_manual = false;
-          liftingUnit.setTargetPosition(liftingUnit.getPosition());
-          liftingUnit.drive();
+        if(liftingUnit.isZeroed()) {
+          liftingUnit.enableAutonomous(true);
+          if(liftingUnit.drive_manual == true) {
+            liftingUnit.drive_manual = false;
+            liftingUnit.setTargetPosition(liftingUnit.getPosition());
+            liftingUnit.drive();
+          }
         }
-        // // liftingUnit.setTargetPosition(Algorithms.limit(joystickZrotateSupport, 0, 1) * 5000);
-        // liftingUnit.setTargetPosition(7500);
-        // liftingUnit.drive();
       }
     }
 
     if (RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
-      if (OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 90) {
-        if(cart.drive_autonomous == true) {
-          cart.drive_autonomous = false;
-          cart.stop();
-        }
-        cart.enableAutonomous(false);
-        cart.drive(joystickZrotateSupport / 4);
-      } else {
-        cart.enableAutonomous(true);
-        if(cart.drive_manual == true) {
-          cart.drive_manual = false;
-          cart.setPosition((int)cart.getPosition());
-          cart.drive();
-        }
-      }
+      cart.drive(joystickZrotateSupport / 4.0);
     }
 
   }
