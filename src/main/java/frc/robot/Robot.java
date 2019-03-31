@@ -50,6 +50,8 @@ public class Robot extends TimedRobot {
   private int lastPos;
   private double liftingBreak = 0;
 
+  private boolean cameraDrive = false;
+
   // Create Subsystems
   public static SCargoGripper cargoGripper;
   public static SHatchGripper hatchGripper;
@@ -199,8 +201,15 @@ public class Robot extends TimedRobot {
         } else {
           swerveDrive.manualDrive(joystickX, joystickY, 0, 0);
         }
+      }  
+      if(OI.JoystickMainDriver.getRawButtonPressed(4)) {
+        cameraDrive = !cameraDrive;
       } else {
-        swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, ahrs.getYaw());
+        if(cameraDrive == true) {
+          swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, 180);
+        } else {
+          swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, ahrs.getYaw());
+        }
       }
     }
 
