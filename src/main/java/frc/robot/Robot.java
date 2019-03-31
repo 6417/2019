@@ -309,11 +309,13 @@ public class Robot extends TimedRobot {
         liftingUnit.setMaximumRaiseSpeed(0.4);
         liftingUnit.drive(joystickZrotateSupport);
       } else {
-        liftingUnit.enableAutonomous(true);
-        if(liftingUnit.drive_manual == true) {
-          liftingUnit.drive_manual = false;
-          liftingUnit.setTargetPosition(liftingUnit.getPosition());
-          liftingUnit.drive();
+        if(liftingUnit.isZeroed()) {
+          liftingUnit.enableAutonomous(true);
+          if(liftingUnit.drive_manual == true) {
+            liftingUnit.drive_manual = false;
+            liftingUnit.setTargetPosition(liftingUnit.getPosition());
+            liftingUnit.drive();
+        }
         }
         // // liftingUnit.setTargetPosition(Algorithms.limit(joystickZrotateSupport, 0, 1) * 5000);
         // liftingUnit.setTargetPosition(7500);
