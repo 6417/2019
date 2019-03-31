@@ -210,9 +210,7 @@ public class Robot extends TimedRobot {
       swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, ahrs.getYaw());
     }
 
-    if (RobotMap.ROBOT_ELEVATOR_SUBSYSTEM_IN_USE && RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
-
-      elevator.checkLimitSwitches();      
+    if (RobotMap.ROBOT_ELEVATOR_SUBSYSTEM_IN_USE && RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {    
 
       SmartDashboard.putNumber("levelingElevator ", elevator.calculateLevelingElevator());
       SmartDashboard.putNumber(" dLM ", elevator.calculateDLM());

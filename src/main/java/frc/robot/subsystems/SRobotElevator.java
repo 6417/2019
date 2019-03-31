@@ -150,12 +150,17 @@ public class SRobotElevator extends Subsystem {
     Motors.robotElevatorRight.set(ControlMode.PercentOutput, 0);
   }
 
+  @Override
+  public void periodic() {
+    checkLimitSwitches();
+  }
+
   public void checkLimitSwitches() {
     if (!Motors.robotElevatorLeft.getSensorCollection().isRevLimitSwitchClosed()) {
       Motors.robotElevatorLeft.getSensorCollection().setQuadraturePosition(0,0);
       m_isHomed = true;
     }
-    if (!Motors.robotElevatorRight.getSensorCollection().isFwdLimitSwitchClosed()) {
+    if (!Motors.robotElevatorRight.getSensorCollection().isRevLimitSwitchClosed()) {
       Motors.robotElevatorRight.getSensorCollection().setQuadraturePosition(0,0);
       m_isHomed = true;
     }
