@@ -92,6 +92,9 @@ public class RobotMap {
 
   public static final int MAIN_SWERVE_BOOST_BUTTON_ID = 7;
   public static final int MAIN_SWERVE_SLOW_MODE_BUTTON_ID = 8;
+  public static final int MAIN_SWERVE_HATCH_ORIENTED_BUTTON_ID = 3;
+  public static final int MAIN_SWERVE_CARGO_ORIENTED_BUTTON_ID = 4;
+  public static final int MAIN_SWERVE_FIELD_ORINETED_BUTTON_ID = 2;
 
   // General Speed Variables
   public static final double SPEED_MULTIPLIER = 1;

@@ -5,43 +5,39 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.cart;
+package frc.robot.commands.drive.swerve;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.subsystems.SSwerve.DriveMode;
 
-public class CCartSetPosition extends Command {
-  private int m_position;
+public class CSwerveChangeDriveMode extends Command {
+  private DriveMode m_driveMode;
 
-  public CCartSetPosition(int position) {
-    requires(Robot.cart);
-    m_position = position;
+  public CSwerveChangeDriveMode(DriveMode driveMode) {
+    m_driveMode = driveMode;
   }
- 
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.cart.setPosition(m_position);
-    Robot.cart.enableAutonomous(true);
+    Robot.swerveDrive.setDriveMode(m_driveMode);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.cart.drive();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return Robot.cart.isInRange(m_position);
+    return true;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    // Robot.liftingUnit.setMaximumHeight(RobotMap.LIFTING_UNIT_DRIVE_LENGTH);
   }
 
   // Called when another command which requires one or more of the same

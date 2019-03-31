@@ -379,6 +379,7 @@ public class Motors {
 
       for (WPI_TalonSRX motor : motors) {
         motor.configFactoryDefault();
+        motor.getSensorCollection().setQuadraturePosition(0,30);
         motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
         motor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
         motor.setSensorPhase(false);

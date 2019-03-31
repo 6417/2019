@@ -33,7 +33,7 @@ public class CLiftingUnitSetHeight extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return Robot.liftingUnit.isInRange(m_position);
+    return Robot.liftingUnit.isInRange(m_position - 100);
   }
 
   // Called once after isFinished returns true
