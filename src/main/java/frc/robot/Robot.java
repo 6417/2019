@@ -50,6 +50,8 @@ public class Robot extends TimedRobot {
   private int lastPos;
   private double liftingBreak = 0;
 
+  private boolean cameraDrive = false;
+
   // Create Subsystems
   public static SCargoGripper cargoGripper;
   public static SHatchGripper hatchGripper;
@@ -190,18 +192,17 @@ public class Robot extends TimedRobot {
     double joystickZrotateSupport = Deadzone.getAxis(-OI.JoystickSupportDriver.getRawAxis(3), RobotMap.DEADZONE_RANGE);
 
     if (RobotMap.SWERVE_DRIVE_SUBSYSTEM_IS_IN_USE) {
-      if (OI.JoystickMainDriver.getRawButton(1)) {
-        if (vision.getEntry("targetDetected").getBoolean(false)) {
-          double visionInput = vision.getEntry("targetDistance").getDouble(0);
-          visionInput = Math.tanh(visionInput / 320 * 1.5) / 2;
-          System.out.println(visionInput);
-          swerveDrive.manualDrive(joystickX, joystickY, visionInput, 0);
-        } else {
-          swerveDrive.manualDrive(joystickX, joystickY, 0, 0);
-        }
-      } else {
-        swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, ahrs.getYaw());
-      }
+      // if (OI.JoystickMainDriver.getRawButton(1)) {
+      //   if (vision.getEntry("targetDetected").getBoolean(false)) {
+      //     double visionInput = vision.getEntry("targetDistance").getDouble(0);
+      //     visionInput = Math.tanh(visionInput / 320 * 1.5) / 2;
+      //     System.out.println(visionInput);
+      //     swerveDrive.manualDrive(joystickX, joystickY, visionInput, 0);
+      //   } else {
+      //     swerveDrive.manualDrive(joystickX, joystickY, 0, 0);
+      //   }
+      // }
+      swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, ahrs.getYaw());
     }
 
     if (RobotMap.ROBOT_ELEVATOR_SUBSYSTEM_IN_USE && RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {

@@ -9,7 +9,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.commands.drive.navx.CNavXReset;
+import frc.robot.commands.drive.swerve.CSwerveChangeDriveMode;
 import frc.robot.commands.drive.swerve.CSwerveSpeedMultiplier;
 import frc.robot.commands.gripper.cargo.CCargoGripperPull;
 import frc.robot.commands.gripper.cargo.CCargoGripperPush;
@@ -21,6 +23,7 @@ import frc.robot.commands.groups.CHatchHandOut;
 import frc.robot.commands.groups.CHatchPress;
 import frc.robot.commands.groups.CLiftingUnitCalibrate;
 import frc.robot.commands.groups.CSwerveCalibrate;
+import frc.robot.subsystems.SSwerve.DriveMode;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -44,6 +47,9 @@ public class OI {
   public static JoystickButton NavXResetButton;
   public static JoystickButton SwerveSpeedBoostButton;
   public static JoystickButton SwerveSpeedBulletTimeButton;
+  public static JoystickButton SwerveHatchOrientedButton;
+  public static JoystickButton SwerveCargoOrientedButton;
+  public static JoystickButton SwerveFieldOrientedButton;
   public static JoystickButton LiftingUnitButtonCalibrate;
 
   public static JoystickButton StartPositionButton;
@@ -90,11 +96,18 @@ public class OI {
       NavXResetButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_FIELD_ANGLE_RESET_BUTTON_ID);
       SwerveSpeedBoostButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_SWERVE_BOOST_BUTTON_ID);
       SwerveSpeedBulletTimeButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_SWERVE_SLOW_MODE_BUTTON_ID);
+      SwerveHatchOrientedButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_SWERVE_HATCH_ORIENTED_BUTTON_ID);
+      SwerveCargoOrientedButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_SWERVE_CARGO_ORIENTED_BUTTON_ID);
+      SwerveFieldOrientedButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_SWERVE_FIELD_ORINETED_BUTTON_ID);
 
       SwerveCalibrateButton.whenPressed(new CSwerveCalibrate());
       NavXResetButton.whenPressed(new CNavXReset());
       SwerveSpeedBoostButton.whileHeld(new CSwerveSpeedMultiplier(RobotMap.SWERVE_SPEED_BOOST));
       SwerveSpeedBulletTimeButton.whileHeld(new CSwerveSpeedMultiplier(RobotMap.SWERVE_BULLET_TIME));
+      SwerveHatchOrientedButton.whenPressed(new CSwerveChangeDriveMode(DriveMode.HatchOriented));
+      SwerveCargoOrientedButton.whenPressed(new CSwerveChangeDriveMode(DriveMode.CargoOriented));
+      SwerveFieldOrientedButton.whenPressed(new CSwerveChangeDriveMode(DriveMode.FieldOriented));
+
     }
 
     if(RobotMap.CART_SUBSYSTEM_IS_IN_USE) {

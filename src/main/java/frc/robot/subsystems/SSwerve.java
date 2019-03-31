@@ -25,12 +25,15 @@ public class SSwerve extends Subsystem {
 	private double driveY;
 	private double rotationMagnitude;
 	private double gyro;
+	private DriveMode driveMode;
 
-	ShuffleboardLayout swerveSettings = Robot.shuffleSettings.getLayout("Swerve", BuiltInLayouts.kList).withPosition(2, 0).withSize(2,2);
-	NetworkTableEntry homed = swerveSettings.add("Homed", false).getEntry();
+	ShuffleboardLayout swerveSubsystem = Robot.shuffleSubsystems.getLayout("Swerve", BuiltInLayouts.kList).withPosition(2, 0).withSize(2,2);
+	NetworkTableEntry shuffleboardHomed = swerveSubsystem.add("Homed", false).getEntry();
+	NetworkTableEntry shuffleboardDriveMode = swerveSubsystem.add("Drive Mode", DriveMode.FieldOriented.toString()).getEntry();
 
 	public SSwerve() {
 		super();
+		driveMode = DriveMode.FieldOriented;
 	}
 
 	@Override
@@ -50,15 +53,26 @@ public class SSwerve extends Subsystem {
 	}
 
 	public void driveCartesian() {
-		Robot.swerve.driveCartesian(driveX, driveY, rotationMagnitude, gyro);
+		switch(driveMode) {
+			case FieldOriented:
+				Robot.swerve.driveCartesian(driveX, driveY, rotationMagnitude, gyro);
+			break;
+			case CargoOriented:
+				Robot.swerve.driveCartesian(driveX, driveY, rotationMagnitude, 0);
+			break;
+			case HatchOriented:
+				Robot.swerve.driveCartesian(driveX, driveY, rotationMagnitude, 180.0);
+			break;
+		}
+		
 	}
 
 	public boolean isHomed() {
-		return homed.getBoolean(false);
+		return shuffleboardHomed.getBoolean(false);
 	}
 
 	public void homed(boolean successful) {
-		homed.setBoolean(successful);
+		shuffleboardHomed.setBoolean(successful);
 	}
 
 	@Override
@@ -69,5 +83,16 @@ public class SSwerve extends Subsystem {
 		builder.addBooleanProperty("HallSteeringBackLeft", Motors.swerveAngleBackLeft::isForwardLimitSwitchActive, null);
 		builder.addBooleanProperty("HallSteeringBackRight", Motors.swerveAngleBackRight::isForwardLimitSwitchActive, null);
 	}
+
+	public void setDriveMode(DriveMode driveMode) {
+		this.driveMode = driveMode;
+		shuffleboardDriveMode.setString(driveMode.toString());
+	}
+
+	public enum DriveMode {
+		CargoOriented,
+		FieldOriented,
+		HatchOriented
+	} 
 
 }
