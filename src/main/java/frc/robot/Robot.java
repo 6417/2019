@@ -32,6 +32,7 @@ import frc.robot.subsystems.SCart;
 import frc.robot.subsystems.SHatchGripper;
 import frc.robot.subsystems.SLiftingUnit;
 import frc.robot.subsystems.SRemoteControl;
+import frc.robot.subsystems.SRobotElevator;
 import frc.robot.subsystems.SSwerve;
 
 /**
@@ -57,6 +58,7 @@ public class Robot extends TimedRobot {
   public static SHatchGripper hatchGripper;
   public static SCart cart;
   public static SLiftingUnit liftingUnit;
+  public static SRobotElevator elevator;
   public static SRemoteControl remoteControl;
   public static SSwerve swerveDrive;
   public static SwerveDrive swerve = new SwerveDrive();
@@ -95,6 +97,9 @@ public class Robot extends TimedRobot {
     }
     if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE && RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
       remoteControl = new SRemoteControl();
+    }
+    if(RobotMap.ROBOT_ELEVATOR_SUBSYSTEM_IN_USE && RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+      elevator = new SRobotElevator();
     }
 
     oi = OI.getInstance();
@@ -205,96 +210,31 @@ public class Robot extends TimedRobot {
       swerveDrive.manualDrive(joystickX, joystickY, -joystickZ, ahrs.getYaw());
     }
 
-    if (RobotMap.ROBOT_ELEVATOR_SUBSYSTEM_IN_USE && RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
+    if (RobotMap.ROBOT_ELEVATOR_SUBSYSTEM_IN_USE && RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {    
 
-      double liftMasterOutput = 0;
-      double elevatorRightOutput = 0;
-      double elevatorLeftOutput = 0;
+      SmartDashboard.putNumber("levelingElevator ", elevator.calculateLevelingElevator());
+      SmartDashboard.putNumber(" dLM ", elevator.calculateDLM());
+      SmartDashboard.putNumber(" Elevator dif: ", (Motors.robotElevatorRight.getSelectedSensorPosition(0) - Motors.robotElevatorLeft.getSelectedSensorPosition(0)) / elevator.getLiftingUnitElevatorRatio() / 2000.0);
 
-      if(!Motors.robotElevatorLeft.getSensorCollection().isRevLimitSwitchClosed()) {
-        Motors.robotElevatorLeft.getSensorCollection().setQuadraturePosition(0,0);
-      }
-      if(!Motors.robotElevatorRight.getSensorCollection().isRevLimitSwitchClosed()) {
-        Motors.robotElevatorRight.getSensorCollection().setQuadraturePosition(0,0);
-      }
-      // double tanh = Math.tanh(diffrenceLiftingElevator / 2000);
-      final double liftingUnitElevatorRatio = 100.0;
-      double dLM = Math.tanh(
-          (
-              (Motors.robotElevatorRight.getSelectedSensorPosition(0) / liftingUnitElevatorRatio)
-              - (8300 - liftingUnit.getPosition())
-          ) / 500.0) * 0.5;
-      double levelingElevator = Math.tanh(
-        (Motors.robotElevatorRight.getSelectedSensorPosition(0) - Motors.robotElevatorLeft.getSelectedSensorPosition(0))
-         / liftingUnitElevatorRatio / 500.0) * 0.5;
-      SmartDashboard.putNumber("levelingElevator ", levelingElevator);
-      SmartDashboard.putNumber(" dLM ", dLM);
-      SmartDashboard.putNumber(" Elevator dif: ", (Motors.robotElevatorRight.getSelectedSensorPosition(0) - Motors.robotElevatorLeft.getSelectedSensorPosition(0)) / liftingUnitElevatorRatio / 2000.0);
-      // Motors.liftMaster.set(ControlMode.PercentOutput, joystickZrotateSupport - tanh + tanh2);
       if(OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 270) {
-        Motors.liftMaster.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.Disabled);
-        if(liftingUnit.getPosition() <= 1000) {
-          // liftMasterOutput = - joystickZrotateSupport + liftingBreak;
-          // elevatorRightOutput =  joystickZrotateSupport - liftingBreak;
-          // elevatorLeftOutput = joystickZrotateSupport - liftingBreak;
-          // double normalizeFactor = 1;
-          // Double[] outputs = {liftMasterOutput, elevatorRightOutput, elevatorLeftOutput};
-          // for(Double output : outputs) {
-          //   normalizeFactor = Math.max(Math.abs(output), normalizeFactor);
-          // }
-          Motors.liftMaster.set(ControlMode.Position, 0, DemandType.ArbitraryFeedForward, -0.6);
-          Motors.robotElevatorRight.set(ControlMode.PercentOutput, joystickZrotateSupport);
-          Motors.robotElevatorLeft.set(ControlMode.PercentOutput, joystickZrotateSupport);
-        } else {
-          liftMasterOutput = - joystickZrotateSupport - dLM + levelingElevator;
-          elevatorRightOutput =  joystickZrotateSupport - dLM - levelingElevator;
-          elevatorLeftOutput = joystickZrotateSupport - dLM + levelingElevator;
 
-          double normalizeFactor = 1;
-          Double[] outputs = {liftMasterOutput, elevatorRightOutput, elevatorLeftOutput};
-          for(Double output : outputs) {
-            normalizeFactor = Math.max(Math.abs(output), normalizeFactor);
-          }
-          SmartDashboard.putNumber("Normalize Factor", normalizeFactor);
-          SmartDashboard.putNumber("LU Output", liftMasterOutput / normalizeFactor);
-          SmartDashboard.putNumber("ELR Output", elevatorRightOutput / normalizeFactor);
-          SmartDashboard.putNumber("ELL Output", elevatorLeftOutput /normalizeFactor);
-          SmartDashboard.putNumber("Break", liftingBreak);
-          Motors.liftMaster.set(ControlMode.PercentOutput, liftMasterOutput / normalizeFactor);
-          Motors.robotElevatorRight.set(ControlMode.PercentOutput, elevatorRightOutput / normalizeFactor);
-          Motors.robotElevatorLeft.set(ControlMode.PercentOutput, elevatorLeftOutput / normalizeFactor);
-        }
+        elevator.elevate(joystickZrotateSupport);
+
+          SmartDashboard.putNumber("Normalize Factor", elevator.getNormalizeFactor());
+          SmartDashboard.putNumber("LU Output", elevator.getLiftMasterOutput() / elevator.getNormalizeFactor());
+          SmartDashboard.putNumber("ELR Output", elevator.getElevatorRightOutput() / elevator.getNormalizeFactor());
+          SmartDashboard.putNumber("ELL Output", elevator.getElevatorLeftOutput() /elevator.getNormalizeFactor());
+          SmartDashboard.putNumber("Break", elevator.getLiftingBreak());
        
       } else if(OI.JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 180) {
-        Motors.robotElevatorRight.set(ControlMode.PercentOutput, joystickZrotateSupport);
-        Motors.robotElevatorLeft.set(ControlMode.PercentOutput, joystickYsupport);
+        elevator.moveElevators(joystickZrotateSupport, joystickYsupport);
       } else {
 
       }
 
-      // Motors.robotElevatorLeft.set(ControlMode.PercentOutput, joystickYsupport);
-      
-      // Motors.robotElevatorRight.set(ControlMode.Position, Algorithms.limit(joystickZrotateSupport * 450000, 0, 450000), DemandType.AuxPID, 0);
-      // Motors.robotElevatorLeft.follow(Motors.robotElevatorRight, FollowerType.AuxOutput1);
-
-      if(liftingUnit.getPosition() <= 1000) {
-        if(liftingUnit.getPosition() >= 500) {
-          if(liftMasterOutput > 0) {
-            liftingBreak = liftingBreak - (Math.abs(lastPos) - Math.abs(liftingUnit.getPosition())) * 0.2;  
-          } else {
-          liftingBreak = liftingBreak + (Math.abs(lastPos) - Math.abs(liftingUnit.getPosition())) * 0.2;
-          }
-          liftingBreak = Algorithms.limit(liftingBreak, -1, 1);
-        } else {
-          liftingBreak = 1;
-        }
-      } else {
-        liftingBreak = 0;
-      }
-      System.out.print(" Lifting Break: " + liftingBreak);
+      System.out.print(" Lifting Break: " + elevator.calculateBreak());
       System.out.println(" Lifting Unit Position: " + liftingUnit.getPosition());
-      lastPos = liftingUnit.getPosition();
-
+    
     }
 
     if (RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE) {
