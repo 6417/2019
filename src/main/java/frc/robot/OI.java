@@ -8,8 +8,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import frc.robot.commands.cart.CCartDriveManual;
 import frc.robot.commands.drive.navx.CNavXReset;
 import frc.robot.commands.drive.swerve.CSwerveChangeDriveMode;
 import frc.robot.commands.drive.swerve.CSwerveSpeedMultiplier;
@@ -43,6 +45,7 @@ public class OI {
   public static JoystickButton HatchGripperButtonPress;
   public static JoystickButton HatchGripperButtonCalibrate;
   public static JoystickButton CartButtonPressHatch;
+  public static Button CartButtonDriveManual;
   public static JoystickButton SwerveCalibrateButton;
   public static JoystickButton NavXResetButton;
   public static JoystickButton SwerveSpeedBoostButton;
@@ -113,6 +116,13 @@ public class OI {
     if(RobotMap.CART_SUBSYSTEM_IS_IN_USE) {
       CartButtonPressHatch = new JoystickButton(JoystickSupportDriver, RobotMap.SUPPORT_HATCH_GRIPPER_BUTTON_PRESS_HATCH);
       CartButtonPressHatch.whenPressed(new CHatchPress());
+      CartButtonDriveManual = new Button() {
+       @Override
+       public boolean get() {
+         return (JoystickSupportDriver.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 90);
+       }
+      };
+      CartButtonDriveManual.whileHeld(new CCartDriveManual());
     }
 
     if(RobotMap.LIFTING_UNIT_SUBSYSTEM_IS_IN_USE && RobotMap.CART_SUBSYSTEM_IS_IN_USE) {

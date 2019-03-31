@@ -8,7 +8,6 @@
 package frc.robot.commands.cart;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.Motors;
 import frc.robot.Robot;
 
 public class CCartDriveToLimit extends Command {
@@ -37,13 +36,13 @@ public class CCartDriveToLimit extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return !Motors.cartMotor.getSensorCollection().isFwdLimitSwitchClosed() || !Motors.cartMotor.getSensorCollection().isRevLimitSwitchClosed();
+    return Robot.cart.isHomed();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.liftingUnit.setTargetPosition(Robot.liftingUnit.getPosition());
+    Robot.cart.stop();
     Robot.cart.enableAutonomous(true);
   }
 
@@ -51,5 +50,6 @@ public class CCartDriveToLimit extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    Robot.cart.enableAutonomous(true);
   }
 }

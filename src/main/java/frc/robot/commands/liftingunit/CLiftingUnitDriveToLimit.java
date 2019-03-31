@@ -10,7 +10,6 @@ package frc.robot.commands.liftingunit;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Motors;
 import frc.robot.Robot;
-import frc.robot.RobotMap;
 
 public class CLiftingUnitDriveToLimit extends Command {
 
@@ -36,7 +35,7 @@ public class CLiftingUnitDriveToLimit extends Command {
       if(!Motors.liftMaster.getSensorCollection().isRevLimitSwitchClosed()) {
         Robot.liftingUnit.drive(value); 
       } else {
-        Robot.liftingUnit.drive((-value) / 4);
+        Robot.liftingUnit.drive(-1);
       } 
     } else {
       Robot.liftingUnit.drive(value);

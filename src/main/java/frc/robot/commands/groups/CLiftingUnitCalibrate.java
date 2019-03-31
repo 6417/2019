@@ -7,6 +7,7 @@
 
 package frc.robot.commands.groups;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.RobotMap;
 import frc.robot.commands.cart.CCartDriveToLimit;
@@ -20,7 +21,7 @@ public class CLiftingUnitCalibrate extends CommandGroup {
    */
   public CLiftingUnitCalibrate() {
     addSequential(new CLiftingUnitDriveToLimit(0.5));
-    addSequential(new CLiftingUnitSetHeight(RobotMap.LIFTING_UNIT_HEIGHT_START));
+    addSequential(new CLiftingUnitSetHeight(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_BOTTOM));
     addSequential(new CCartDriveToLimit(0.3));
     addSequential(new CCartSetPosition(RobotMap.CART_CENTER_POINT));
   }
