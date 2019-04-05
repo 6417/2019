@@ -10,7 +10,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.commands.cart.CCartDriveManual;
 import frc.robot.commands.drive.navx.CNavXReset;
 import frc.robot.commands.drive.swerve.CSwerveChangeDriveMode;
@@ -36,6 +35,7 @@ public class OI {
   //Create Joystick
   public static Joystick JoystickMainDriver = new Joystick(RobotMap.JOYSTICK_MAIN_DRIVER_ID);
   public static Joystick JoystickSupportDriver = new Joystick(RobotMap.JOYSTICK_SUPPORT_DRIVER_ID);
+  public static Joystick JoystickHeightController = new Joystick(RobotMap.JOYSTICK_HEIGHT_CONTROLLER_ID);
 
   //Create JoystickButtons
   public static JoystickButton CargoGripperButtonPush;
@@ -58,6 +58,15 @@ public class OI {
   public static JoystickButton StartPositionButton;
   public static JoystickButton HatchPickUpButton;
   public static JoystickButton CargoGroundButton;
+
+  public static JoystickButton HatchStation;
+  public static JoystickButton HatchRocket2;
+  public static JoystickButton HatchRocket3;
+  public static JoystickButton CargoGroundButton2;
+  public static Button CargoRocket1;
+  public static Button CargoRocket2;
+  public static Button CargoRocket3;
+  public static Button CargoStation;
 
   private static OI INSTANCE;
 
@@ -135,7 +144,50 @@ public class OI {
       CargoGroundButton.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_DEPOT, RobotMap.CART_DRIVE_LENGTH));
       HatchPickUpButton.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_STATION, RobotMap.CART_REVERSE_SAFETY_LENGTH));
       LiftingUnitButtonCalibrate.whenPressed(new CLiftingUnitCalibrate());
-    }
+    
+      /** Remote control replacement follows here */
+      HatchStation = new JoystickButton(JoystickHeightController, RobotMap.HEIGHT_HATCH_STATION_BUTTON_ID);
+      HatchRocket2 = new JoystickButton(JoystickHeightController, RobotMap.HEIGHT_HATCH_MID_BUTTON_ID);
+      HatchRocket3 = new JoystickButton(JoystickHeightController, RobotMap.HEIGHT_HATCH_TOP_BUTTON_ID);
+      CargoGroundButton2 = new JoystickButton(JoystickHeightController, RobotMap.HEIGHT_CARGO_GROUND_BUTTON_ID);
+
+      HatchStation.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_STATION, RobotMap.CART_REVERSE_SAFETY_LENGTH));
+      HatchRocket2.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_MID, RobotMap.CART_REVERSE_SAFETY_LENGTH));
+      HatchRocket3.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_HATCH_TOP, RobotMap.CART_REVERSE_SAFETY_LENGTH));
+      CargoGroundButton2.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_DEPOT, RobotMap.CART_DRIVE_LENGTH));
+
+      CargoRocket1 = new Button() {
+        @Override
+        public boolean get() {
+          return (JoystickHeightController.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 180);
+        }
+       };
+       CargoRocket1.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_BOTTOM, RobotMap.CART_DRIVE_LENGTH));
+
+       CargoRocket2 = new Button() {
+        @Override
+        public boolean get() {
+          return (JoystickHeightController.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 90);
+        }
+       };
+       CargoRocket2.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_MID, RobotMap.CART_DRIVE_LENGTH));
+       CargoRocket3 = new Button() {
+        @Override
+        public boolean get() {
+          return (JoystickHeightController.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 0);
+        }
+       };
+       CargoRocket3.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_TOP, RobotMap.CART_DRIVE_LENGTH));
+       CargoStation = new Button() {
+        @Override
+        public boolean get() {
+          return (JoystickHeightController.getPOV(RobotMap.SUPPORT_POV_CHANNEL_ID) == 270);
+        }
+       };
+       CargoStation.whenPressed(new CAutonomousDeliver(RobotMap.LIFTING_UNIT_HEIGHT_CARGO_STATION, RobotMap.CART_REVERSE_SAFETY_LENGTH));
+
+
+      }
 
   }
 }

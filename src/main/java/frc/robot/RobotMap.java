@@ -63,6 +63,7 @@ public class RobotMap {
   // Joysticks
   public static final int JOYSTICK_MAIN_DRIVER_ID = 0;
   public static final int JOYSTICK_SUPPORT_DRIVER_ID = 1;
+  public static final int JOYSTICK_HEIGHT_CONTROLLER_ID = 2;
 
   // JoystickButtons
     //Triggers
@@ -74,9 +75,14 @@ public class RobotMap {
 
     //Color Buttons
     public static final int SUPPORT_HATCH_GRIPPER_BUTTON_PRESS_HATCH = 4;
-    public static final int SUPPORT_HATCH_PICK_UP_BUTTON = 1;
+    public static final int SUPPORT_HATCH_PICK_UP_BUTTON = 2;
     public static final int SUPPORT_START_POS_BUTTON = 3;
-    public static final int SUPPORT_CARGO_GROUND_BUTTON = 2;
+    public static final int SUPPORT_CARGO_GROUND_BUTTON = 1;
+
+    public static final int HEIGHT_HATCH_STATION_BUTTON_ID = 2;
+    public static final int HEIGHT_HATCH_MID_BUTTON_ID = 3;
+    public static final int HEIGHT_HATCH_TOP_BUTTON_ID = 4;
+    public static final int HEIGHT_CARGO_GROUND_BUTTON_ID = 1;
 
     //Calibrate Buttons
     public static final int SUPPORT_HATCH_GRIPPER_BUTTON_CALIBRATE_ID = 9;
@@ -84,6 +90,19 @@ public class RobotMap {
 
     //POV Channel
     public static final int SUPPORT_POV_CHANNEL_ID = 0;
+
+    //Height Controller
+    //Buttons for Hatch heights
+    public static final int HEIGHT_CONTROLLER_HATCH_STATION = 1;
+    public static final int HEIGHT_CONTROLLER_HATCH_ROCKET_2 = 2;
+    public static final int HEIGHT_CONTROLLER_HATCH_ROCKET_3 = 3;
+    public static final int HEIGHT_CONTROLLER_CARGO_BOTTOM = 4;
+
+    //POV for Height Controller for Cargo heights
+    public static final int HEIGHT_CONTROLLER_CARGO_ROCKET_1 = 180;
+    public static final int HEIGHT_CONTROLLER_CARGO_ROCKET_2 = 90;
+    public static final int HEIGHT_CONTROLLER_CARGO_ROCKET_3 = 0;
+    public static final int HEIGHT_CONTROLLER_CARGO_STATION = 270;
 
   public static final int MAIN_SWERVE_ANGLE_CALIBRATE_BUTTON_ID = 9;
   public static final int MAIN_FIELD_ANGLE_RESET_BUTTON_ID = 10;
@@ -101,15 +120,15 @@ public class RobotMap {
   public static final double STOP_SPEED = 0;
 
   // Swerve Speed Variables
-  public static final double DRIVE_SPEED_MULITPLIER = 0.35;
-  public static final double TURN_SPEED_MULTIPLIER = 0.5;
+  public static final double DRIVE_SPEED_MULITPLIER = 0.45;
+  public static final double TURN_SPEED_MULTIPLIER = 0.65;
   public static final double SWERVE_SPEED_BOOST = 1;
-  public static final double SWERVE_BULLET_TIME = 0.2;
+  public static final double SWERVE_BULLET_TIME = 0.35;
   public static final double SWERVE_CALIBRATE_SPEED = 0.2;
 
   // Gripper Speed Variables
   public static final double CARGO_GRIPPER_SPEED = 0.3;
-  public static final double HATCH_CALIBRATE_SPEED = -0.1;
+  public static final double HATCH_CALIBRATE_SPEED = -0.2;
 
   // Deadzone
   public static final double DEADZONE_RANGE = 0.05;
@@ -118,7 +137,7 @@ public class RobotMap {
   public static double DEFAULT_FIELD_ANGLE = 0;
 
   // Lifting Unit
-      public static final int LIFTING_UNIT_ZERO_POSITION = 1050;
+      public static final int LIFTING_UNIT_ZERO_POSITION = 1355;
       /** Lifting Unit motor max velocity in units/100ms */
       public static final int LIFTING_UNIT_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS = 1200;
       /** mm per pulse */
@@ -126,7 +145,7 @@ public class RobotMap {
       /** Lifting unit motor velocity in units/100ms */
       public static final int LIFTING_UNIT_ENCODER_UNITS_PER_100_MS = 38000;
       /** Lifting unit length in encoder pulses */
-      public static final int LIFTING_UNIT_DRIVE_LENGTH = 33350;
+      public static final int LIFTING_UNIT_DRIVE_LENGTH = 33505;
       /** Lifting unit minimum height such that the cargo gripper is not colliding with the cart system */
       public static final int LIFTING_UNIT_MINIMUM_HEIGHT = 1500;
       /** Lifting unit positions for driving and starting... */
@@ -143,7 +162,7 @@ public class RobotMap {
       /** Lifting unit cargo rocket stations */
       public static final int LIFTING_UNIT_HEIGHT_CARGO_BOTTOM = 9800;
       public static final int LIFTING_UNIT_HEIGHT_CARGO_MID = 21900;
-      public static final int LIFTING_UNIT_HEIGHT_CARGO_TOP = 33350;
+      public static final int LIFTING_UNIT_HEIGHT_CARGO_TOP = 33200;
       /** Lifting unit cargo cargo ship height */
       public static final int LIFTING_UNIT_HEIGHT_CARGO_SHIP = 15000;
     
@@ -164,7 +183,7 @@ public class RobotMap {
       /** Cart length in mm measured from the zero point */
       public static final double CART_DRIVE_LENGTH_MM = 448;
       /** Cart length in encoder pulse */
-      public static final int CART_DRIVE_LENGTH = 15450;
+      public static final int CART_DRIVE_LENGTH = 15620;
       /** Cart length in mm measured from the zero point. */
       public static final double CART_DRIVE_LENGTH_HATCH_MM = 70;
       /** Cart middle position in mm */
