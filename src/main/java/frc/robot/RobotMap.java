@@ -149,22 +149,22 @@ public class RobotMap {
       /** Lifting unit minimum height such that the cargo gripper is not colliding with the cart system */
       public static final int LIFTING_UNIT_MINIMUM_HEIGHT = 1500;
       /** Lifting unit positions for driving and starting... */
-      public static final int LIFTING_UNIT_HEIGHT_START = 1500;
+      public static final int LIFTING_UNIT_HEIGHT_START = 3198;
       /** Lifting unit positions for hatch Station, the ship and the first rocket level  */
-      public static final int LIFTING_UNIT_HEIGHT_HATCH_STATION = 2050;
+      public static final int LIFTING_UNIT_HEIGHT_HATCH_STATION = 3198;
       /** Lifting unit other hatch positions for rocket */
-      public static final int LIFTING_UNIT_HEIGHT_HATCH_BOTTOM = 2500;
-      public static final int LIFTING_UNIT_HEIGHT_HATCH_MID = 14300;
-      public static final int LIFTING_UNIT_HEIGHT_HATCH_TOP = 26150;
+      public static final int LIFTING_UNIT_HEIGHT_HATCH_BOTTOM = 3198;
+      public static final int LIFTING_UNIT_HEIGHT_HATCH_MID = 14695;
+      public static final int LIFTING_UNIT_HEIGHT_HATCH_TOP = 26900;
       /** Lifting unit cargo station on field and driverstation */
       public static final int LIFTING_UNIT_HEIGHT_CARGO_STATION = 17000;
       public static final int LIFTING_UNIT_HEIGHT_CARGO_DEPOT = 1500;
       /** Lifting unit cargo rocket stations */
-      public static final int LIFTING_UNIT_HEIGHT_CARGO_BOTTOM = 9800;
-      public static final int LIFTING_UNIT_HEIGHT_CARGO_MID = 21900;
+      public static final int LIFTING_UNIT_HEIGHT_CARGO_BOTTOM = 9910;
+      public static final int LIFTING_UNIT_HEIGHT_CARGO_MID = 21960;
       public static final int LIFTING_UNIT_HEIGHT_CARGO_TOP = 33200;
       /** Lifting unit cargo cargo ship height */
-      public static final int LIFTING_UNIT_HEIGHT_CARGO_SHIP = 15000;
+      public static final int LIFTING_UNIT_HEIGHT_CARGO_SHIP = 16700;
     
 
   // Hatch
