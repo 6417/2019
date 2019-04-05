@@ -151,10 +151,11 @@ public class SCart extends Subsystem {
 
   private void driveAutonomous() {
     // when the system is not homed, do not drive the cart!
-    if (!isHomed()) {
-      stop();
-      return;
-    }
+    // TODO zeroed in Cart not enabled
+    // if (!isHomed()) {
+    //   stop();
+    //   return;
+    // }
 
     int targetPosition = calculateNextPosition(m_targetPosition);
 
@@ -182,7 +183,8 @@ public class SCart extends Subsystem {
     if (!remoteTalon.getSensorCollection().isRevLimitSwitchClosed()) {
       Motors.cartMotor.setSelectedSensorPosition(0);
       m_isHomed = true;
-    } else if (!remoteTalon.getSensorCollection().isFwdLimitSwitchClosed()) {
+    } 
+    else if (!remoteTalon.getSensorCollection().isFwdLimitSwitchClosed()) {
       Motors.cartMotor.setSelectedSensorPosition(RobotMap.CART_DRIVE_LENGTH);
       m_isHomed = true;
     }
