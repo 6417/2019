@@ -7,14 +7,9 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.kauailabs.navx.frc.AHRS;
 
 import ch.fridolinsrobotik.drivesystems.swerve.SwerveDrive;
-import ch.fridolinsrobotik.utilities.Algorithms;
 import ch.fridolinsrobotik.utilities.Deadzone;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
@@ -245,18 +240,18 @@ public class Robot extends TimedRobot {
           liftingUnit.stopMotor();
         }
         liftingUnit.enableAutonomous(false);
-        liftingUnit.setMaximumLoweringSpeed(-0.3);
-        liftingUnit.setMaximumRaiseSpeed(0.4);
+        liftingUnit.setMaximumLoweringSpeed(-0.5);
+        liftingUnit.setMaximumRaiseSpeed(0.7);
         liftingUnit.drive(joystickZrotateSupport);
       } else {
-        if(liftingUnit.isZeroed()) {
+        // if(liftingUnit.isZeroed()) {
           liftingUnit.enableAutonomous(true);
           if(liftingUnit.drive_manual == true) {
             liftingUnit.drive_manual = false;
             liftingUnit.setTargetPosition(liftingUnit.getPosition());
             liftingUnit.drive();
           }
-        }
+        // }
       }
     }
 
