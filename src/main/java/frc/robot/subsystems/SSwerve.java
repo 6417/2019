@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.robot.Motors;
 import frc.robot.Robot;
+import frc.robot.RobotMap;
 import frc.robot.commands.drive.swerve.CSwerveDriveManual;
 
 /**
@@ -30,6 +31,7 @@ public class SSwerve extends Subsystem {
 	ShuffleboardLayout swerveSubsystem = Robot.shuffleSubsystems.getLayout("Swerve", BuiltInLayouts.kList).withPosition(2, 0).withSize(2,2);
 	NetworkTableEntry shuffleboardHomed = swerveSubsystem.add("Homed", false).getEntry();
 	NetworkTableEntry shuffleboardDriveMode = swerveSubsystem.add("Drive Mode", DriveMode.FieldOriented.toString()).getEntry();
+	NetworkTableEntry shuffleboardDefaultDriveSpeed = swerveSubsystem.add("Drive Speed", RobotMap.DRIVE_SPEED_MULITPLIER).getEntry();
 
 	public SSwerve() {
 		super();
@@ -65,6 +67,11 @@ public class SSwerve extends Subsystem {
 			break;
 		}
 		
+	}
+
+	public double getDefaultDriveSpeed() {
+		// return shuffleboardDefaultDriveSpeed.getDouble(RobotMap.DRIVE_SPEED_MULITPLIER);
+		return RobotMap.DRIVE_SPEED_MULITPLIER;
 	}
 
 	public boolean isHomed() {

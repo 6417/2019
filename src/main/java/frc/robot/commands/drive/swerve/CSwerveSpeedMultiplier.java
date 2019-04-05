@@ -37,7 +37,7 @@ public class CSwerveSpeedMultiplier extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.swerveDrive.setMultiplier(RobotMap.DRIVE_SPEED_MULITPLIER);
+    Robot.swerveDrive.setMultiplier(Robot.swerveDrive.getDefaultDriveSpeed());
   }
 
   // Called when another command which requires one or more of the same
