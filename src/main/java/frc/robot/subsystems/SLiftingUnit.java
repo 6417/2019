@@ -156,10 +156,11 @@ public class SLiftingUnit extends Subsystem {
   }
  
   public void driveAutonomous() {
-    if(!zeroed) {
-      stopMotor();
-      return;
-    }
+    // TODO not Zeroed in liftingUnit
+    // if(!zeroed) {
+    //   stopMotor();
+    //   return;
+    // }
 
     drive_autonomous = true;
 
