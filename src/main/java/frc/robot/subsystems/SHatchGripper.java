@@ -77,19 +77,19 @@ public class SHatchGripper extends Subsystem {
   }
 
   public void hatchGripperExtend() {
-    if (isHomed) {
+    // if (isHomed) {
       Motors.hatchGripperMotor.set(ControlMode.MotionMagic, RobotMap.HATCH_DRIVE_EXTENDED);
-    } else {
-      hatchGripperStop();
-    }
+    // } else {
+      // hatchGripperStop();
+    // }
   }
 
   public void hatchGripperRetract() {
-    if (isHomed) {
+    // if (isHomed) {
       Motors.hatchGripperMotor.set(ControlMode.MotionMagic, RobotMap.HATCH_DRIVE_RETRACTED);
-    } else {
-      hatchGripperStop();
-    }
+    // } else {
+      // hatchGripperStop();
+    // }
   }
 
   public void hatchGripperStop() {
