@@ -138,10 +138,10 @@ public class Motors {
             //PID for primary robot
             liftMaster.selectProfileSlot(0, 0);
             liftMaster.config_kF(0, 0.8525, 30);
-            liftMaster.config_kP(0, 0.5, 30);
+            liftMaster.config_kP(0, 1.2, 30);
             liftMaster.config_kI(0, 0.0, 30);
-            liftMaster.config_kD(0, 0.0, 30);
-            liftMaster.config_IntegralZone(0, 500);
+            liftMaster.config_kD(0, 18.0, 30);
+            liftMaster.config_IntegralZone(0, 200);
             liftMaster.configAllowableClosedloopError(0, 30, 30);
             liftMaster.configMotionCruiseVelocity(RobotMap.LIFTING_UNIT_MAX_VELOCITY_ENCODER_UNITS_PER_100_MS * 4 / 3,
                     30);
