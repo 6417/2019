@@ -305,6 +305,7 @@ public class Motors {
                 
                 motor.configPeakCurrentLimit(0);
                 motor.configContinuousCurrentLimit(30);
+                motor.configNeutralDeadband(0.12);
 
                 // Set Directions
                 motor.setSensorPhase(false);
