@@ -15,13 +15,14 @@ import frc.robot.Robot;
 
 public class CSwerveCalibrate extends CommandGroup {
   public CSwerveCalibrate() {
-    addSequential(new InstantCommand(new Runnable(){
+    // addSequential(new InstantCommand(new Runnable(){
     
-      @Override
-      public void run() {
-        Robot.swerveDrive.homed(false);
-      }
-    }));
+    //   @Override
+    //   public void run() {
+    //     Robot.swerveDrive.homed(false);
+    //   }
+    // }));
+    addSequential(new InstantCommand(() -> Robot.swerveDrive.homed(false)));
     addSequential(new SwerveSteeringZeroingBySwitchWithPositionControl(500));
     addSequential(new SwerveSteeringPutStraight());
   }
