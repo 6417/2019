@@ -154,6 +154,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     raspberry.getEntry("timeStart").setBoolean(true);
     hatchGripper.hatchGripperExtend();
+    ahrs.reset();
   }
 
   /**
