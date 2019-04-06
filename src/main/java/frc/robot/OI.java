@@ -112,13 +112,22 @@ public class OI {
       SwerveCargoOrientedButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_SWERVE_CARGO_ORIENTED_BUTTON_ID);
       SwerveFieldOrientedButton = new JoystickButton(JoystickMainDriver, RobotMap.MAIN_SWERVE_FIELD_ORINETED_BUTTON_ID);
 
+      CSwerveChangeDriveMode hatchOriented = new CSwerveChangeDriveMode(DriveMode.HatchOriented);
+      hatchOriented.setRunWhenDisabled(true);
+      CSwerveChangeDriveMode cargoOriented = new CSwerveChangeDriveMode(DriveMode.CargoOriented);
+      cargoOriented.setRunWhenDisabled(true);
+      CSwerveChangeDriveMode fieldOriented = new CSwerveChangeDriveMode(DriveMode.FieldOriented);
+      fieldOriented.setRunWhenDisabled(true);
+      CNavXReset navxReset = new CNavXReset();
+      navxReset.setRunWhenDisabled(true);
+
       SwerveCalibrateButton.whenPressed(new CSwerveCalibrate());
-      NavXResetButton.whenPressed(new CNavXReset());
+      NavXResetButton.whenPressed(navxReset);
       SwerveSpeedBoostButton.whileHeld(new CSwerveSpeedMultiplier(RobotMap.SWERVE_SPEED_BOOST));
       SwerveSpeedBulletTimeButton.whileHeld(new CSwerveSpeedMultiplier(RobotMap.SWERVE_BULLET_TIME));
-      SwerveHatchOrientedButton.whenPressed(new CSwerveChangeDriveMode(DriveMode.HatchOriented));
-      SwerveCargoOrientedButton.whenPressed(new CSwerveChangeDriveMode(DriveMode.CargoOriented));
-      SwerveFieldOrientedButton.whenPressed(new CSwerveChangeDriveMode(DriveMode.FieldOriented));
+      SwerveHatchOrientedButton.whenPressed(hatchOriented);
+      SwerveCargoOrientedButton.whenPressed(cargoOriented);
+      SwerveFieldOrientedButton.whenPressed(fieldOriented);
 
     }
 
