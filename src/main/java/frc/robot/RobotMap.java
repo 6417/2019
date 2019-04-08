@@ -151,7 +151,7 @@ public class RobotMap {
       /** Lifting unit positions for driving and starting... */
       public static final int LIFTING_UNIT_HEIGHT_START = 3198;
       /** Lifting unit positions for hatch Station, the ship and the first rocket level  */
-      public static final int LIFTING_UNIT_HEIGHT_HATCH_STATION = 3198;
+      public static final int LIFTING_UNIT_HEIGHT_HATCH_STATION = 2600;
       /** Lifting unit other hatch positions for rocket */
       public static final int LIFTING_UNIT_HEIGHT_HATCH_BOTTOM = 3198;
       public static final int LIFTING_UNIT_HEIGHT_HATCH_MID = 14695;
